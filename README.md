@@ -1,7 +1,9 @@
-# snptest: a pacakge to address [biological question] 
+# phylosuite: a package to 
 
 **Description**
 
 **Input**
+Phylogenetic tree
+Genome-informed trait
 
 **Output** 
