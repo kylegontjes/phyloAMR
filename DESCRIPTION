@@ -1,17 +1,16 @@
 Package: phylosuite
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Phylogenetic Analysis of Genome-Influenced Traits
 Version: 0.1.0
 Authors@R: c(
-    person(
-      "Jane", "Doe",
-      email = "jane@example.com",
-      role = c("aut", "cre")
-    )
+  person(given = "Kyle",family = "Gontjes",email = "kgontjes@umich.edu",role=c("cre","aut"),comment = c(ORCID = "0000-0001-8671-7990"))
   )
-Description: More about what it does (maybe more than one line).
+Maintainer: Kyle Gontjes <kgontjes@umich.edu>
+Description: Collection of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.
     Continuation lines should be indented.
-License: What license is it under?
+License: MIT
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/kylegontjes/phylosuite
+BugReports: https://github.com/kylegontjes/phylosuite/issues
 RoxygenNote: 7.3.2
