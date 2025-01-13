@@ -2,12 +2,13 @@
 
 **Description**
 
-The R package, phylosuite, is a collection of phylogenetically-informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity. 
+The R package, phylosuite, is a collection of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity. 
 
-This tool has three main workhorses:
-1. **asr_clustering_algorithm()**: An algorithm that leverages ancestral state reconstruction to evaluate the clustering of features across a phylogenetic tree
-2. **nearest_neighbor_algorithm()**: An algorithm that permits the identification of an isolate's nearest neighbor on the phylogenetic tree
-3. **permute_burden_algorithm()**: An algorithm that implements a permutation test to identify genes with elevated mutation frequency. 
+This tool's main workhorse is **asr_clustering_algorithm()**, which leverages ancestral state reconstruction to characterize the gain and loss of features across the phylogenetic tree. 
+
+Miscellaneous algorithms include:
+1. **nearest_neighbor_algorithm()**: An algorithm that permits the identification of an isolate's nearest neighbor on the phylogenetic tree
+2. **permute_burden_algorithm()**: An algorithm implementing a permutation test to identify genes with elevated mutation frequency. 
 
 This package's suite of algorithms and workflows was developed to address numerous biological questions, including:  
 1. How often does a genome-informed trait emerge and spread across a healthcare network?
@@ -27,5 +28,9 @@ devtools::install_github("kylegontjes/phylosuite", force=TRUE, build_vignettes=T
 | Question | Method | Function(s) | Inputs | Output |
 |---|---|---|---|---|
 | How often does a genome-informed trait emerge and spread across a healthcare network? | Ancestral state reconstruction and tracing of estimates| asr_clustering_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | ancestral reconstruction and calls for clusters and singletons | 
+| Genetic features associated with trait/lineage emergence/spread? | Ancestral state reconstruction of phenotype and genotype | asr_clustering_algorithm() + genotypic_phenotypic_convergence() **WIP** | Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree | Genotypes with convergent episodes of gain or loss 
+| What descriptive characteristics associated with phenotypic emergence and spread? | Association testing for characteristics and phenotypic emergence (singletons) and clusters | phylodynamic_associations() **WIP** | Cluster calls from asr_clustering_algorithm() and dataframe with characteristics of interest | Statistical association testing results for characteristics of interest | 
 | Who is the nearest neighbor of my isolate | Evaluation of phylogenetic distance | nearest_neighbor_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | An isolate's nearest neighbor |  
-| What genes are mutated more often than expected? | Permutation testing of observed mutations | permute_burden_algorithm() | VCF file and dictionary with details on gene length | Statistically significant genes with more mutations than expected | 
+| What genes are mutated more often than expected in my population of interest? | Permutation testing of observed mutations | permute_burden_algorithm() **WIP** | VCF file and dictionary with details on gene length | Statistically significant genes with more mutations than expected | 
+
+
