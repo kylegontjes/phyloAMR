@@ -27,6 +27,7 @@ devtools::install_github("kylegontjes/phylosuite", force=TRUE, build_vignettes=T
 **Questions that this tool can address**
 | Question | Method | Function(s) | Inputs | Output |
 |---|---|---|---|---|
+| Do isolates belong to episodes of trait emergence or spread? | Ancestral state reconstruction and tracing of estimates | asr_clustering_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | ancestral reconstruction and calls for clusters and singletons | 
 | How often does a genome-informed trait emerge and spread across a healthcare network? | Ancestral state reconstruction and tracing of estimates| asr_clustering_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | ancestral reconstruction and calls for clusters and singletons | 
 | Genetic features associated with trait/lineage emergence/spread? | Ancestral state reconstruction of phenotype and genotype | asr_clustering_algorithm() + genotypic_phenotypic_convergence() **WIP** | Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree | Genotypes with convergent episodes of gain or loss 
 | What descriptive characteristics associated with phenotypic emergence and spread? | Association testing for characteristics and phenotypic emergence (singletons) and clusters | phylodynamic_associations() **WIP** | Cluster calls from asr_clustering_algorithm() and dataframe with characteristics of interest | Statistical association testing results for characteristics of interest | 
