@@ -10,45 +10,28 @@
         <mxCell id="VNcOllqoroxEwjGYsbXY-1" value="Phylogenetic tree" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="210" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-2" target="VNcOllqoroxEwjGYsbXY-5" edge="1">
+        <mxCell id="imIZca2bCh2cf1kf2X_s-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="VNcOllqoroxEwjGYsbXY-2" target="imIZca2bCh2cf1kf2X_s-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-2" target="VNcOllqoroxEwjGYsbXY-6" edge="1">
+        <mxCell id="imIZca2bCh2cf1kf2X_s-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="VNcOllqoroxEwjGYsbXY-2" target="VNcOllqoroxEwjGYsbXY-16">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-2" value="Phylocluster object" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="imIZca2bCh2cf1kf2X_s-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="VNcOllqoroxEwjGYsbXY-2" target="VNcOllqoroxEwjGYsbXY-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VNcOllqoroxEwjGYsbXY-2" value="Ancestral state reconstruction estimates for internal nodes and tips" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="320" y="200" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-4" value="asr_clustering_algorithm()" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="350" y="140" width="60" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-5" target="VNcOllqoroxEwjGYsbXY-16" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-5" target="VNcOllqoroxEwjGYsbXY-28" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-5" value="Ancestral state reconstruction estimates for internal nodes and tips" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="130" y="300" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-6" target="VNcOllqoroxEwjGYsbXY-11" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="570" y="370" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-6" target="VNcOllqoroxEwjGYsbXY-23" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-6" value="Tip dataframe: Cluster and singleton calls" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="395" y="300" width="120" height="60" as="geometry" />
+        <mxCell id="VNcOllqoroxEwjGYsbXY-4" value="asr()" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="320" y="150" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-11" value="Descriptive statistics on cluster calls and phylogenetic singletons" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="640" y="370" width="120" height="60" as="geometry" />
+          <mxGeometry x="760" y="440" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="VNcOllqoroxEwjGYsbXY-13" value="asr_clustering_analysis()" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="575" y="300" width="60" height="30" as="geometry" />
+        <mxCell id="VNcOllqoroxEwjGYsbXY-13" value="asr_clustering()" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="530" y="290" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="VNcOllqoroxEwjGYsbXY-16" target="aSbFs4OQgKcLIXqlhelV-11">
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-16" target="aSbFs4OQgKcLIXqlhelV-11" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="130" y="530" />
@@ -56,25 +39,25 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-16" value="Genotypes with convergent gain and loss events with a phenotype" style="rounded=0;whiteSpace=wrap;html=1;textDirection=ltr;horizontal=1;verticalAlign=middle;" parent="1" vertex="1">
-          <mxGeometry x="10" y="420" width="120" height="80" as="geometry" />
+          <mxGeometry x="-10" y="420" width="140" height="60" as="geometry" />
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-18" value="&lt;span style=&quot;text-align: start; background-color: rgb(255, 255, 255);&quot;&gt;&lt;font style=&quot;&quot; face=&quot;Helvetica&quot;&gt;genotypic_phenotypic_convergence()&lt;/font&gt;&lt;/span&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FF0000;" parent="1" vertex="1">
-          <mxGeometry x="20" y="360" width="60" height="30" as="geometry" />
+          <mxGeometry x="150" y="310" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-23" value="Patient features associated with trait emergence and spread" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="515" y="430" width="120" height="60" as="geometry" />
+          <mxGeometry x="600" y="440" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-26" value="&lt;span style=&quot;text-align: start; background-color: rgb(246, 248, 250);&quot;&gt;&lt;font style=&quot;&quot; face=&quot;Helvetica&quot;&gt;phyloaware_regression()&lt;/font&gt;&lt;/span&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FF0C0C;" parent="1" vertex="1">
-          <mxGeometry x="470" y="370" width="60" height="30" as="geometry" />
+          <mxGeometry x="580" y="362" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="VNcOllqoroxEwjGYsbXY-28" target="aSbFs4OQgKcLIXqlhelV-11">
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-28" target="aSbFs4OQgKcLIXqlhelV-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-28" value="Hitchiking and compensatory mutations" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="305" y="420" width="120" height="60" as="geometry" />
+          <mxGeometry x="320" y="420" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-30" value="&lt;div style=&quot;text-align: start;&quot;&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;concurrent_downstream_genotypic_change()&lt;/span&gt;&lt;/div&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FF0C0C;" parent="1" vertex="1">
-          <mxGeometry x="253" y="362" width="60" height="30" as="geometry" />
+          <mxGeometry x="339" y="362" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="VNcOllqoroxEwjGYsbXY-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VNcOllqoroxEwjGYsbXY-36" target="VNcOllqoroxEwjGYsbXY-2" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -82,26 +65,38 @@
         <mxCell id="VNcOllqoroxEwjGYsbXY-36" value="Genome-influenced traits" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="480" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-4" value="Statistically significant convergent gain/loss events" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-4" value="Statistically significant convergent gain/loss events" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="10" y="600" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-6" value="Statistically significant hitchiking and compensatory mutations" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-6" value="Statistically significant hitchiking and compensatory mutations" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="320" y="600" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-8" value="&lt;span style=&quot;color: rgb(255, 36, 2);&quot;&gt;convergence_permutation_test()&lt;/span&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="40" y="530" width="60" height="30" as="geometry" />
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-8" value="&lt;span style=&quot;color: rgb(255, 36, 2);&quot;&gt;convergence_permutation_test()&lt;/span&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="10" y="510" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-10" value="&lt;span style=&quot;color: rgb(255, 36, 2);&quot;&gt;convergence_permutation_test()&lt;/span&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="365" y="510" width="60" height="30" as="geometry" />
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-10" value="&lt;span style=&quot;color: rgb(255, 36, 2);&quot;&gt;convergence_permutation_test()&lt;/span&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="380" y="510" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="aSbFs4OQgKcLIXqlhelV-11" target="aSbFs4OQgKcLIXqlhelV-4">
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" source="aSbFs4OQgKcLIXqlhelV-11" target="aSbFs4OQgKcLIXqlhelV-4" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="aSbFs4OQgKcLIXqlhelV-11" target="aSbFs4OQgKcLIXqlhelV-6">
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="aSbFs4OQgKcLIXqlhelV-11" target="aSbFs4OQgKcLIXqlhelV-6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="aSbFs4OQgKcLIXqlhelV-11" value="Random permutation of genotype on tree and perform ASR" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="aSbFs4OQgKcLIXqlhelV-11" value="Random permutation of genotype on tree and perform ASR" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="160" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="imIZca2bCh2cf1kf2X_s-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="imIZca2bCh2cf1kf2X_s-1" target="VNcOllqoroxEwjGYsbXY-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="imIZca2bCh2cf1kf2X_s-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="imIZca2bCh2cf1kf2X_s-1" target="VNcOllqoroxEwjGYsbXY-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="imIZca2bCh2cf1kf2X_s-1" value="Tip dataframe: Cluster and singleton calls" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="660" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="imIZca2bCh2cf1kf2X_s-2" value="&lt;span style=&quot;text-align: start; background-color: rgb(246, 248, 250);&quot;&gt;&lt;font style=&quot;color: rgb(255, 0, 0);&quot; face=&quot;Helvetica&quot;&gt;asr_clustering_analysis()&lt;/font&gt;&lt;/span&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FF0C0C;" vertex="1" parent="1">
+          <mxGeometry x="800" y="370" width="60" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
