@@ -14,3 +14,6 @@ LazyData: true
 URL: https://github.com/kylegontjes/phylosuite
 BugReports: https://github.com/kylegontjes/phylosuite/issues
 RoxygenNote: 7.3.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
