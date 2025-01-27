@@ -34,9 +34,6 @@ get_parent_child_data <- function(tr,anc_data,pheno_data,conf_threshold=0.875,no
     anc_data[,"pred"] <- ifelse(anc_data[,2] > conf_threshold,1,ifelse(anc_data[,1] >conf_threshold,0,0.5))
   } else if (node_states == "joint"){
     state_coding = as.factor(pheno_data) %>% levels %>% `names<-`(1:length(.))
-    if(is.character(state_coding)){
-      state_coding = recode(state_coding,!!! as.list(names(state_coding)))
-    }
     anc_data = data.frame(pred = anc_data)
     anc_data$pred =  recode(anc_data$pred,!!!as.list(state_coding)) %>% as.numeric
   } else {
