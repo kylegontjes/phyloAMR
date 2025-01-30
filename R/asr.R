@@ -1,6 +1,6 @@
 asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_threshold=0.875){
   # Check if phenotype is 0,1
-  check_phenotype(df[[pheno]])
+  check_phenotype(df[[paste0(pheno)]])
 
   # Run corHMM to estimate hidden rates
   corHMM_out = corHMM::corHMM(phy=tr,data=df[,c(tip_name_var,pheno)],rate.cat = 1,model=model,node.states = node_states)
@@ -20,7 +20,6 @@ check_phenotype <- function(phenotype_var){
   if(sum(unique(as.numeric(df[,pheno])) %in% c(0,1))!=2){
     stop("Phenotype is not formatted as binary variable with event = 1 and no-event = 0")
   }
-
 }
 
 get_parent_child_data <- function(tr,anc_data,pheno_data,conf_threshold=0.875,node_states){
@@ -74,7 +73,7 @@ get_parent_child_data <- function(tr,anc_data,pheno_data,conf_threshold=0.875,no
   return(edge)
 }
 
-get_phenotypic_continuation_data <- function(parent_child_df){
+get_phenotypic_continuation_data <- function(parent_child_df,node_states){
   parent_child_df <- parent_child_df %>% dplyr::mutate(transition_any = ifelse(parent_val != child_val,1,0),
                                                        transition_high = ifelse(parent_val ==0 & child_val==1 | parent_val==1 & child_val ==0,1,0),
                                                        transition_low = ifelse(parent_val ==0.5 & child_val==1 | parent_val==0.5 & child_val ==0,1,0),
@@ -87,6 +86,7 @@ get_phenotypic_continuation_data <- function(parent_child_df){
                                                        continuation_any  =  ifelse(parent_val == child_val,1,0),
                                                        continuation_high  =  ifelse(parent_val == 1 & child_val ==1 | parent_val == 0 & child_val ==0,1,0),
                                                        continuation_low =  ifelse(parent_val == 0.5 & child_val ==0.5,1,0))
+
   return(parent_child_df)
 }
 
