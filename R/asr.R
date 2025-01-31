@@ -1,6 +1,6 @@
 asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_threshold=0.875){
   # Check if phenotype is 0,1
-  check_phenotype(df[[paste0(pheno)]])
+  check_phenotype(df[[pheno]])
 
   # Run corHMM to estimate hidden rates
   corHMM_out = corHMM::corHMM(phy=tr,data=df[,c(tip_name_var,pheno)],rate.cat = 1,model=model,node.states = node_states)
@@ -17,7 +17,7 @@ asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_
 }
 
 check_phenotype <- function(phenotype_var){
-  if(sum(unique(as.numeric(df[,pheno])) %in% c(0,1))!=2){
+  if(sum(unique(as.numeric(phenotype_var)) %in% c(0,1))!=2){
     stop("Phenotype is not formatted as binary variable with event = 1 and no-event = 0")
   }
 }
