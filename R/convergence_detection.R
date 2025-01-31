@@ -1,7 +1,7 @@
 convergence_detection <- function(comparitor_parent_child_df,trait_parent_child_df){
-  gains_t = parent_child_df %>% subset(gain_any==1) %>% .$child
+  gains_t = trait_parent_child_df %>% subset(gain_any==1) %>% .$child
   gains_c = comparitor_parent_child_df  %>% subset(gain_any==1) %>% .$child
-  loss_t = parent_child_df %>% subset(loss_any==1) %>% .$child
+  loss_t = trait_parent_child_df %>% subset(loss_any==1) %>% .$child
   loss_c = comparitor_parent_child_df  %>% subset(loss_any==1) %>% .$child
 
   num_trait_gains =  length(gains_t)
