@@ -2,6 +2,10 @@ asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
 
+  # Order dataframe properly
+  df<- df %>% .[match(tr$tip.label,.[[tip_name_var]]),]
+
+
   # Run corHMM to estimate hidden rates
   corHMM_out = corHMM::corHMM(phy=tr,data=df[,c(tip_name_var,pheno)],rate.cat = 1,model=model,node.states = node_states)
 
