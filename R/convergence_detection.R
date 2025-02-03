@@ -10,15 +10,23 @@ convergence_detection <- function(comparitor_parent_child_df,trait_parent_child_
   convergent_gains = gains_t[which(gains_t %in%  gains_c)]
   convergent_gains_num = length(convergent_gains)
   convergent_gains_prop =   convergent_gains_num / num_trait_gains
+  convergent_gain_loss = gains_t[which(gains_t %in%  loss_c)]
+  convergent_gain_loss_num =  length(convergent_gain_loss)
+  convergent_gain_loss_prop =  convergent_gain_loss_num / num_trait_gains
   convergent_loss = loss_t[which(loss_t %in%  loss_c)]
   convergent_loss_num = length(convergent_loss)
   convergent_loss_prop =  convergent_loss_num / num_trait_loss
+  convergent_loss_gain = loss_t[which(loss_t %in%  gains_c)]
+  convergent_loss_gain_num =  length(convergent_loss_gain)
+  convergent_loss_gain_prop =  convergent_loss_gain_num / num_trait_loss
 
-  summary <- data.frame(num_trait_gains=num_trait_gains,convergent_gains_num = convergent_gains_num,convergent_gains_prop=convergent_gains_prop,num_trait_loss=num_trait_loss,convergent_loss_num=convergent_loss_num,convergent_loss_prop=convergent_loss_prop)
+  summary <- data.frame(num_trait_gains=num_trait_gains,convergent_gains_num = convergent_gains_num,convergent_gains_prop=convergent_gains_prop,convergent_gain_loss_num=convergent_gain_loss_num,convergent_gain_loss_prop=convergent_gain_loss_prop,num_trait_loss=num_trait_loss,convergent_loss_num=convergent_loss_num,convergent_loss_prop=convergent_loss_prop,convergent_loss_gain_num=convergent_loss_gain_num,convergent_loss_gain_prop=convergent_loss_gain_prop)
 
   results = list(summary=summary,
                  convergent_gains=convergent_gains,
-                 convergent_loss=convergent_loss
+                 convergent_gain_loss=convergent_gain_loss,
+                 convergent_loss=convergent_loss,
+                 convergent_loss_gain=convergent_loss_gain
   )
 
   return(results)
