@@ -73,7 +73,7 @@ get_parent_child_data <- function(tr,anc_data,pheno_data,conf_threshold=0.875,no
   return(edge)
 }
 
-get_phenotypic_continuation_data <- function(parent_child_df,node_states){
+get_phenotypic_continuation_data <- function(parent_child_df){
   parent_child_df <- parent_child_df %>% dplyr::mutate(transition_any = ifelse(parent_val != child_val,1,0),
                                                        transition_high = ifelse(parent_val ==0 & child_val==1 | parent_val==1 & child_val ==0,1,0),
                                                        transition_low = ifelse(parent_val ==0.5 & child_val==1 | parent_val==0.5 & child_val ==0,1,0),
