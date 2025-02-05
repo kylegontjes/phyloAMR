@@ -5,6 +5,12 @@ asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_
   # Order dataframe properly
   df<- df %>% .[match(tr$tip.label,.[[tip_name_var]]),]
 
+  # Check if you want to use the best model
+  if(model=="MF"){
+    print("Performing model finding to use best fitting model")
+    model = find_best_model(df=df,tr=tr,tip_name_var=tip_name_var,pheno=pheno,node_states = node_states)
+    print(paste0("Best model is: ",model))
+  }
 
   # Run corHMM to estimate hidden rates
   corHMM_out = corHMM::corHMM(phy=tr,data=df[,c(tip_name_var,pheno)],rate.cat = 1,model=model,node.states = node_states)
