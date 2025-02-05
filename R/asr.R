@@ -2,7 +2,7 @@ asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
 
-  # Order dataframe properly
+  # Order dataframe properly, if not the predictions will be wrong
   df<- df %>% .[match(tr$tip.label,.[[tip_name_var]]),]
 
   # Check if you want to use the best model
