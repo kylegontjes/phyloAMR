@@ -45,23 +45,15 @@ get_trait_traces_on_tree <- function(parent_child_df,tr){
     starts <- cumsum(c(1, head(rle_result$lengths, -1)))  # Start positions
     stretches <- data.frame(
       startnode =names( starts[rle_result$values]),start = starts[rle_result$values],
-                            end = starts[rle_result$values] + rle_result$lengths[rle_result$values] - 1)
-    paths = list()
-    if(nrow(stretches)>0){
+                            end = starts[rle_result$values] + rle_result$lengths[rle_result$values] - 1) %>% subset(start==1)
 
-      for(i in 1:nrow(stretches)){
-        start= stretches[i,"start"]
-        end = stretches[i,"end"]
-        paths[[i]] <- as.vector(nodes[start:end])
-      }
-    }
-    paths = unlist(paths)
-
-
+    start= stretches[1,"start"]
+    end = stretches[1,"end"]
+    paths<- as.vector(nodes[start:end])
     return(paths)
   }
 
-  true_stretches = lapply(paths_w_trait,find_true_stretches)
+  true_stretches = lapply(paths_w_trait,find_true_stretches) %>% unique
   return(true_stretches)
 }
 
@@ -111,18 +103,19 @@ get_gain_loss_on_stretches = function(comparitor_parent_child_df, stretches){
   #Gains
   stretches_w_gains = lapply(merged_paths,FUN=function(x){
     x[which(x %in% gains_c)] %>% sum %>% {ifelse(.>0,T,F)}
-  }) %>% unlist %>% which %>% names %>% as.numeric %>% {ifelse(length(.>0),.,NA)}
-
+  }) %>% unlist %>% which %>% names %>% as.numeric
+  stretches_w_gains_str = ifelse(length(stretches_w_gains)>0,stretches_w_gains,NA)
   stretches_w_gains_num = length(stretches_w_gains)
   stretches_w_gains_prop  = stretches_w_gains_num / num_stretches
   # Losses
   stretches_w_losses = lapply(merged_paths,FUN=function(x){
     x[which(x %in% loss_c)] %>% sum %>% {ifelse(.>0,T,F)}
-  })  %>% unlist %>% which %>% names %>% as.numeric %>% {ifelse(length(.>0),.,NA)}
+  })  %>% unlist %>% which %>% names %>% as.numeric
+  stretches_w_losses_str  = ifelse(length(stretches_w_losses)>0,stretches_w_gains,NA)
   stretches_w_losses_num = length(stretches_w_losses)
   stretches_w_losses_prop = stretches_w_losses_num / num_stretches
 
-  summary = data.frame(num_stretches=num_stretches,stretches_w_gains = stretches_w_gains,stretches_w_gains_num=stretches_w_gains_num,stretches_w_gains_prop=stretches_w_gains_prop,stretches_w_losses = stretches_w_losses,stretches_w_losses_num,stretches_w_losses_prop=stretches_w_losses_prop,num_downstream=num_downstream,gains=gains_str,gains_num=gains_num,gains_prop=gains_prop,loss=loss_str,loss_num=loss_num,loss_prop=loss_prop)
+  summary = cbind.data.frame(num_stretches=num_stretches,stretches_w_gains = stretches_w_gains_str,stretches_w_gains_num=stretches_w_gains_num,stretches_w_gains_prop=stretches_w_gains_prop,stretches_w_losses = stretches_w_losses_str,stretches_w_losses_num,stretches_w_losses_prop=stretches_w_losses_prop,num_downstream=num_downstream,gains=gains_str,gains_num=gains_num,gains_prop=gains_prop,loss=loss_str,loss_num=loss_num,loss_prop=loss_prop)
   return(summary)
 }
 
