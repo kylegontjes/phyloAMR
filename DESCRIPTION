@@ -7,17 +7,22 @@ Authors@R: c(
   )
 Maintainer: Kyle Gontjes <kgontjes@umich.edu>
 Description: Collection of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.
-    Continuation lines should be indented.
+    Many of our tools leverage phylogenetic distance or ancestral state analyses
 License: MIT
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/kylegontjes/phylosuite
 BugReports: https://github.com/kylegontjes/phylosuite/issues
 RoxygenNote: 7.3.2
-Imports:
-    corHMM,
+Imports: 
     dplyr,
-    stringr
+    stringr,
+    ape,
+    pbapply
 Suggests: 
     testthat (>= 3.0.0)
+Remotes: 
+    thej022214/corHMM
+Depends: 
+    R (>= 2.10)
 Config/testthat/edition: 3
