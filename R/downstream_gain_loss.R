@@ -79,9 +79,11 @@ get_gain_loss_on_stretches = function(comparitor_parent_child_df, stretches){
 
   num_downstream = length(downstream_positions)
   gains = downstream_positions[which(downstream_positions %in%  gains_c)]
+  gains_str = paste0(gains,collapse=",")
   gains_num = length(gains)
   gains_prop = gains_num / num_downstream
   loss =  downstream_positions[which(downstream_positions %in%  loss_c)]
+  loss_str = paste0(loss,collapse=",")
   loss_num =length(loss)
   loss_prop = loss_num / num_downstream
 
@@ -90,24 +92,37 @@ get_gain_loss_on_stretches = function(comparitor_parent_child_df, stretches){
     gains =  lapply(stretches,FUN=function(x){x[1]}) %>%unlist %>% unique %>% sort
     # group by stretches with same start
     paths_from_gain = lapply(gains,FUN=function(gain){
-      stretches[lapply(stretches,FUN=function(y){gain %in% y})  %>% unlist %>% which] %>% unlist %>% sort %>% unique()
+      stretches[lapply(stretches,FUN=function(y){gain %in% y})  %>% unlist %>% which] %>% unlist %>% as.numeric  %>% sort(decreasing = T) %>% unique()
     })
 
-    downstream_merged_paths = lapply(paths_from_gain,FUN=function(x){subset(x,!x%in%gains)}) %>% lapply(.,as.numeric)
+    downstream_merged_paths = lapply(paths_from_gain,FUN=function(x){
+      without_downstream_but_merged =          subset(x,!x%in%gains)
+
+      return(without_downstream_but_merged)})
+    names(downstream_merged_paths) = lapply(paths_from_gain,FUN=function(x){
+      subset(x,x%in%gains)
+    }) %>% unlist
 
     return(downstream_merged_paths)
   }
   merged_paths = get_gain_paths(stretches = stretches )
+  # Num paths
   num_stretches = length(merged_paths)
-  stretches_w_gains_num = lapply(merged_paths,FUN=function(x){
+  #Gains
+  stretches_w_gains = lapply(merged_paths,FUN=function(x){
     x[which(x %in% gains_c)] %>% sum %>% {ifelse(.>0,T,F)}
-  }) %>% unlist %>% sum
+  }) %>% unlist %>% which %>% names %>% as.numeric %>% {ifelse(length(.>0),.,NA)}
+
+  stretches_w_gains_num = length(stretches_w_gains)
   stretches_w_gains_prop  = stretches_w_gains_num / num_stretches
-  stretches_w_losses_num = lapply(merged_paths,FUN=function(x){
+  # Losses
+  stretches_w_losses = lapply(merged_paths,FUN=function(x){
     x[which(x %in% loss_c)] %>% sum %>% {ifelse(.>0,T,F)}
-  }) %>% unlist %>% sum
+  })  %>% unlist %>% which %>% names %>% as.numeric %>% {ifelse(length(.>0),.,NA)}
+  stretches_w_losses_num = length(stretches_w_losses)
   stretches_w_losses_prop = stretches_w_losses_num / num_stretches
 
-  summary = data.frame(num_stretches=num_stretches,stretches_w_gains_num=stretches_w_gains_num,stretches_w_gains_prop=stretches_w_gains_prop,stretches_w_losses_num,stretches_w_losses_prop=stretches_w_losses_prop,num_downstream=num_downstream,gains_num=gains_num,gains_prop=gains_prop,loss_num=loss_num,loss_prop=loss_prop)
+  summary = data.frame(num_stretches=num_stretches,stretches_w_gains = stretches_w_gains,stretches_w_gains_num=stretches_w_gains_num,stretches_w_gains_prop=stretches_w_gains_prop,stretches_w_losses = stretches_w_losses,stretches_w_losses_num,stretches_w_losses_prop=stretches_w_losses_prop,num_downstream=num_downstream,gains=gains_str,gains_num=gains_num,gains_prop=gains_prop,loss=loss_str,loss_num=loss_num,loss_prop=loss_prop)
   return(summary)
 }
+
