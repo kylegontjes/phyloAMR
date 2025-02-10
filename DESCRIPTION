@@ -18,6 +18,7 @@ Imports:
     dplyr,
     stringr,
     ape,
+    corHMM,
     pbapply
 Suggests: 
     testthat (>= 3.0.0)
