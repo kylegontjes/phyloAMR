@@ -1,3 +1,11 @@
+#' asr
+#'
+#' Description of what the function does.
+#'
+#' @param x Description of parameter `x`
+#' @param y Description of parameter `y`
+#' @return Description of return value
+#' @export
 asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_threshold=0.875){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])

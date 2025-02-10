@@ -1,3 +1,11 @@
+#' Cluster analysis
+#'
+#' Description of what the function does.
+#'
+#' @param x Description of parameter `x`
+#' @param y Description of parameter `y`
+#' @return Description of return value
+#' @export
 asr_cluster_analysis <- function(asr_cluster_obj,remove_faux="yes"){
   if(remove_faux =="yes"){
     clustering <- asr_cluster_obj[["tip_data_df"]][["asr_cluster"]] %>% {ifelse(grepl("1pt",.)==T,"r_singleton",.)}

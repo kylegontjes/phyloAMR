@@ -1,3 +1,11 @@
+#' Synchronous permutation
+#'
+#' Description of what the function does.
+#'
+#' @param x Description of parameter `x`
+#' @param y Description of parameter `y`
+#' @return Description of return value
+#' @export
 synchronous_permutation_test <- function(genotype,df,tr,tip_name_var,pheno,node_states = "joint",num_permutations=1000,num_cores = 6){
   library(pbmcapply)
   # Pheno

@@ -1,3 +1,11 @@
+#' Downstream gain loss
+#'
+#' Description of what the function does.
+#'
+#' @param x Description of parameter `x`
+#' @param y Description of parameter `y`
+#' @return Description of return value
+#' @export
 downstream_gain_loss <- function(comparitor_parent_child_df,parent_child_df,tr){
   stretches = get_trait_traces_on_tree(parent_child_df,tr)
   downstream_changes = get_gain_loss_on_stretches(comparitor_parent_child_df = comparitor_parent_child_df,stretches)

@@ -1,3 +1,11 @@
+#' Cluster detection
+#'
+#' Description of what the function does.
+#'
+#' @param x Description of parameter `x`
+#' @param y Description of parameter `y`
+#' @return Description of return value
+#' @export
 asr_cluster_detection <- function(df,tr,pheno,parent_child_df,remove_faux="yes",confidence="high",remove_revertant="yes",collapse_cluster="yes"){
   # Get clustering data
   clustering_data <- cbind.data.frame(isolate_no = df$isolate_no,
