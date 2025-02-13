@@ -2,7 +2,7 @@
 % Please edit documentation in R/asr.R
 \name{asr}
 \alias{asr}
-\title{asr}
+\title{asr: ancestral state reconstruction wrapper function}
 \usage{
 asr(
   df,
@@ -15,13 +15,27 @@ asr(
 )
 }
 \arguments{
-\item{x}{Description of parameter `x`}
+\item{df}{Dataframe with tip name variable and phenotype}
 
-\item{y}{Description of parameter `y`}
+\item{tr}{Phylogenetic tree}
+
+\item{tip_name_var}{Name of variable containing tip names in df}
+
+\item{pheno}{Name of phenotype variable in df}
+
+\item{model}{Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices.}
+
+\item{node_states}{Whether to perform "joint" or "marginal" reconstruction}
+
+\item{conf_threshold}{The confidence threshold to use for marginal state reconstruction}
 }
 \value{
 Description of return value
+  \describe{
+    \item{corHMM_out}{corHMM output}
+    \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information.}
+  }
 }
 \description{
-Description of what the function does.
+Function to perform ancestral state reconstruction using corHMM. Parse output into informative dataset with episodes of trait gain, loss, and continuation across the phylogenetic tree
 }
