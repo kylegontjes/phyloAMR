@@ -116,4 +116,3 @@ get_phenotypic_continuation_data <- function(parent_child_df){
 
   return(parent_child_df)
 }
-
