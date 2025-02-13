@@ -1,10 +1,19 @@
-#' asr
+#' asr: ancestral state reconstruction wrapper function
 #'
-#' Description of what the function does.
+#' Function to perform ancestral state reconstruction using corHMM. Parse output into informative dataset with episodes of trait gain, loss, and continuation across the phylogenetic tree
 #'
-#' @param x Description of parameter `x`
-#' @param y Description of parameter `y`
+#' @param df Dataframe with tip name variable and phenotype
+#' @param tr Phylogenetic tree
+#' @param tip_name_var Name of variable containing tip names in df
+#' @param pheno Name of phenotype variable in df
+#' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices.
+#' @param node_states Whether to perform "joint" or "marginal" reconstruction
+#' @param conf_threshold The confidence threshold to use for marginal state reconstruction
 #' @return Description of return value
+#'   \describe{
+#'     \item{corHMM_out}{corHMM output}
+#'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information.}
+#'   }
 #' @export
 asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_threshold=0.875){
   # Check if phenotype is 0,1
