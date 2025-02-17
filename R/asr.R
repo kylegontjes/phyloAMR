@@ -18,6 +18,8 @@
 asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_threshold=0.875){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
+  check_tree(tr)
+  check_phenotype_tree_length(pheno_var =df[[pheno]],df_tips = df[[tip_name_var]],tree=tr)
 
   # Order dataframe properly, if not the predictions will be wrong
   df<- df %>% .[match(tr$tip.label,.[[tip_name_var]]),]
@@ -46,6 +48,21 @@ asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_
 check_phenotype <- function(phenotype_var){
   if(sum(unique(as.numeric(phenotype_var)) %in% c(0,1))!=2){
     stop("Phenotype is not formatted as binary variable with event = 1 and no-event = 0")
+  }
+}
+
+check_tree <- function(tree){
+  if(is.rooted(tree) == F){
+    stop("Tree is not rooted. Please root your tree using functions like ape::root() or phytools::midpoint.root()")
+  }
+}
+
+check_phenotype_tree_length <- function(pheno_var,df_tips,tree){
+  if(length(pheno_var) != length(tree$tip.label)){
+    stop("Tree length does not equal length of phenotype variable. Ensure the number of tips in the tree is the number of entries in your phenotype variable.")
+  }
+  if(sum(! tree$tip.label %in% df_tips)>0){
+    stop("At least one tree tip name is not found in the dataset")
   }
 }
 
