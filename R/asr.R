@@ -16,7 +16,7 @@
 #'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information.}
 #'   }
 #' @export
-asr <- function(df,tr,tip_name_var ,pheno, model="ARD", node_states = "joint", upper_bound=1e9, lower_bound=1e-9, conf_threshold=0.875){
+asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", upper_bound=1e9, lower_bound=1e-9, conf_threshold=0.875){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
   check_tree(tr)
