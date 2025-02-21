@@ -24,7 +24,7 @@ find_best_model = function(df,tr,tip_name_var,pheno,node_states = "joint",upper_
 
   AICS = c("ER"=corHMM_ER$AIC,"ARD"=corHMM_ARD$AIC,"SYS" = corHMM_SYS$AIC) %>% sort
 
-  best_model = names(AICS)[corHMM_ER$AICc %>% which.min]
+  best_model = names(AICS)[AICS %>% which.min]
   return(best_model)
 
 }
