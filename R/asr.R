@@ -8,6 +8,7 @@
 #' @param pheno Name of phenotype variable in df
 #' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices.
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction
+#' @param upper.bound Upper bound for likelihood search. The default for my implementat
 #' @param conf_threshold The confidence threshold to use for marginal state reconstruction
 #' @return Description of return value
 #'   \describe{
@@ -15,7 +16,7 @@
 #'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information.}
 #'   }
 #' @export
-asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_threshold=0.875){
+asr <- function(df,tr,tip_name_var ,pheno, model="ARD", node_states = "joint", upper_bound=1e9, lower_bound=1e-9, conf_threshold=0.875){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
   check_tree(tr)
@@ -32,7 +33,10 @@ asr <- function(df,tr,tip_name_var ,pheno,model="ER",node_states = "joint",conf_
   }
 
   # Run corHMM to estimate hidden rates
-  corHMM_out = corHMM::corHMM(phy=tr, data=df[, c(tip_name_var,pheno)], rate.cat = 1, model=model, node.states = node_states)
+  corHMM_out = corHMM::corHMM(phy=tr, data=df[, c(tip_name_var,pheno)], rate.cat = 1, model=model, node.states = node_states,upper.bound=upper_bound,lower.bound=lower_bound)
+
+  # Check if rates are at min or max bound
+  check_rates_at_local_max(corHMM_out,upper_bound=upper_bound,lower_bound=lower_bound)
 
   # Get Parent Child data
   outcome_str <- df[,pheno] %>% `names<-`(df[[tip_name_var]])
@@ -63,6 +67,12 @@ check_phenotype_tree_length <- function(pheno_var,df_tips,tree){
   }
   if(sum(! tree$tip.label %in% df_tips)>0){
     stop("At least one tree tip name is not found in the dataset")
+  }
+}
+
+check_rates_at_local_max <- function(corHMM_out,upper_bound,lower_bound){
+  if(sum(corHMM_out$solution%in% as.character(c(upper_bound,lower_bound))) >0){
+    warning("Rates are at the upper or lower maximum, consider updating the maximums to get a more accurate solution")
   }
 }
 
