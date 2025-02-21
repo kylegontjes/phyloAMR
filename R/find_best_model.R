@@ -1,3 +1,18 @@
+#' find_best_model: Determine best model for ancestral state reconstruction
+#'
+#' Function to find best model for ancestral state reconstruction using corHMM.
+#'
+#' @param df Dataframe with tip name variable and phenotype
+#' @param tr Phylogenetic tree
+#' @param tip_name_var Name of variable containing tip names in df
+#' @param pheno Name of phenotype variable in df
+#' @param node_states Whether to perform "joint" or "marginal" reconstruction
+#' @return Description of return value
+#'   \describe{
+#'     \item{best_model}{Best model to use for the ancestral state reconstruction}
+#'   }
+#' @export
+
 find_best_model = function(df,tr,tip_name_var,pheno,node_states = "joint"){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
