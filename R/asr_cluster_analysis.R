@@ -1,66 +1,68 @@
-#' Cluster analysis
+#' asr_cluster_analysis: Cluster analysis
 #'
-#' Description of what the function does.
+#' This function calculates the clustering statistics
 #'
-#' @param x Description of parameter `x`
-#' @param y Description of parameter `y`
-#' @return Description of return value
+#' @param asr_cluster_obj Clustering object from asr_cluster_detection()
+#' @param remove_faux whether to remove faux isolates or not
+#' @return A dataframe with data on the phylogenetics of a trait
 #' @export
 asr_cluster_analysis <- function(asr_cluster_obj,remove_faux="yes"){
   if(remove_faux =="yes"){
-    clustering <- asr_cluster_obj[["tip_data_df"]][["asr_cluster"]] %>% {ifelse(grepl("1pt",.)==T,"r_singleton",.)}
+    clustering <- asr_cluster_obj[["tip_data_df"]][["asr_cluster"]] %>% {ifelse(grepl("1pt",.)==T,"singleton",.)}
   } else {
     clustering <- asr_cluster_obj[["tip_data_df"]][["asr_cluster"]]
   }
 
   sum_clustering <-  table(clustering)
-  r_isolates <- subset(sum_clustering,grepl("r_",names(sum_clustering)))
-  r_ct <- sum(r_isolates)
-  r_singleton <- subset(r_isolates,names(r_isolates)=="r_singleton")  %>% ifelse(length(.)==0,0,.)
-  r_clusters <-  if(r_singleton==r_ct){0} else { subset(r_isolates,names(r_isolates)!="r_singleton")  %>% unlist %>% subset(is.na(.)==F)}
+  num_isolates = sum(sum_clustering)
+  # Characterize present
+  present_isolates <- subset(sum_clustering,grepl("cluster|singleton",names(sum_clustering)))
+  present <- sum(present_isolates)
+  singletons <- subset(present_isolates,names(present_isolates)=="singleton")  %>% ifelse(length(.)==0,0,.)
+  if(singletons==present){
+    clusters = 0
+    cluster_isolates = 0
+    cluster_size_median =0
+    cluster_size_range =NA
+    cluster_size_mean =0
+  } else {
+    clusters_summary <-  subset(present_isolates,names(present_isolates)!="singleton")  %>% unlist %>% subset(is.na(.)==F)
+    clusters = length(clusters_summary)
+    cluster_isolates <- sum(clusters_summary)
+    cluster_size_median <- stats::median(clusters_summary %>% unlist) %>% round(.,2)
+    cluster_size_range <- range(clusters_summary) %>% paste0(collapse = "-")
+    cluster_size_mean <- mean(clusters_summary) %>% round(.,2)
+  }
 
-  r_clusters_num <- sum(r_clusters)
-  r_cluster_ct <-  if(r_singleton==r_ct){0} else { subset(r_isolates,names(r_isolates)!="r_singleton")  %>% unlist %>% subset(is.na(.)==F) %>% length}
-
-  r_cluster_median_num <- stats::median(r_clusters %>% unlist) %>% round(.,2)
-  r_cluster_range <- range(r_clusters) %>% paste0(collapse = "-")
-  r_cluster_mean_num <- mean(r_clusters) %>% round(.,2)
-
-  s <- subset(sum_clustering,!grepl("r_",names(sum_clustering)))
-  s_isolates <- sum(s)
-  s_rev <- subset(s,grepl("s_rev",names(s))) %>% unlist %>% subset(is.na(.)==F)
-  s_rev_ct <- length(s_rev)
-  s_rev_num <- sum(s_rev)
-  s_rev_median_num <- ifelse(s_rev_num==0,0,stats::median(s_rev %>% unlist))
-  s_rev_range <- ifelse(s_rev_num==0,0,range(s_rev) %>% paste0(collapse = "-"))
-  s_rev_mean_num <- ifelse(s_rev_num==0,0,mean(s_rev))
+  #Characerize absent
+  absent <- subset(sum_clustering,!grepl("cluster|singleton",names(sum_clustering)))
+  no_feature <- sum(absent)
+  if(sum(grepl("revertant",names(absent)))>0){
+    revertant_summary <- subset(absent,grepl("revertant",names(absent))) %>% unlist %>% subset(is.na(.)==F)
+    revertant_isolates = sum(revertant_summary)
+    revertant_lineages_summary = subset(revertant_summary,names(revertant_summary) != "revertant_tip")
+    revertant_lineages = length(revertant_lineages_summary)
+    revertant_lineage_size_median = stats::median(revertant_lineages_summary %>% unlist) %>% round(.,2)
+    revertant_lineage_size_mean = mean(revertant_lineages_summary) %>% round(.,2)
+    revertant_lineage_size_range = range(revertant_lineages_summary) %>% paste0(collapse = "-")
+  } else {
+    revertant_isolates = 0
+    revertant_lineages = 0
+    revertant_lineage_size_median = 0
+    revertant_lineage_size_mean =0
+    revertant_lineage_size_range = NA
+  }
 
   # Phylo frequency
-  phylo_events <- sum(r_singleton + r_cluster_ct)
-  feature_frequency <- {r_ct / nrow(asr_cluster_obj[["tip_data_df"]]) * 100} %>%  round(.,2)
-  phylo_frequency <- {phylo_events / sum(phylo_events + s_isolates) * 100}  %>% round(.,2)
-  fixation_frequency <- {r_cluster_ct / phylo_events * 100} %>% round(.,2)
+  phylogenetic_events <- sum(singletons + clusters)
+  feature_frequency <- {present / num_isolates * 100} %>%  round(.,2)
+  phylogenetic_frequency <- {phylo_events / sum(phylogenetic_events + absent) * 100}  %>% round(.,2)
+  fixation_frequency <- {clusters / phylogenetic_events * 100} %>% round(.,2)
 
-  # Tip data
-  num_transitions_any <- asr_cluster_obj[["parent_child_df"]][["transition_any"]] %>% sum
-  num_transitions_high <- asr_cluster_obj[["parent_child_df"]][["transition_high"]] %>% sum
-  num_loss_any <- asr_cluster_obj[["parent_child_df"]][["loss_any"]] %>% sum
-  num_loss_high <- asr_cluster_obj[["parent_child_df"]][["loss_high"]] %>% sum
-  num_loss_tip_any <- asr_cluster_obj[["tip_data_df"]][["loss_any"]]%>% sum
-  num_loss_tip_high <- asr_cluster_obj[["tip_data_df"]][["loss_high"]]%>% sum
-  num_gain_any <- asr_cluster_obj[["parent_child_df"]][["gain_any"]] %>% sum
-  num_gain_high <- asr_cluster_obj[["parent_child_df"]][["gain_high"]] %>% sum
-  num_gain_tip_any <- asr_cluster_obj[["tip_data_df"]][["gain_any"]]%>% sum
-  num_gain_tip_high <- asr_cluster_obj[["tip_data_df"]][["gain_high"]]%>% sum
-
-  results <- cbind.data.frame(r_ct,
-                              r_singleton,
-                              r_clusters_num,r_cluster_ct,r_cluster_median_num,r_cluster_mean_num,r_cluster_range,
-                              s_isolates,s_rev_ct,s_rev_num,s_rev_median_num,s_rev_mean_num,s_rev_range,
-                              phylo_events,feature_frequency,phylo_frequency,fixation_frequency,
-                              num_transitions_any,
-                              num_transitions_high,
-                              num_loss_any,num_loss_high,num_loss_tip_any,num_loss_tip_high,
-                              num_gain_any,num_gain_high,num_gain_tip_any,num_gain_tip_high)
+  results <- cbind.data.frame(present,
+                              singletons,
+                              clusters,cluster_isolates,cluster_size_median,cluster_size_mean,cluster_size_range,
+                              no_feature,revertant_isolates,revertant_lineages,revertant_lineage_size_median,revertant_lineage_size_mean,revertant_lineage_size_range,
+                              phylogenetic_events,feature_frequency,phylogenetic_frequency,fixation_frequency)
   return(results)
 }

@@ -2,18 +2,18 @@
 % Please edit documentation in R/asr_cluster_analysis.R
 \name{asr_cluster_analysis}
 \alias{asr_cluster_analysis}
-\title{Cluster analysis}
+\title{asr_cluster_analysis: Cluster analysis}
 \usage{
 asr_cluster_analysis(asr_cluster_obj, remove_faux = "yes")
 }
 \arguments{
-\item{x}{Description of parameter `x`}
+\item{asr_cluster_obj}{Clustering object from asr_cluster_detection()}
 
-\item{y}{Description of parameter `y`}
+\item{remove_faux}{whether to remove faux isolates or not}
 }
 \value{
-Description of return value
+A dataframe with data on the phylogenetics of a trait
 }
 \description{
-Description of what the function does.
+This function calculates the clustering statistics
 }
