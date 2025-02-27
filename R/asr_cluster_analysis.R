@@ -2,15 +2,15 @@
 #'
 #' This function calculates the clustering statistics
 #'
-#' @param asr_cluster_obj Clustering object from asr_cluster_detection()
+#' @param tip_data_df Tip data frame object from asr_cluster_detection()
 #' @param remove_faux whether to remove faux isolates or not
 #' @return A dataframe with data on the phylogenetics of a trait
 #' @export
-asr_cluster_analysis <- function(asr_cluster_obj,remove_faux="yes"){
+asr_cluster_analysis <- function(tip_data_df,remove_faux="yes"){
   if(remove_faux =="yes"){
-    clustering <- asr_cluster_obj[["tip_data_df"]][["asr_cluster"]] %>% {ifelse(grepl("1pt",.)==T,"singleton",.)}
+    clustering <- tip_data_df[["asr_cluster"]] %>% {ifelse(grepl("1pt",.)==T,"singleton",.)}
   } else {
-    clustering <- asr_cluster_obj[["tip_data_df"]][["asr_cluster"]]
+    clustering <- tip_data_df[["asr_cluster"]]
   }
 
   sum_clustering <-  table(clustering)

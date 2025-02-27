@@ -4,10 +4,10 @@
 \alias{asr_cluster_analysis}
 \title{asr_cluster_analysis: Cluster analysis}
 \usage{
-asr_cluster_analysis(asr_cluster_obj, remove_faux = "yes")
+asr_cluster_analysis(tip_data_df, remove_faux = "yes")
 }
 \arguments{
-\item{asr_cluster_obj}{Clustering object from asr_cluster_detection()}
+\item{tip_data_df}{Tip data frame object from asr_cluster_detection()}
 
 \item{remove_faux}{whether to remove faux isolates or not}
 }
