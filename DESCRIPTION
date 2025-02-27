@@ -19,7 +19,8 @@ Imports:
     stringr,
     ape,
     corHMM,
-    pbapply
+    pbapply,
+    magrittr
 Suggests: 
     testthat (>= 3.0.0)
 Remotes: 
