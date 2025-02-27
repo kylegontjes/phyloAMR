@@ -7,18 +7,39 @@
 asr_cluster_detection(
   df,
   tr,
+  tip_name_var,
+  patient_id = NULL,
   pheno,
   parent_child_df,
-  remove_faux = "yes",
+  faux_clusters = F,
+  node_states = "joint",
   confidence = "high",
   remove_revertant = "yes",
   collapse_cluster = "yes"
 )
 }
 \arguments{
-\item{x}{Description of parameter `x`}
+\item{df}{Dataframe with tip name variable and phenotype}
 
-\item{y}{Description of parameter `y`}
+\item{tr}{Phylogenetic tree}
+
+\item{tip_name_var}{Name of variable containing tip names in df}
+
+\item{patient_id}{Name of variable containing patient IDs, can be combined with faux_clusters option to factor into whether a cluster should have >1 patient. (Optional)}
+
+\item{pheno}{Name of phenotype variable in df}
+
+\item{parent_child_df}{Parent child dataframe from asr() object}
+
+\item{faux_clusters}{Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)}
+
+\item{node_states}{Whether the reconstruction was "joint" or "marginal"}
+
+\item{confidence}{Whether to use high (i.e., 0 -> 1) or low (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS}
+
+\item{remove_revertant}{Whether to remove revertant episodes from consideration in a cleaned}
+
+\item{collapse_cluster}{Whether to create a variable that collapses cluster calls into one category}
 }
 \value{
 Description of return value
