@@ -47,9 +47,9 @@ asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", up
   parent_child_df <- get_parent_child_data(tr=tr, anc_data=corHMM_out$states, pheno_data=outcome_str, conf_threshold = conf_threshold, node_states=node_states)
 
   # Annotate parent child data
-  parent_child_df <- get_phenotypic_continuation_data(parent_child_df)
+  parent_child_df <- get_phenotypic_continuation_data(parent_child_df,node_states=node_states)
 
-  asr_output = list(corHMM_out = corHMM_out,corHMM_model_summary=corHMM_model_summary,parent_child_df = parent_child_df)
+  asr_output = list(corHMM_out = corHMM_out,corHMM_model_summary=corHMM_model_summary,parent_child_df = parent_child_df,node_states=node_states)
   return(asr_output)
 }
 
@@ -131,20 +131,27 @@ get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold=0.875
   return(edge)
 }
 
-get_phenotypic_continuation_data <- function(parent_child_df){
-  parent_child_df <- parent_child_df %>% dplyr::mutate(transition_any = ifelse(parent_val != child_val, 1, 0),
-                                                       transition_high = ifelse(parent_val ==0 & child_val==1 | parent_val==1 & child_val ==0, 1, 0),
-                                                       transition_low = ifelse(parent_val ==0.5 & child_val==1 | parent_val==0.5 & child_val ==0, 1, 0),
-                                                       gain_low = ifelse(child_val ==1 & parent_val==0.5, 1, 0),
-                                                       gain_high  =  ifelse(child_val ==1 & parent_val==0, 1, 0),
-                                                       gain_any = ifelse(gain_low==1 | gain_high==1, 1, 0),
-                                                       loss_low  =  ifelse(child_val ==0 & parent_val==0.5, 1, 0),
-                                                       loss_high  =  ifelse(child_val ==0 & parent_val==1, 1, 0),
-                                                       loss_any = ifelse(loss_low==1 | loss_high==1, 1, 0),
-                                                       continuation_any  =  ifelse(parent_val == child_val, 1, 0),
-                                                       continuation_high  =  ifelse(parent_val == 1 & child_val ==1 | parent_val == 0 & child_val ==0,1,0),
-                                                       continuation_low =  ifelse(parent_val == 0.5 & child_val ==0.5, 1, 0))
-
+get_phenotypic_continuation_data <- function(parent_child_df,node_states){
+  if(node_states =="joint"){
+    parent_child_df <- parent_child_df %>% dplyr::mutate(transition = ifelse(parent_val != child_val, 1, 0),
+                                                         gain = ifelse(child_val ==1 & parent_val==0, 1, 0),
+                                                         loss = ifelse(child_val ==0 & parent_val==1, 1, 0),
+                                                         continuation  =  ifelse(parent_val == child_val, 1, 0))
+  }
+  if(node_states == "marginal"){
+    parent_child_df <- parent_child_df %>% dplyr::mutate(transition = ifelse(parent_val != child_val, 1, 0),
+                                                         transition_high = ifelse(parent_val ==0 & child_val==1 | parent_val==1 & child_val ==0, 1, 0),
+                                                         transition_low = ifelse(parent_val ==0.5 & child_val==1 | parent_val==0.5 & child_val ==0, 1, 0),
+                                                         gain_low = ifelse(child_val ==1 & parent_val==0.5, 1, 0),
+                                                         gain_high  =  ifelse(child_val ==1 & parent_val==0, 1, 0),
+                                                         gain = ifelse(gain_low==1 | gain_high==1, 1, 0),
+                                                         loss_low  =  ifelse(child_val ==0 & parent_val==0.5, 1, 0),
+                                                         loss_high  =  ifelse(child_val ==0 & parent_val==1, 1, 0),
+                                                         loss = ifelse(loss_low==1 | loss_high==1, 1, 0),
+                                                         continuation  =  ifelse(parent_val == child_val, 1, 0),
+                                                         continuation_high  =  ifelse(parent_val == 1 & child_val ==1 | parent_val == 0 & child_val ==0,1,0),
+                                                         continuation_low =  ifelse(parent_val == 0.5 & child_val ==0.5, 1, 0))
+  }
   return(parent_child_df)
 }
 
