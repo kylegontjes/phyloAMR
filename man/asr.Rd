@@ -11,6 +11,8 @@ asr(
   pheno,
   model = "ER",
   node_states = "joint",
+  upper_bound = 1e+09,
+  lower_bound = 1e-09,
   conf_threshold = 0.875
 )
 }
@@ -28,6 +30,10 @@ asr(
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction}
 
 \item{conf_threshold}{The confidence threshold to use for marginal state reconstruction}
+
+\item{upper.bound}{Upper bound for likelihood search. The default for my implementation is 1e9}
+
+\item{lower.bound}{Lower bound for likelihood search. The default for my implementation is 1e-9}
 }
 \value{
 Description of return value

@@ -39,6 +39,9 @@ asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", up
   # Check if rates are at min or max bound
   check_rates_at_local_max(corHMM_out,upper_bound=upper_bound,lower_bound=lower_bound)
 
+  # Model stats
+  corHMM_model_summary = characterize_asr_model(corHMM_out)
+
   # Get Parent Child data
   outcome_str <- df[,pheno] %>% `names<-`(df[[tip_name_var]])
   parent_child_df <- get_parent_child_data(tr=tr, anc_data=corHMM_out$states, pheno_data=outcome_str, conf_threshold = conf_threshold, node_states=node_states)
@@ -46,7 +49,7 @@ asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", up
   # Annotate parent child data
   parent_child_df <- get_phenotypic_continuation_data(parent_child_df)
 
-  asr_output = list(corHMM_out = corHMM_out, parent_child_df = parent_child_df)
+  asr_output = list(corHMM_out = corHMM_out,corHMM_model_summary=corHMM_model_summary,parent_child_df = parent_child_df)
   return(asr_output)
 }
 
@@ -144,3 +147,4 @@ get_phenotypic_continuation_data <- function(parent_child_df){
 
   return(parent_child_df)
 }
+
