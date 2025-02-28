@@ -15,7 +15,7 @@
 #' @param collapse_cluster Whether to create a variable that collapses cluster calls into one category
 #' @return Description of return value
 #' @export
-asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,faux_clusters=F,node_states="joint",confidence="high",remove_revertant="yes",collapse_cluster="yes"){
+asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,faux_clusters=F,node_states="joint",confidence=NULL,remove_revertant="yes",collapse_cluster="yes"){
   # Check if states are as desired
   check_joint_confidence(node_states,confidence)
   # Check faux_cluster
@@ -30,7 +30,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
   }
 
   # Get clustering data
-  clustering_data$asr_cluster <- sapply(clustering_data$isolate_no,FUN=get_clustering_data,parent_child_df,confidence)
+  clustering_data$asr_cluster <- sapply(clustering_data$isolate_no,FUN=get_clustering_data,parent_child_df,node_states,confidence)
 
   # Clean clusters
   if(faux_clusters == "remove"){
@@ -60,8 +60,9 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
 }
 
 check_joint_confidence <- function(node_states,confidence){
-  if(node_states == "joint" & confidence != "high"){
-    stop("When using joint reconstruction states, you must specify confidence as 'high'")
+  if(node_states == "joint" & is.null(confidence)== F
+     ){
+    stop("When using joint reconstruction states, you must specify confidence as NULL")
   }
 }
 
@@ -75,25 +76,39 @@ check_faux_clusters <- function(patient_id,faux_clusters){
 }
 
 
-get_clustering_data <- function (isolate, edge_data, confidence)
+get_clustering_data <- function (isolate, edge_data,node_states, confidence)
 {
   tip_row <- edge_data %>% subset(child_name == isolate)
   classification <- c()
   if (tip_row$child_val == 0) {
-    classification <- ifelse(tip_row[,paste0("loss_",confidence)] == 1, "revertant_tip",
-                             "no feature")
+    if(node_states == "joint"){
+      classification <- ifelse(tip_row[,"loss"] == 1, "revertant_tip",
+                               "no feature")
+    } else {
+      classification <- ifelse(tip_row[,paste0("loss_",confidence)] == 1, "revertant_tip",
+                               "no feature")
+    }
   }
+
   if (tip_row$child_val == 1) {
-    classification <- ifelse(tip_row[,paste0("gain_",confidence)] == 1, "singleton",
-                             paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.$child)}))
+    if(node_states == "joint"){
+      classification <- ifelse(tip_row[,"gain"] == 1, "singleton",
+                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.$child)}))
+    } else {
+
+      classification <- ifelse(tip_row[,paste0("gain_",confidence)] == 1, "singleton",
+                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.$child)}))
+
+    }
   }
   if (classification == "singleton") {
     classification <- reclassify_singletons(node_data = tip_row,
-                                                         edge_data = edge_data,confidence=confidence)
+                                                         edge_data = edge_data,node_status=node_states,confidence=confidence)
   }
   if (classification == "no feature") {
     classification <- get_largest_anc_reversion(node_data = tip_row,
-                                                                 edge_data = edge_data,confidence=confidence)
+                                                                 edge_data = edge_data,node_states=node_states,confidence=confidence)
+
     classification <- ifelse(classification == "no feature",classification,paste0("revertant_",classification))
   }
   return(classification)
@@ -110,12 +125,8 @@ get_largest_anc_cluster <- function(node_data,edge_data){
         if(nrow(output)==0){
           output <- c("root")
           break
-        } else  {if (output$parent_val == 0.5){
-          break
-        }
         }
       }
-      break
     } else  {if (output$parent_val == 0) {
       break
     }
@@ -124,16 +135,21 @@ get_largest_anc_cluster <- function(node_data,edge_data){
   return(output)
 }
 
-reclassify_singletons <- function (node_data, edge_data,confidence){
+reclassify_singletons <- function (node_data, edge_data,node_status,confidence){
   previous <- get_parent_node(node_data, edge_data)
-  classification <- ifelse(previous[,paste0("loss_",confidence)] == 0, "singleton",
-                           get_largest_anc_cluster(previous, edge_data) %>% .$child)
+  if(node_status == "joint"){
+    classification <- ifelse(previous[,"loss"] == 0, "singleton",
+                             get_largest_anc_cluster(previous, edge_data) %>% .$child)
+  } else {
+    classification <- ifelse(previous[,paste0("loss_",confidence)] == 0, "singleton",
+                             get_largest_anc_cluster(previous, edge_data) %>% .$child)
+  }
+
+
   return(classification)
 }
 
-
-
-get_largest_anc_reversion <- function (node_data, edge_data,confidence){
+get_largest_anc_reversion <- function (node_data, edge_data,node_states,confidence){
   output <- node_data
   repeat {
     output <- get_parent_node(output, edge_data)
@@ -145,10 +161,19 @@ get_largest_anc_reversion <- function (node_data, edge_data,confidence){
       output <- output$child
       break
     }
-    else if (output[,paste0("loss_",confidence)] == 1) {
-      output <- output$child
-      break
-    }
+    else
+      if(node_states =="joint"){
+        if(output[,"loss"]==1){
+          output <- output$child
+          break
+        }
+      }
+      if(node_states == "marginal"){
+        if (output[,paste0("loss_",confidence)] == 1) {
+          output <- output$child
+          break
+        }
+      }
   }
   return(output)
 }
@@ -158,7 +183,6 @@ get_parent_node <- function(node_data,edge_data){
   step_up <- subset(edge_data,child==parent_node)
   return(step_up)
 }
-
 
 remove_faux_clusters <- function(cluster_data){
   cluster_size <- table(cluster_data$asr_cluster) %>% subset(grepl("r_",names(.))) %>% subset(!grepl("singleton",names(.)))
