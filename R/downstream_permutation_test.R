@@ -1,10 +1,13 @@
-#' Downstream
+#' downstream_permutation_test: Permutation test for downstream analysis
 #'
-#' Description of what the function does.
+#' Permutation test for analysis of downstream gain and loss of a comparitor trait on stretches of a different trait of interest
 #'
-#' @param x Description of parameter `x`
-#' @param y Description of parameter `y`
-#' @return Description of return value
+#' @param comparitor_parent_child_df Parent child dataset for a comparitor trait, such as a genotype
+#' @param trait_parent_child_df Parent child dataset for a trait of interest, such as a phenotype
+#' @param tr Phylogenetic tree
+#' @param node_states Joint or marginal reconstruction
+#' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
+#' @return Summary stats for downstream gain and loss of a trait
 #' @export
 downstream_permutation_test <- function(genotype,df,tr,tip_name_var,pheno,node_states = "joint",num_permutations=1000,num_cores = 6){
   library(pbmcapply)
@@ -14,6 +17,7 @@ downstream_permutation_test <- function(genotype,df,tr,tip_name_var,pheno,node_s
   # Geno
   geno_asr = asr(df=df,tr=tr,tip_name_var=tip_name_var,pheno = genotype,model = "ER",node_states = 'joint',conf_threshold = 0.875) %>% .$parent_child_df
 
+  # Get observed
   pheno_downstream_obs = downstream_gain_loss(geno_asr,pheno_asr,tr)
   # permute
   num_isolates = nrow(df)

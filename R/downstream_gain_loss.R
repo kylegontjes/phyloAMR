@@ -1,21 +1,28 @@
-#' Downstream gain loss
+#' downstream_gain_loss: Analysis of downstream gain and loss of comparitor trains
 #'
-#' Description of what the function does.
+#' Downstream gain and loss of a comparitor trait on stretches of a different trait of interest
 #'
-#' @param x Description of parameter `x`
-#' @param y Description of parameter `y`
-#' @return Description of return value
+#' @param comparitor_parent_child_df Parent child dataset for a comparitor trait, such as a genotype
+#' @param trait_parent_child_df Parent child dataset for a trait of interest, such as a phenotype
+#' @param tr Phylogenetic tree
+#' @param node_states Joint or marginal reconstruction
+#' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
+#' @return Summary stats for downstream gain and loss of a trait
 #' @export
-downstream_gain_loss <- function(comparitor_parent_child_df,parent_child_df,tr){
-  stretches = get_trait_traces_on_tree(parent_child_df,tr)
-  downstream_changes = get_gain_loss_on_stretches(comparitor_parent_child_df = comparitor_parent_child_df,stretches)
+downstream_gain_loss <- function(comparitor_parent_child_df,trait_parent_child_df,tr,node_states='joint',confidence=NULL){
+  stretches = get_trait_traces_on_tree(trait_parent_child_df,tr)
+  downstream_changes = get_gain_loss_on_stretches(comparitor_parent_child_df = comparitor_parent_child_df,stretches,node_states,confidence)
   return(downstream_changes)
 }
 
-get_trait_traces_on_tree <- function(parent_child_df,tr){
+get_trait_traces_on_tree <- function(parent_child_df,tr,node_states){
   all_possible_paths = nodepath(tr)
+  if(node_states == "joint"){
+    gains = parent_child_df %>% subset(gain==1) %>% .$child
+  } else {
+    gains =  parent_child_df %>% subset(get(paste0("gain_",confidence))==1) %>% .$child
+  }
 
-  gains = parent_child_df %>% subset(gain_any==1) %>% .$child
   tip_gains = subset(gains,gains < min(tr$edge[1,]))
   ancestral_gains = subset(gains,!gains %in% tip_gains)
 
@@ -58,9 +65,14 @@ get_trait_traces_on_tree <- function(parent_child_df,tr){
 }
 
 
-get_gain_loss_on_stretches = function(comparitor_parent_child_df, stretches){
-  gains_c = comparitor_parent_child_df  %>% subset(gain_any==1) %>% .$child
-  loss_c = comparitor_parent_child_df  %>% subset(loss_any==1) %>% .$child
+get_gain_loss_on_stretches = function(comparitor_parent_child_df, stretches,node_states,confidence){
+  if(node_states =="joint"){
+    comparitor_gains = comparitor_parent_child_df  %>% subset(gain==1) %>% .$child
+    comparitor_losses = comparitor_parent_child_df  %>% subset(loss==1) %>% .$child
+  } else {
+    comparitor_gains = comparitor_parent_child_df  %>% subset(get(paste0("gain_",confidence))==1) %>% .$child
+    comparitor_losses = comparitor_parent_child_df  %>% subset(get(paste0("loss_",confidence))==1) %>% .$child
+  }
 
   get_downstream_nodes = function(stretches){
     lapply(stretches,FUN=function(x){x[-1]})
@@ -70,11 +82,11 @@ get_gain_loss_on_stretches = function(comparitor_parent_child_df, stretches){
   downstream_positions = stretches %>% unlist %>% unique %>% sort
 
   num_downstream = length(downstream_positions)
-  gains = downstream_positions[which(downstream_positions %in%  gains_c)]
+  gains = downstream_positions[which(downstream_positions %in%  comparitor_gains)]
   gains_str = paste0(gains,collapse=",")
   gains_num = length(gains)
   gains_prop = gains_num / num_downstream
-  loss =  downstream_positions[which(downstream_positions %in%  loss_c)]
+  loss =  downstream_positions[which(downstream_positions %in%  comparitor_losses)]
   loss_str = paste0(loss,collapse=",")
   loss_num =length(loss)
   loss_prop = loss_num / num_downstream
@@ -102,14 +114,14 @@ get_gain_loss_on_stretches = function(comparitor_parent_child_df, stretches){
   num_stretches = length(merged_paths)
   #Gains
   stretches_w_gains = lapply(merged_paths,FUN=function(x){
-    x[which(x %in% gains_c)] %>% sum %>% {ifelse(.>0,T,F)}
+    x[which(x %in% comparitor_gains)] %>% sum %>% {ifelse(.>0,T,F)}
   }) %>% unlist %>% which %>% names %>% as.numeric
   stretches_w_gains_str = ifelse(length(stretches_w_gains)>0,stretches_w_gains,NA)
   stretches_w_gains_num = length(stretches_w_gains)
   stretches_w_gains_prop  = stretches_w_gains_num / num_stretches
   # Losses
   stretches_w_losses = lapply(merged_paths,FUN=function(x){
-    x[which(x %in% loss_c)] %>% sum %>% {ifelse(.>0,T,F)}
+    x[which(x %in% comparitor_losses)] %>% sum %>% {ifelse(.>0,T,F)}
   })  %>% unlist %>% which %>% names %>% as.numeric
   stretches_w_losses_str  = ifelse(length(stretches_w_losses)>0,stretches_w_gains,NA)
   stretches_w_losses_num = length(stretches_w_losses)
