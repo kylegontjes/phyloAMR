@@ -13,7 +13,7 @@
 #' @param confidence Whether to use high (i.e., 0 -> 1) or low (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS
 #' @param remove_revertant Whether to remove revertant episodes from consideration in a cleaned
 #' @param collapse_cluster Whether to create a variable that collapses cluster calls into one category
-#' @return Description of return value
+#' @return A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired
 #' @export
 asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,faux_clusters=F,node_states="joint",confidence=NULL,remove_revertant="yes",collapse_cluster="yes"){
   # Check if states are as desired
@@ -51,11 +51,10 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
 
   # Get tip data and merge it with the clustering data
   tip_data <- parent_child_df %>% subset(child <= ape::Nnode(tr)+1) %>% dplyr::mutate(isolate_no=child_name)
-  tip_data_df <- tip_data %>% dplyr::left_join(.,clustering_data) %>% `rownames<-`(.$isolate_no)
+  tip_data_df <- tip_data %>% dplyr::left_join(.,clustering_data) %>% `rownames<-`(.$isolate_no) %>% select(-isolate_no)
 
-  # List containing all of the results from this pipeline
-  results <- list(parent_child_df = parent_child_df,
-                tip_data_df = tip_data_df)
+  # We don't need the parent_child dataframe here, so we are only providing the tip based data
+  results <-tip_data_df
   return(results)
 }
 
