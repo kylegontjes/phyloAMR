@@ -13,7 +13,7 @@ asr_cluster_detection(
   parent_child_df,
   faux_clusters = F,
   node_states = "joint",
-  confidence = "high",
+  confidence = NULL,
   remove_revertant = "yes",
   collapse_cluster = "yes"
 )
@@ -42,7 +42,7 @@ asr_cluster_detection(
 \item{collapse_cluster}{Whether to create a variable that collapses cluster calls into one category}
 }
 \value{
-Description of return value
+A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired
 }
 \description{
 Description of what the function does.

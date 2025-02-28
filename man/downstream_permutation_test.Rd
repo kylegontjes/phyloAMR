@@ -2,7 +2,7 @@
 % Please edit documentation in R/downstream_permutation_test.R
 \name{downstream_permutation_test}
 \alias{downstream_permutation_test}
-\title{Downstream}
+\title{downstream_permutation_test: Permutation test for downstream analysis}
 \usage{
 downstream_permutation_test(
   genotype,
@@ -16,13 +16,19 @@ downstream_permutation_test(
 )
 }
 \arguments{
-\item{x}{Description of parameter `x`}
+\item{tr}{Phylogenetic tree}
 
-\item{y}{Description of parameter `y`}
+\item{node_states}{Joint or marginal reconstruction}
+
+\item{comparitor_parent_child_df}{Parent child dataset for a comparitor trait, such as a genotype}
+
+\item{trait_parent_child_df}{Parent child dataset for a trait of interest, such as a phenotype}
+
+\item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
 }
 \value{
-Description of return value
+Summary stats for downstream gain and loss of a trait
 }
 \description{
-Description of what the function does.
+Permutation test for analysis of downstream gain and loss of a comparitor trait on stretches of a different trait of interest
 }

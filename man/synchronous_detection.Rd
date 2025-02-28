@@ -2,18 +2,29 @@
 % Please edit documentation in R/synchronous_detection.R
 \name{synchronous_detection}
 \alias{synchronous_detection}
-\title{Synrchronous detection}
+\title{synchronous_detection: Synchronous detection}
 \usage{
-synchronous_detection(comparitor_parent_child_df, trait_parent_child_df)
+synchronous_detection(
+  comparitor_parent_child_df,
+  trait_parent_child_df,
+  node_states = "joint",
+  confidence = NULL
+)
 }
 \arguments{
-\item{x}{Description of parameter `x`}
+\item{comparitor_parent_child_df}{Parent child dataset for a comparitor trait, such as a genotype}
 
-\item{y}{Description of parameter `y`}
+\item{trait_parent_child_df}{Parent child dataset for a trait of interest, such as a phenotype}
+
+\item{node_states}{Joint or marginal reconstruction}
+
+\item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
+
+\item{tr}{Phylogenetic tree}
 }
 \value{
-Description of return value
+Synchronous gain and loss events of two traits
 }
 \description{
-Description of what the function does.
+Synchronous gain and loss of two traits at a spot on tree
 }

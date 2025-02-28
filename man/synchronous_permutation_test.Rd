@@ -2,7 +2,7 @@
 % Please edit documentation in R/synchronous_permutation_test.R
 \name{synchronous_permutation_test}
 \alias{synchronous_permutation_test}
-\title{Synchronous permutation}
+\title{synchronous_permutation_test: Synchronous permutation test}
 \usage{
 synchronous_permutation_test(
   genotype,
@@ -16,13 +16,19 @@ synchronous_permutation_test(
 )
 }
 \arguments{
-\item{x}{Description of parameter `x`}
+\item{tr}{Phylogenetic tree}
 
-\item{y}{Description of parameter `y`}
+\item{node_states}{Joint or marginal reconstruction}
+
+\item{comparitor_parent_child_df}{Parent child dataset for a comparitor trait, such as a genotype}
+
+\item{trait_parent_child_df}{Parent child dataset for a trait of interest, such as a phenotype}
+
+\item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
 }
 \value{
-Description of return value
+Synchronous gain and loss events of two traits with p-value permutation testing results
 }
 \description{
-Description of what the function does.
+Permutation test for synchronous detection function
 }

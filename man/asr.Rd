@@ -13,7 +13,7 @@ asr(
   node_states = "joint",
   upper_bound = 1e+09,
   lower_bound = 1e-09,
-  conf_threshold = 0.875
+  conf_threshold = NULL
 )
 }
 \arguments{

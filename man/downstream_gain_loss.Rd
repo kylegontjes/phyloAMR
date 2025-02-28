@@ -2,18 +2,30 @@
 % Please edit documentation in R/downstream_gain_loss.R
 \name{downstream_gain_loss}
 \alias{downstream_gain_loss}
-\title{Downstream gain loss}
+\title{downstream_gain_loss: Analysis of downstream gain and loss of comparitor trains}
 \usage{
-downstream_gain_loss(comparitor_parent_child_df, parent_child_df, tr)
+downstream_gain_loss(
+  comparitor_parent_child_df,
+  trait_parent_child_df,
+  tr,
+  node_states = "joint",
+  confidence = NULL
+)
 }
 \arguments{
-\item{x}{Description of parameter `x`}
+\item{comparitor_parent_child_df}{Parent child dataset for a comparitor trait, such as a genotype}
 
-\item{y}{Description of parameter `y`}
+\item{trait_parent_child_df}{Parent child dataset for a trait of interest, such as a phenotype}
+
+\item{tr}{Phylogenetic tree}
+
+\item{node_states}{Joint or marginal reconstruction}
+
+\item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
 }
 \value{
-Description of return value
+Summary stats for downstream gain and loss of a trait
 }
 \description{
-Description of what the function does.
+Downstream gain and loss of a comparitor trait on stretches of a different trait of interest
 }
