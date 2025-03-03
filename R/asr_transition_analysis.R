@@ -38,7 +38,7 @@ asr_transition_analysis <- function(parent_child_df,node_states="joint"){
     gains_tip_high <- tip_data_df[["gain_high"]] %>% sum
 
     # Continuation data
-    continuations_unsure <- (parent_child_df[["continuation"]] == 0.5 & parent_child_df[["child_val"]]==0.5) %>% sum
+    continuations_unsure <- (parent_child_df[["continuation"]] == 1 & parent_child_df[["child_val"]]==0.5) %>% sum
 
     results <- cbind.data.frame(results,transitions_high,transitions_low,gains_high,gains_tip_high,losses_high,losses_tip_high,continuations_unsure) %>% select(total_edges,transitions,transitions_high,transitions_low,gains,gains_high,gains_tip,gains_tip_high,losses,losses_high,losses_tip,losses_tip_high,continuations,continuations_present,continuations_absent,continuations_unsure)
   }
