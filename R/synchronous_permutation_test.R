@@ -17,7 +17,7 @@ synchronous_permutation_test <- function(genotype,df,tr,tip_name_var,pheno,node_
   # Geno
   geno_asr = asr(df=df,tr=tr,tip_name_var=tip_name_var,pheno = genotype,model = "ER",node_states = 'joint',conf_threshold = 0.875) %>% .$parent_child_df
 
-  pheno_convergent_obs = synchronous_detection(geno_asr,pheno_asr,node_states)
+  pheno_synchronous_obs = synchronous_detection(geno_asr,pheno_asr,node_states)
   # permute
   num_isolates = nrow(df)
   num_features = sum(as.numeric(df[[genotype]]))
@@ -28,14 +28,14 @@ synchronous_permutation_test <- function(genotype,df,tr,tip_name_var,pheno,node_
   phenotype_runs=data.frame(phenotype_runs,tip_name_var = df[,tip_name_var])
   asr_permutation = pbmclapply(permutation_names,FUN=function(x){
     asr_result = asr(df=phenotype_runs,tr=tr,tip_name_var="tip_name_var",pheno = x,model = "ER",node_states = 'joint',conf_threshold = 0.875) %>% .$parent_child_df
-    pheno_convergent_perm = synchronous_detection(asr_result,pheno_asr)
-    return(pheno_convergent_perm)
+    pheno_synchronous_perm = synchronous_detection(asr_result,pheno_asr)
+    return(pheno_synchronous_perm)
   },mc.cores = num_cores) %>% do.call(rbind,.)
 
-  pheno_convergent_obs$synchronous_gain_pval = c(1+sum(asr_permutation$convergent_gains_num >= pheno_convergent_obs$summary$convergent_gains_num)) / c(1+num_permutations)
-  pheno_convergent_obs$synchronous_loss_pval = c(1+sum(asr_permutation$convergent_loss_num >= pheno_convergent_obs$summary$convergent_losses_num)) / c(1+num_permutations)
-  pheno_convergent_obs$synchronous_gain_loss_pval = c(1+sum(asr_permutation$convergent_gain_loss_num >= pheno_convergent_obs$summary$convergent_gain_loss_num)) / c(1+num_permutations)
-  pheno_convergent_obs$synchronous_loss_gain_pval = c(1+sum(asr_permutation$convergent_loss_gain_num >= pheno_convergent_obs$summary$convergent_loss_gain_num)) / c(1+num_permutations)
+  pheno_synchronous_obs$synchronous_gain_pval = c(1+sum(asr_permutation$synchronous_gains_num >= pheno_synchronous_obs$summary$synchronous_gains_num)) / c(1+num_permutations)
+  pheno_synchronous_obs$synchronous_loss_pval = c(1+sum(asr_permutation$synchronous_loss_num >= pheno_synchronous_obs$summary$synchronous_losses_num)) / c(1+num_permutations)
+  pheno_synchronous_obs$synchronous_gain_loss_pval = c(1+sum(asr_permutation$synchronous_gain_loss_num >= pheno_synchronous_obs$summary$synchronous_gain_loss_num)) / c(1+num_permutations)
+  pheno_synchronous_obs$synchronous_loss_gain_pval = c(1+sum(asr_permutation$synchronous_loss_gain_num >= pheno_synchronous_obs$summary$synchronous_loss_gain_num)) / c(1+num_permutations)
 
-  return(pheno_convergent_obs)
+  return(pheno_synchronous_obs)
 }
