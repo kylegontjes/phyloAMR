@@ -4,7 +4,6 @@
 #'
 #' @param comparitor_parent_child_df Parent child dataset for a comparitor trait, such as a genotype
 #' @param trait_parent_child_df Parent child dataset for a trait of interest, such as a phenotype
-#' @param tr Phylogenetic tree
 #' @param node_states Joint or marginal reconstruction
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
 #' @return Synchronous gain and loss events of two traits
@@ -46,10 +45,9 @@ synchronous_detection <- function(comparitor_parent_child_df,trait_parent_child_
   synchronous_loss_gain_num =  length(synchronous_loss_gain)
   synchronous_loss_gain_prop =  synchronous_loss_gain_num / num_trait_loss
 
-  summary <- data.frame(num_trait_gains=num_trait_gains,synchronous_gains=synchronous_gains_str,synchronous_gains_num = synchronous_gains_num,synchronous_gains_prop=synchronous_gains_prop,
-                        synchronous_gain_loss=synchronous_gain_loss_str,synchronous_gain_loss_num=synchronous_gain_loss_num,synchronous_gain_loss_prop=synchronous_gain_loss_prop,
-                        num_trait_loss=num_trait_loss,synchronous_losses=synchronous_losses_str,synchronous_losses_num=synchronous_losses_num,synchronous_losses_prop=synchronous_losses_prop,
-                        synchronous_loss_gain=synchronous_loss_gain_str,synchronous_loss_gain_num=synchronous_loss_gain_num,synchronous_loss_gain_prop=synchronous_loss_gain_prop)
-
+  summary <- data.frame(num_trait_gains,synchronous_gains,synchronous_gains_num,synchronous_gains_prop,
+                        synchronous_gain_loss,synchronous_gain_loss_num,synchronous_gain_loss_prop,
+                        num_trait_loss,synchronous_losses,synchronous_losses_num,synchronous_losses_prop,
+                        synchronous_loss_gain,synchronous_loss_gain_num,synchronous_loss_gain_prop)
   return(summary)
 }
