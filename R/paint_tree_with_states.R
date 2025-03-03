@@ -14,7 +14,7 @@ paint_tree_with_states <- function(parent_child_df,tr,scale_labels = c("Present"
   outcome_str = parent_child_df %>% subset(.,child <= length(tr$tip.label)) %>% arrange(child)  %>% .$child_val
   parent_str = parent_child_df %>% subset(.,child > length(tr$tip.label)) %>% arrange(child) %>% .$child_val
   # Get data
-  d = data.frame(node=seq_len(nrow(blbli_asr$parent_child_df)),state=c(outcome_str,parent_str))
+  d = data.frame(node=seq_len(nrow(parent_child_df)),state=c(outcome_str,parent_str))
   # Tree
   painted_tree <- ggtree(tr) %<+% d + aes(color=as.factor(state)) + edge_color
   return(painted_tree)
