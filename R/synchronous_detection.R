@@ -26,28 +26,28 @@ synchronous_detection <- function(comparitor_parent_child_df,trait_parent_child_
 
   # Synchronous gains
   synchronous_gains = trait_gains[which(trait_gains %in%  comparitor_gains)]
-  synchronous_gains_str = paste0(synchronous_gains,collapse = ",")
+  synchronous_gains_str =  if (length(synchronous_gains) == 0) "" else paste0(synchronous_gains, collapse = ",")
   synchronous_gains_num = length(synchronous_gains)
   synchronous_gains_prop =   synchronous_gains_num / num_trait_gains
   # Synchronous gains and losses
   synchronous_gain_loss = trait_gains[which(trait_gains %in%  comparitor_losses)]
-  synchronous_gain_loss_str = paste0(synchronous_gain_loss,collapse = ",")
+  synchronous_gain_loss_str = if (length(synchronous_gain_loss) == 0) "" else paste0(synchronous_gain_loss, collapse = ",")
   synchronous_gain_loss_num =  length(synchronous_gain_loss)
   synchronous_gain_loss_prop =  synchronous_gain_loss_num / num_trait_gains
   # Synchronous losses
   synchronous_losses = trait_losses[which(trait_losses %in%  comparitor_losses)]
-  synchronous_losses_str = paste0(synchronous_losses,collapse = ",")
+  synchronous_losses_str =  if (length(synchronous_losses) == 0) "" else paste0(synchronous_losses, collapse = ",")
   synchronous_losses_num = length(synchronous_losses)
   synchronous_losses_prop =  synchronous_losses_num / num_trait_loss
   # Synchronous loss gain
   synchronous_loss_gain = trait_losses[which(trait_losses %in%  comparitor_gains)]
-  synchronous_loss_gain_str = paste0(synchronous_loss_gain,collapse = ",")
+  synchronous_loss_gain_str = if (length(synchronous_loss_gain) == 0) "" else paste0(synchronous_loss_gain, collapse = ",")
   synchronous_loss_gain_num =  length(synchronous_loss_gain)
   synchronous_loss_gain_prop =  synchronous_loss_gain_num / num_trait_loss
 
-  summary <- data.frame(num_trait_gains,synchronous_gains,synchronous_gains_num,synchronous_gains_prop,
-                        synchronous_gain_loss,synchronous_gain_loss_num,synchronous_gain_loss_prop,
-                        num_trait_loss,synchronous_losses,synchronous_losses_num,synchronous_losses_prop,
-                        synchronous_loss_gain,synchronous_loss_gain_num,synchronous_loss_gain_prop)
+  summary <- data.frame(num_trait_gains,synchronous_gains=synchronous_gains_str,synchronous_gains_num,synchronous_gains_prop,
+                        synchronous_gain_loss=synchronous_gain_loss_str,synchronous_gain_loss_num,synchronous_gain_loss_prop,
+                        num_trait_loss,synchronous_losses=synchronous_losses_str,synchronous_losses_num,synchronous_losses_prop,
+                        synchronous_loss_gai=synchronous_loss_gain_str,synchronous_loss_gain_num,synchronous_loss_gain_prop,stringsAsFactors = T)
   return(summary)
 }
