@@ -42,9 +42,15 @@ asr_cluster_analysis <- function(tip_data_df,remove_faux="yes"){
     revertant_isolates = sum(revertant_summary)
     revertant_lineages_summary = subset(revertant_summary,names(revertant_summary) != "revertant_tip")
     revertant_lineages = length(revertant_lineages_summary)
-    revertant_lineage_size_median = stats::median(revertant_lineages_summary %>% unlist) %>% round(.,2)
-    revertant_lineage_size_mean = mean(revertant_lineages_summary) %>% round(.,2)
-    revertant_lineage_size_range = range(revertant_lineages_summary) %>% paste0(collapse = "-")
+    if(revertant_lineages==0){
+      revertant_lineage_size_median=0
+      revertant_lineage_size_mean=0
+      revertant_lineage_size_range=NA
+    } else{
+      revertant_lineage_size_median = stats::median(revertant_lineages_summary %>% unlist) %>% round(.,2)
+      revertant_lineage_size_mean = mean(revertant_lineages_summary) %>% round(.,2)
+      revertant_lineage_size_range = range(revertant_lineages_summary) %>% paste0(collapse = "-")
+    }
   } else {
     revertant_isolates = 0
     revertant_lineages = 0
@@ -56,7 +62,7 @@ asr_cluster_analysis <- function(tip_data_df,remove_faux="yes"){
   # Phylo frequency
   phylogenetic_events <- sum(singletons + clusters)
   feature_frequency <- {present / num_isolates * 100} %>%  round(.,2)
-  phylogenetic_frequency <- {phylo_events / sum(phylogenetic_events + absent) * 100}  %>% round(.,2)
+  phylogenetic_frequency <- {phylogenetic_events / sum(phylogenetic_events + absent) * 100}  %>% round(.,2)
   fixation_frequency <- {clusters / phylogenetic_events * 100} %>% round(.,2)
 
   results <- cbind.data.frame(present,
