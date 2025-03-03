@@ -122,26 +122,19 @@ get_largest_anc_cluster <- function(node_data,edge_data,node_states,confidence){
     }
     else {
       if(node_states =="joint"){
-        if(output[,"parent_val"]==0){
+        if(output[,"gain"]==1){
           output <- output$child
           break
         }
       }
       if(node_states == "marginal"){
-        if(confidence=="high"){
-          if(output[,"parent_val"]==0){
-            output <- output$child
-            break
-          }
-        } else {
-          if(output[,"parent_val"]==0.5){
+          if(output[,paste0("gain_",confidence)]==1){
             output <- output$child
             break
           }
         }
-      }
-    }
-  }
+          }
+        }
   return(output)
 }
 
@@ -263,7 +256,7 @@ simplify_acr_clustering_string <-  function(string,df,tr,faux_clusters,remove_re
     }
   }
   if(remove_revertant=="yes"){
-    df_ordered$string <- dplyr::recode(df_ordered$string,"Reversion Tip" = "No Feature")
+    df_ordered$string <- dplyr::recode(df_ordered$string,"Revertant Tip" = "No Feature")
   }
 
   rownames(df_ordered) <- df_ordered$isolate_no

@@ -20,7 +20,8 @@ Imports:
     ape,
     corHMM,
     pbapply,
-    magrittr
+    magrittr,
+    ggtree
 Suggests: 
     testthat (>= 3.0.0)
 Remotes: 
