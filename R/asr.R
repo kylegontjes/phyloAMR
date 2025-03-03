@@ -17,7 +17,7 @@
 #'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information.}
 #'   }
 #' @export
-asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", upper_bound=1e9, lower_bound=1e-9, conf_threshold=NULL){
+asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", upper_bound=1e100, lower_bound=1e-9, conf_threshold=NULL){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
   check_tree(tr)
@@ -142,12 +142,12 @@ get_phenotypic_continuation_data <- function(parent_child_df,node_states){
     parent_child_df <- parent_child_df %>% dplyr::mutate(transition = ifelse(parent_val != child_val, 1, 0),
                                                          transition_high = ifelse(parent_val ==0 & child_val==1 | parent_val==1 & child_val ==0, 1, 0),
                                                          transition_low = ifelse(parent_val ==0.5 & child_val==1 | parent_val==0.5 & child_val ==0, 1, 0),
-                                                         gain_low = ifelse(child_val ==1 & parent_val==0.5, 1, 0),
+                                                         gain = ifelse(child_val ==1 & parent_val==0.5 | child_val ==1 & parent_val==0, 1, 0),
                                                          gain_high  =  ifelse(child_val ==1 & parent_val==0, 1, 0),
-                                                         gain = ifelse(gain_low==1 | gain_high==1, 1, 0),
-                                                         loss_low  =  ifelse(child_val ==0 & parent_val==0.5, 1, 0),
+                                                         gain_low = ifelse(child_val ==1 & parent_val==0.5, 1, 0),
+                                                         loss = ifelse(child_val ==0 & parent_val==1 | child_val ==0 & parent_val==0.5, 1, 0),
                                                          loss_high  =  ifelse(child_val ==0 & parent_val==1, 1, 0),
-                                                         loss = ifelse(loss_low==1 | loss_high==1, 1, 0),
+                                                         loss_low  =  ifelse(child_val ==0 & parent_val==0.5, 1, 0),
                                                          continuation  =  ifelse(parent_val == child_val, 1, 0),
                                                          continuation_high  =  ifelse(parent_val == 1 & child_val ==1 | parent_val == 0 & child_val ==0,1,0),
                                                          continuation_low =  ifelse(parent_val == 0.5 & child_val ==0.5, 1, 0))
