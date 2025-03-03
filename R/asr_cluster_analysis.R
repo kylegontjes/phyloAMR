@@ -63,12 +63,12 @@ asr_cluster_analysis <- function(tip_data_df,remove_faux="yes"){
   phylogenetic_events <- sum(singletons + clusters)
   feature_frequency <- {present / num_isolates * 100} %>%  round(.,2)
   phylogenetic_frequency <- {phylogenetic_events / sum(phylogenetic_events + absent) * 100}  %>% round(.,2)
-  fixation_frequency <- {clusters / phylogenetic_events * 100} %>% round(.,2)
+  clustering_frequency <- {clusters / phylogenetic_events * 100} %>% round(.,2)
 
   results <- cbind.data.frame(present,
                               singletons,
                               clusters,cluster_isolates,cluster_size_median,cluster_size_mean,cluster_size_range,
                               no_feature,revertant_isolates,revertant_lineages,revertant_lineage_size_median,revertant_lineage_size_mean,revertant_lineage_size_range,
-                              phylogenetic_events,feature_frequency,phylogenetic_frequency,fixation_frequency)
+                              phylogenetic_events,feature_frequency,phylogenetic_frequency,clustering_frequency)
   return(results)
 }
