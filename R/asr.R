@@ -20,7 +20,9 @@
 asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", upper_bound=1e100, lower_bound=1e-9, conf_threshold=NULL){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
+  # Check if tree is rooted
   check_tree(tr)
+  # Check if phenotype and tree length is the same
   check_phenotype_tree_length(pheno_var =df[[pheno]],df_tips = df[[tip_name_var]],tree=tr)
 
   # Order dataframe properly, if not the predictions will be wrong
@@ -124,8 +126,8 @@ get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold=0.875
 
   # Values and name for the tip
   for(i in 1:(min(internal_nodes)-1)){
-    edge[edge$child == i, "child_val"] <- pheno_data[[i]]
-    edge[edge$child == i, "child_name"] <- names(pheno_data[i])
+    edge[edge$child == i, "child_name"] <- tr$tip.label[[i]]
+    edge[edge$child == i, "child_val"] <- subset(pheno_data,names(pheno_data)==edge[edge$child == i, "child_name"])
   }
 
   return(edge)
@@ -136,7 +138,9 @@ get_phenotypic_continuation_data <- function(parent_child_df,node_states){
     parent_child_df <- parent_child_df %>% dplyr::mutate(transition = ifelse(parent_val != child_val, 1, 0),
                                                          gain = ifelse(child_val ==1 & parent_val==0, 1, 0),
                                                          loss = ifelse(child_val ==0 & parent_val==1, 1, 0),
-                                                         continuation  =  ifelse(parent_val == child_val, 1, 0))
+                                                         continuation  =  ifelse(parent_val == child_val, 1, 0),
+                                                         continuation_present = ifelse(continuation==1 & child_val==1,1,0),
+                                                         continuation_absent = ifelse(continuation==1 & child_val==0,1,0))
   }
   if(node_states == "marginal"){
     parent_child_df <- parent_child_df %>% dplyr::mutate(transition = ifelse(parent_val != child_val, 1, 0),
@@ -150,8 +154,11 @@ get_phenotypic_continuation_data <- function(parent_child_df,node_states){
                                                          loss_low  =  ifelse(child_val ==0 & parent_val==0.5, 1, 0),
                                                          continuation  =  ifelse(parent_val == child_val, 1, 0),
                                                          continuation_high  =  ifelse(parent_val == 1 & child_val ==1 | parent_val == 0 & child_val ==0,1,0),
-                                                         continuation_low =  ifelse(parent_val == 0.5 & child_val ==0.5, 1, 0))
+                                                         continuation_low =  ifelse(parent_val == 0.5 & child_val ==0.5, 1, 0),
+                                                         continuation_present = ifelse(continuation==1 & child_val==1,1,0),
+                                                         continuation_present_high = ifelse(continuation_high==1 & child_val==1,1,0),
+                                                         continuation_absent = ifelse(continuation==1 & child_val==0,1,0),
+                                                         continuation_absent_high = ifelse(continuation_high==1 & child_val==0,1,0))
   }
   return(parent_child_df)
 }
-
