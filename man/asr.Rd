@@ -11,7 +11,7 @@ asr(
   pheno,
   model = "ER",
   node_states = "joint",
-  upper_bound = 1e+09,
+  upper_bound = 1e+100,
   lower_bound = 1e-09,
   conf_threshold = NULL
 )

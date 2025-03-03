@@ -19,8 +19,6 @@ synchronous_detection(
 \item{node_states}{Joint or marginal reconstruction}
 
 \item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
-
-\item{tr}{Phylogenetic tree}
 }
 \value{
 Synchronous gain and loss events of two traits

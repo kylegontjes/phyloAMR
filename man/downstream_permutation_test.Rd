@@ -5,24 +5,30 @@
 \title{downstream_permutation_test: Permutation test for downstream analysis}
 \usage{
 downstream_permutation_test(
-  genotype,
+  comparitor,
   df,
   tr,
   tip_name_var,
-  pheno,
+  trait,
   node_states = "joint",
+  conf_threshold = NULL,
+  confidence = NULL,
   num_permutations = 1000,
   num_cores = 6
 )
 }
 \arguments{
+\item{comparitor}{Comparitor trait, such as a genotype}
+
+\item{df}{Dataframe with trait and comparitor and tip_name_var}
+
 \item{tr}{Phylogenetic tree}
+
+\item{tip_name_var}{Tip name variable}
 
 \item{node_states}{Joint or marginal reconstruction}
 
-\item{comparitor_parent_child_df}{Parent child dataset for a comparitor trait, such as a genotype}
-
-\item{trait_parent_child_df}{Parent child dataset for a trait of interest, such as a phenotype}
+\item{conf_threshold}{Set value for confidence threshold of MLE calls if marginal}
 
 \item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
 }

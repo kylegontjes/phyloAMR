@@ -11,9 +11,9 @@ asr_cluster_detection(
   patient_id = NULL,
   pheno,
   parent_child_df,
-  faux_clusters = F,
   node_states = "joint",
   confidence = NULL,
+  faux_clusters = F,
   remove_revertant = "yes",
   collapse_cluster = "yes"
 )
@@ -31,11 +31,11 @@ asr_cluster_detection(
 
 \item{parent_child_df}{Parent child dataframe from asr() object}
 
-\item{faux_clusters}{Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)}
-
 \item{node_states}{Whether the reconstruction was "joint" or "marginal"}
 
-\item{confidence}{Whether to use high (i.e., 0 -> 1) or low (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS}
+\item{confidence}{Whether to use 'high' (i.e., 0 -> 1) or 'low' (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS}
+
+\item{faux_clusters}{Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)}
 
 \item{remove_revertant}{Whether to remove revertant episodes from consideration in a cleaned}
 

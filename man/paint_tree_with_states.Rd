@@ -7,7 +7,9 @@
 paint_tree_with_states(
   parent_child_df,
   tr,
+  scale_breaks = c(1, 0),
   scale_labels = c("Present", "Absent"),
+  scale_colors = c("red", "black"),
   legend_name = "Trait"
 )
 }
@@ -24,5 +26,5 @@ paint_tree_with_states(
 Tree with painted states
 }
 \description{
-Function to paint a tree
+Function to paint a tree with anestral states
 }

@@ -15,5 +15,5 @@ asr_transition_analysis(parent_child_df, node_states = "joint")
 A dataframe with data on the trait dynamics
 }
 \description{
-This function calculates the transition statistics for ancestral state
+This function calculates the transition statistics for an ancestral state reconstruction using their edge dataframe
 }
