@@ -238,21 +238,21 @@ simplify_acr_clustering_string <-  function(string,df,tr,faux_clusters,remove_re
                                                                                                    ifelse(.!="revertant_tip" & grepl("revertant",.),"No Feature",
                                                                                                           ifelse(.=="revertant_tip","Revertant Tip",.))))}
   # Name clusters
-  num_clusters <- length(df_ordered$string  %>% subset(.,!. %in% c("No Feature","Singleton","Reversion Tip")) %>% subset(.,grepl("1pt",.)==F) %>% unique)
+  num_clusters <- length(df_ordered$string  %>% subset(.,!. %in% c("No Feature","Singleton","Revertant Tip")) %>% subset(.,grepl("1pt",.)==F) %>% unique)
   if(num_clusters >0){
-    cluster_names <- df_ordered$string  %>% subset(.,!. %in% c("No Feature","Singleton","Reversion Tip")) %>% subset(.,grepl("1pt",.)==F) %>% unique %>% `names<-`(paste0("Cluster ",1:length(.))) %>% stats::setNames(names(.), .)
+    cluster_names <- df_ordered$string  %>% subset(.,!. %in% c("No Feature","Singleton","Revertant Tip")) %>% subset(.,grepl("1pt",.)==F) %>% unique %>% `names<-`(paste0("Cluster ",1:length(.))) %>% stats::setNames(names(.), .)
     df_ordered$string <- dplyr::recode(df_ordered$string, !!! cluster_names)
 
     if(faux_clusters=="rename"){
       # Name faux clusters
       faux_cluster_names <- df_ordered$string %>% subset(.,grepl("1pt",.)==T) %>% unique %>% `names<-`(paste0("Single Patient Cluster ",1:length(.))) %>% stats::setNames(names(.), .)
       df_ordered$string <- dplyr::recode(df_ordered$string, !!! faux_cluster_names)
-      df_ordered$string <- factor(levels = c("No Feature","Reversion Tip","Singleton",paste0("Cluster ",1:length(cluster_names)),paste0("Single Patient Cluster ",1:length(faux_cluster_names))),x = df_ordered$string)
+      df_ordered$string <- factor(levels = c("No Feature","Revertant Tip","Singleton",paste0("Cluster ",1:length(cluster_names)),paste0("Single Patient Cluster ",1:length(faux_cluster_names))),x = df_ordered$string)
     } else {
       # Remove single patient calls
       df_ordered$string <- ifelse(grepl("1pt",df_ordered$string)==T,"Singleton",df_ordered$string)
       # Factor String
-      df_ordered$string <- factor(levels = c("No Feature","Reversion Tip","Singleton",paste0("Cluster ",1:length(cluster_names))),x = df_ordered$string)
+      df_ordered$string <- factor(levels = c("No Feature","Revertant Tip","Singleton",paste0("Cluster ",1:length(cluster_names))),x = df_ordered$string)
     }
   }
   if(remove_revertant=="yes"){
