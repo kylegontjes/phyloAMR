@@ -30,7 +30,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
   }
 
   # Get clustering data
-  clustering_data$asr_cluster <- sapply(clustering_data$isolate_no,FUN=get_clustering_data,parent_child_df,node_states,confidence)
+  clustering_data$asr_cluster <- sapply(clustering_data$isolate_no,FUN=get_clustering_data,parent_child_df,node_states=node_states,confidence=confidence)
 
   # Clean clusters
   if(faux_clusters == "remove"){
@@ -91,17 +91,17 @@ get_clustering_data <- function (isolate, edge_data,node_states, confidence){
   if (tip_row$child_val == 1) {
     if(node_states == "joint"){
       classification <- ifelse(tip_row[,"gain"] == 1, "singleton",
-                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.)}))
+                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data=edge_data,node_states=node_states,confidence=confidence) %>% {ifelse(.=="root","root",.)}))
     } else {
 
       classification <- ifelse(tip_row[,paste0("gain_",confidence)] == 1, "singleton",
-                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.)}))
+                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data=edge_data,node_states=node_states,confidence=confidence) %>% {ifelse(.=="root","root",.)}))
 
     }
   }
   if (classification == "singleton") {
     classification <- reclassify_singletons(node_data = tip_row,
-                                                         edge_data = edge_data,node_status=node_states,confidence=confidence)
+                                                         edge_data = edge_data,node_states=node_states,confidence=confidence)
   }
   if (classification == "no feature") {
     classification <- get_largest_anc_reversion(node_data = tip_row,
@@ -112,7 +112,7 @@ get_clustering_data <- function (isolate, edge_data,node_states, confidence){
   return(classification)
 }
 
-get_largest_anc_cluster <- function(node_data,edge_data){
+get_largest_anc_cluster <- function(node_data,edge_data,node_states,confidence){
   output <- node_data
   repeat{
     output <- get_parent_node(output, edge_data)
@@ -145,14 +145,14 @@ get_largest_anc_cluster <- function(node_data,edge_data){
   return(output)
 }
 
-reclassify_singletons <- function (node_data, edge_data,node_status,confidence){
+reclassify_singletons <- function (node_data, edge_data,node_states,confidence){
   previous <- get_parent_node(node_data, edge_data)
-  if(node_status == "joint"){
+  if(node_states == "joint"){
     classification <- ifelse(previous[,"loss"] == 0, "singleton",
-                             get_largest_anc_cluster(previous, edge_data))
+                             get_largest_anc_cluster(previous, edge_data,node_states,confidence))
   } else {
     classification <- ifelse(previous[,paste0("loss_",confidence)] == 0, "singleton",
-                             get_largest_anc_cluster(previous, edge_data))
+                             get_largest_anc_cluster(previous, edge_data,node_states,confidence))
   }
   return(classification)
 }
