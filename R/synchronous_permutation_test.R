@@ -3,8 +3,10 @@
 #' Permutation test for synchronous detection function
 #'
 #' @param comparitor Comparitor, such as a genotype
+#' @param df Dataframe with comparitor, trait, and tip_name_var
 #' @param tr Phylogenetic tree
-#' @param trait Parent child dataset for a trait of interest, such as a phenotype
+#' @param tip_name_var Tip name variable
+#' @param trait Trait of interest, such as a phenotype
 #' @param node_states Joint or marginal reconstruction
 #' @param conf_threshold Confidence threshold if using marginal reconstruction
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
