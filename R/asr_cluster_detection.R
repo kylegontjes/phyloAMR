@@ -9,13 +9,13 @@
 #' @param pheno Name of phenotype variable in df
 #' @param parent_child_df Parent child dataframe from asr() object
 #' @param node_states Whether the reconstruction was "joint" or "marginal"
+#' @param confidence Whether to use 'high' (i.e., 0 -> 1) or 'low' (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS
 #' @param faux_clusters Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)
-#' @param confidence Whether to use high (i.e., 0 -> 1) or low (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS
 #' @param remove_revertant Whether to remove revertant episodes from consideration in a cleaned
 #' @param collapse_cluster Whether to create a variable that collapses cluster calls into one category
 #' @return A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired
 #' @export
-asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,faux_clusters=F,node_states="joint",confidence=NULL,remove_revertant="yes",collapse_cluster="yes"){
+asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,node_states="joint",confidence=NULL,faux_clusters=F,remove_revertant="yes",collapse_cluster="yes"){
   # Check if states are as desired
   check_joint_confidence(node_states,confidence)
   # Check faux_cluster
@@ -75,8 +75,7 @@ check_faux_clusters <- function(patient_id,faux_clusters){
 }
 
 
-get_clustering_data <- function (isolate, edge_data,node_states, confidence)
-{
+get_clustering_data <- function (isolate, edge_data,node_states, confidence){
   tip_row <- edge_data %>% subset(child_name == isolate)
   classification <- c()
   if (tip_row$child_val == 0) {
@@ -92,11 +91,11 @@ get_clustering_data <- function (isolate, edge_data,node_states, confidence)
   if (tip_row$child_val == 1) {
     if(node_states == "joint"){
       classification <- ifelse(tip_row[,"gain"] == 1, "singleton",
-                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.$child)}))
+                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.)}))
     } else {
 
       classification <- ifelse(tip_row[,paste0("gain_",confidence)] == 1, "singleton",
-                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.$child)}))
+                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data) %>% {ifelse(.=="root","root",.)}))
 
     }
   }
@@ -118,17 +117,29 @@ get_largest_anc_cluster <- function(node_data,edge_data){
   repeat{
     output <- get_parent_node(output, edge_data)
     if(nrow(output)==0){
-      output <- node_data
-      repeat{
-        output <- get_parent_node(output, edge_data)
-        if(nrow(output)==0){
-          output <- c("root")
+      output <- c("root")
+      break
+    }
+    else {
+      if(node_states =="joint"){
+        if(output[,"parent_val"]==0){
+          output <- output$child
           break
         }
       }
-    } else  {if (output$parent_val == 0) {
-      break
-    }
+      if(node_states == "marginal"){
+        if(confidence=="high"){
+          if(output[,"parent_val"]==0){
+            output <- output$child
+            break
+          }
+        } else {
+          if(output[,"parent_val"]==0.5){
+            output <- output$child
+            break
+          }
+        }
+      }
     }
   }
   return(output)
@@ -138,13 +149,11 @@ reclassify_singletons <- function (node_data, edge_data,node_status,confidence){
   previous <- get_parent_node(node_data, edge_data)
   if(node_status == "joint"){
     classification <- ifelse(previous[,"loss"] == 0, "singleton",
-                             get_largest_anc_cluster(previous, edge_data) %>% .$child)
+                             get_largest_anc_cluster(previous, edge_data))
   } else {
     classification <- ifelse(previous[,paste0("loss_",confidence)] == 0, "singleton",
-                             get_largest_anc_cluster(previous, edge_data) %>% .$child)
+                             get_largest_anc_cluster(previous, edge_data))
   }
-
-
   return(classification)
 }
 
