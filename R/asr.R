@@ -155,10 +155,8 @@ get_phenotypic_continuation_data <- function(parent_child_df,node_states){
                                                          continuation  =  ifelse(parent_val == child_val, 1, 0),
                                                          continuation_high  =  ifelse(parent_val == 1 & child_val ==1 | parent_val == 0 & child_val ==0,1,0),
                                                          continuation_low =  ifelse(parent_val == 0.5 & child_val ==0.5, 1, 0),
-                                                         continuation_present = ifelse(continuation==1 & child_val==1,1,0),
-                                                         continuation_present_high = ifelse(continuation_high==1 & child_val==1,1,0),
-                                                         continuation_absent = ifelse(continuation==1 & child_val==0,1,0),
-                                                         continuation_absent_high = ifelse(continuation_high==1 & child_val==0,1,0))
+                                                         continuation_present = ifelse(continuation_high==1 & child_val==1,1,0),
+                                                         continuation_absent = ifelse(continuation_high==1 & child_val==0,1,0))
   }
   return(parent_child_df)
 }
