@@ -1,10 +1,37 @@
-phyloaware_regression <- function(df,pheno,asr_cluster_obj,datasets,variables,entry_criteria,retention_criteria,confounding_criteria){
+phyloaware_regression <- function(pheno,variables,df,first_present=NULL,patient_id=NULL,culture_date=NULL,multivariable=NULL,stepwise_direction=NULL,entry_criteria=NULL,retention_criteria=NULL,confounding_criteria=NULL){
   # Get dataset with first isolate
-  datasets= dataset_curation(pheno,df)
-  # Purposeful selection
-  lr_non_s <- tryCatch(purposeful_selection_algorithm(outcome = phenotype_var,dataset = datasets[[paste0(drug,"_non_s")]],variables = variables,entry_criteria = entry_criteria,retension_criteria=retension_criteria,confounding_criteria=confounding_criteria), error = function(e) e)
-  lr_emerge <-  tryCatch(purposeful_selection_algorithm(outcome = phenotype_var,dataset = datasets[[paste0(drug,"_emerge")]],variables = variables,entry_criteria = entry_criteria,retension_criteria=retension_criteria,confounding_criteria=confounding_criteria), error = function(e) e)
-  lr_spread <- tryCatch(purposeful_selection_algorithm(outcome = phenotype_var,dataset = datasets[[paste0(drug,"_spread")]],variables = variables,entry_criteria = entry_criteria,retension_criteria=retension_criteria,confounding_criteria=confounding_criteria), error = function(e) e)
-  lr_list <- list(lr_non_s,lr_emerge,lr_spread) %>% `names<-`(c("non_s","emerge","spread"))
-  return(lr_list)
+  datasets= phyloaware_dataset_curation(pheno,df,first_present=first_present,patient_id=patient_id,culture_date=culture_date)
+  # Unadjusted
+  univariable <- lapply(datasets,FUN=function(x){univariable_regression_table(outcome=pheno, dataset=x, variables=variables)})  %>% `names<-`(names(datasets))
+  results <- list(datasets=datasets,univariable=univariable)
+  # Multivariable
+  if(is.null(multivariable)==TRUE){
+    break
+  }
+  if(multivariable=="purposeful"){
+    multivariable <- lapply(datasets,FUN=function(x){purposeful_selection_algorithm(outcome=pheno,variables=variables,dataset=x,entry_criteria=entry_criteria,retension_criteria=retension_criteria,confounding_criteria=confounding_criteria)})  %>% `names<-`(names(datasets))
+    results[['multivariable']] <- multivariable
+  }
+  if(multivariable=='AIC'){
+    multivariable <- lapply(datasets,FUN=function(x){
+      model = as.formula(paste0(pheno," ~ 1 +",paste0(variables,collapse = " + ")))
+      glm_model <- glm(model, data = x,family = 'binomial')
+      stepwise_glm_model <- suppressMessages(stats::step(glm_model,scope = model,direction = stepwise_direction))
+      ci <- suppressMessages(confint(stepwise_glm_model))
+      final <- cbind(exp(cbind(OR = coef(stepwise_glm_model), ci)) %>% round(., 2),
+                     abs(summary(stepwise_glm_model)$coefficients[, "Pr(>|z|)"]) %>%
+                       round(., 4)) %>% subset(rownames(.) != "(Intercept)") %>%
+        `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
+        as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (", `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`, p_value)
+      return(final)
+    }) %>% `names<-`(names(datasets))
+  results[['multivariable']] <- multivariable
+  }
+  if(multivariable=='pvalue'){
+  multivariable <- lapply(datasets,FUN=function(x){
+    pvalue_informed_regression(outcome=pheno,dataset=x,variables=variables,pvalue_threshold=entry_criteria) %>% .['final_model']
+  }) %>% `names<-`(names(datasets))
+    results[['multivariable']] <- multivariable
+  }
+  return(results)
 }

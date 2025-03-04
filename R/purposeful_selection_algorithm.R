@@ -1,12 +1,12 @@
 purposeful_selection_algorithm <- function(outcome,variables,dataset,entry_criteria,retension_criteria,confounding_criteria){
-    ps_step1 <- purposeful_selection_step_1(outcome = outcome,variables = variables,dataset = dataset,entry_criteria = entry_criteria)
-    ps_step2 <- purposeful_selection_step_2(outcome = outcome,candidate_variables = ps_step1$candidates,dataset = dataset,retension_criteria = retension_criteria,confounding_criteria = confounding_criteria)
-    p3_candidate_variables <- subset(variables,!variables %in% ps_step1$candidates)
-    ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retension_criteria = retension_criteria)
-    final_model_table <- purposeful_table_curation(ps_step3$final_model)
-    results <- list(ps_step1=ps_step1,ps_step2=ps_step2,ps_step3=ps_step3,final_model=ps_step3$final_model,final_model_table=final_model_table)
-    return(results)
-  }
+  ps_step1 <- purposeful_selection_step_1(outcome = outcome,variables = variables,dataset = dataset,entry_criteria = entry_criteria)
+  ps_step2 <- purposeful_selection_step_2(outcome = outcome,candidate_variables = ps_step1$candidates,dataset = dataset,retension_criteria = retension_criteria,confounding_criteria = confounding_criteria)
+  p3_candidate_variables <- subset(variables,!variables %in% ps_step1$candidates)
+  ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retension_criteria = retension_criteria)
+  final_model_table <- purposeful_table_curation(ps_step3$final_model)
+  results <- list(ps_step1=ps_step1,ps_step2=ps_step2,ps_step3=ps_step3,final_model=ps_step3$final_model,final_model_table=final_model_table)
+  return(results)
+}
 
 purposeful_selection_step_1 <- function(outcome,variables,dataset,entry_criteria){
   univariable_results <- lapply(variables,FUN=function(x){glm(formula = paste0(outcome," ~ 1 +",x),data=dataset,family = "binomial")})
@@ -18,7 +18,7 @@ purposeful_selection_step_1 <- function(outcome,variables,dataset,entry_criteria
 }
 
 purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,retension_criteria,confounding_criteria){
-  input_formula <- paste0(outcome," ~ 1 + ",paste0(candidate_variables,collapse="+"))
+  input_formula <- paste0(outcome," ~ 1 + ",paste0(candidate_variables,collapse="+")) %>% trimws(.,whitespace = "\\+")
   # Glm model output to manipulate
   glm_model <- glm(formula=input_formula,data=dataset,family="binomial")
   glm_model_tbl <- data.table::data.table(coef(summary(glm_model)),keep.rownames='term')
@@ -66,7 +66,7 @@ purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,rete
 }
 
 purposeful_selection_step_3 <-  function(outcome,fixed_model_variables,candidate_variables,dataset,retension_criteria){
-  input_formula <- paste0(outcome," ~ 1 + ",paste0(fixed_model_variables,collapse="+"))
+  input_formula <- paste0(outcome," ~ 1 + ",paste0(fixed_model_variables,collapse="+")) %>% trimws(.,whitespace = "\\+")
   # Determine candidates for retension analysis
   model_additions <- lapply(candidate_variables,FUN=function(x){glm(formula = paste0(input_formula,"+",x),data=dataset,family = "binomial")})
   model_additions_tbl <- model_additions %>% lapply(.,FUN=function(x){data.table::data.table(coef(summary(x)),keep.rownames='term')}) %>% do.call(rbind,.) %>% arrange(-`Pr(>|z|)`) %>% subset(!term  %in%c('(Intercept)',fixed_model_variables))
@@ -120,7 +120,7 @@ purposeful_selection_step_3 <-  function(outcome,fixed_model_variables,candidate
 test_confounding <- function(model1,model2,confounding_criteria,tested_variable){
   model1_summary <-  data.table::data.table(coef(summary(model1)),keep.rownames='term') %>% `colnames<-`(c("term","m1_estimate","m1_SE","m1_z_val","m1_p_val"))
   model2_summary <- data.table::data.table(coef(summary(model2)),keep.rownames='term')%>% `colnames<-`(c("term","m2_estimate","m2_SE","m2_z_val","m2_p_val"))
-  model_comparison <- left_join(model1_summary,model2_summary)
+  model_comparison <- suppressMessages(left_join(model1_summary,model2_summary))
   model_comparison <- model_comparison  %>% subset(term !=tested_variable)
   model_comparison$effect_change <- 1 - (model_comparison$m1_estimate / model_comparison$m2_estimate)
   model_comparison$confounder <- ifelse(abs(model_comparison$effect_change)>confounding_criteria,"yes","no")
@@ -128,7 +128,7 @@ test_confounding <- function(model1,model2,confounding_criteria,tested_variable)
 }
 
 purposeful_table_curation <- function(final_model){
-  ci <- confint(final_model)
+  ci <- suppressMessages(confint(final_model))
   final <- cbind(exp(cbind(OR = coef(final_model), ci)) %>% round(.,
                                                                   2), abs(summary(final_model)$coefficients[, "Pr(>|z|)"]) %>%
                    round(., 4)) %>% subset(rownames(.) != "(Intercept)") %>%
@@ -139,30 +139,3 @@ purposeful_table_curation <- function(final_model){
   final <- final %>% select(`OR (95% CI)`,`p_value`)
   return(final)
 }
-univariable_regression_table <- function (outcome, dataset, variables)
-{
-  datatable <- lapply(variables, FUN = function(x) {
-    datatable <- univariable_regression(x, outcome, dataset) %>%
-      as.data.frame
-    return(datatable)
-  }) %>% do.call(rbind, .)
-  return(datatable)
-}
-
-univariable_regression <- function (variable, outcome, data)
-{
-  dataset <- data %>% select(outcome, paste0(variable))
-  model <- paste(outcome, paste(variable, collapse = " + "),
-                 sep = "~")
-  output <- glm(model, data = dataset, family = "binomial")
-  ci <- confint(output)
-  final <- cbind(exp(cbind(OR = coef(output), ci)) %>% round(.,
-                                                             2), abs(summary(output)$coefficients[, "Pr(>|z|)"]) %>%
-                   round(., 4)) %>% subset(rownames(.) != "(Intercept)") %>%
-    `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
-    as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (",
-                                                    `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`,
-                                                                                           p_value)
-  return(final)
-}
-
