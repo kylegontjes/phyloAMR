@@ -1,3 +1,8 @@
+#' phyloaware_regression: Phylogenetically-aware regression
+#'
+#' This function performs regression on our dataset
+#'
+#' @export
 phyloaware_regression <- function(pheno,variables,df,first_present=NULL,patient_id=NULL,culture_date=NULL,multivariable=NULL,stepwise_direction=NULL,entry_criteria=NULL,retention_criteria=NULL,confounding_criteria=NULL){
   # Get dataset with first isolate
   datasets= phyloaware_dataset_curation(pheno,df,first_present=first_present,patient_id=patient_id,culture_date=culture_date)
