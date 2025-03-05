@@ -1,8 +1,8 @@
-purposeful_selection_algorithm <- function(outcome,variables,dataset,entry_criteria,retension_criteria,confounding_criteria){
+purposeful_selection_algorithm <- function(outcome,variables,dataset,entry_criteria,retention_criteria,confounding_criteria){
   ps_step1 <- purposeful_selection_step_1(outcome = outcome,variables = variables,dataset = dataset,entry_criteria = entry_criteria)
-  ps_step2 <- purposeful_selection_step_2(outcome = outcome,candidate_variables = ps_step1$candidates,dataset = dataset,retension_criteria = retension_criteria,confounding_criteria = confounding_criteria)
+  ps_step2 <- purposeful_selection_step_2(outcome = outcome,candidate_variables = ps_step1$candidates,dataset = dataset,retention_criteria = retention_criteria,confounding_criteria = confounding_criteria)
   p3_candidate_variables <- subset(variables,!variables %in% ps_step1$candidates)
-  ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retension_criteria = retension_criteria)
+  ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retention_criteria = retention_criteria)
   final_model_table <- purposeful_table_curation(ps_step3$final_model)
   results <- list(ps_step1=ps_step1,ps_step2=ps_step2,ps_step3=ps_step3,final_model=ps_step3$final_model,final_model_table=final_model_table)
   return(results)
@@ -17,7 +17,7 @@ purposeful_selection_step_1 <- function(outcome,variables,dataset,entry_criteria
   return(results)
 }
 
-purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,retension_criteria,confounding_criteria){
+purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,retention_criteria,confounding_criteria){
   input_formula <- paste0(outcome," ~ 1 + ",paste0(candidate_variables,collapse="+")) %>% trimws(.,whitespace = "\\+")
   # Glm model output to manipulate
   glm_model <- glm(formula=input_formula,data=dataset,family="binomial")
@@ -30,11 +30,11 @@ purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,rete
     # grab significant value
     max_pval <- glm_model_tbl %>% subset(.,!term %in% c(tested,"(Intercept)"))  %>% .[which.max(.$`Pr(>|z|)`),]
 
-    if(max_pval$`Pr(>|z|)` < retension_criteria){
+    if(max_pval$`Pr(>|z|)` < retention_criteria){
       # Model is completed as all either confounders or significant
       break
     } else {
-      if(c(length(tested)+1)==length(candidate_variables) & max_pval$`Pr(>|z|)` > retension_criteria){
+      if(c(length(tested)+1)==length(candidate_variables) & max_pval$`Pr(>|z|)` > retention_criteria){
         stop("No significant variables")
       } else {
         # Test as confounder
@@ -65,12 +65,12 @@ purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,rete
   return(results)
 }
 
-purposeful_selection_step_3 <-  function(outcome,fixed_model_variables,candidate_variables,dataset,retension_criteria){
+purposeful_selection_step_3 <-  function(outcome,fixed_model_variables,candidate_variables,dataset,retention_criteria){
   input_formula <- paste0(outcome," ~ 1 + ",paste0(fixed_model_variables,collapse="+")) %>% trimws(.,whitespace = "\\+")
   # Determine candidates for retension analysis
   model_additions <- lapply(candidate_variables,FUN=function(x){glm(formula = paste0(input_formula,"+",x),data=dataset,family = "binomial")})
   model_additions_tbl <- model_additions %>% lapply(.,FUN=function(x){data.table::data.table(coef(summary(x)),keep.rownames='term')}) %>% do.call(rbind,.) %>% arrange(-`Pr(>|z|)`) %>% subset(!term  %in%c('(Intercept)',fixed_model_variables))
-  final_candidates <- subset(model_additions_tbl,`Pr(>|z|)`<retension_criteria)   %>% .$term
+  final_candidates <- subset(model_additions_tbl,`Pr(>|z|)`<retention_criteria)   %>% .$term
   if(length(final_candidates)==0){
     glm_model <- glm(formula=input_formula,data=dataset,family="binomial")
     glm_model_tbl <- data.table::data.table(coef(summary(glm_model)),keep.rownames='term')
@@ -86,7 +86,7 @@ purposeful_selection_step_3 <-  function(outcome,fixed_model_variables,candidate
         break
       }
       max_pval <- glm_model_tbl %>% subset(.,!term %in% c(tested,fixed_model_variables,"(Intercept)"))  %>% .[which.max(.$`Pr(>|z|)`),]
-      if(max_pval$`Pr(>|z|)` < retension_criteria){
+      if(max_pval$`Pr(>|z|)` < retention_criteria){
         glm_model <- glm_model
         tested <- c(tested,max_pval$term)
       } else {

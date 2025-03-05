@@ -14,7 +14,7 @@ phyloaware_regression <- function(pheno,variables,df,first_present=NULL,patient_
     break
   }
   if(multivariable=="purposeful"){
-    multivariable <- lapply(datasets,FUN=function(x){purposeful_selection_algorithm(outcome=pheno,variables=variables,dataset=x,entry_criteria=entry_criteria,retension_criteria=retension_criteria,confounding_criteria=confounding_criteria)})  %>% `names<-`(names(datasets))
+    multivariable <- lapply(datasets,FUN=function(x){purposeful_selection_algorithm(outcome=pheno,variables=variables,dataset=x,entry_criteria=entry_criteria,retention_criteria=retention_criteria,confounding_criteria=confounding_criteria)})  %>% `names<-`(names(datasets))
     results[['multivariable']] <- multivariable
   }
   if(multivariable=='AIC'){
