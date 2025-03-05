@@ -16,8 +16,7 @@ phyloaware_regression <- function(pheno,variables,df,first_present=NULL,patient_
   if(multivariable=="purposeful"){
     multivariable <- lapply(datasets,FUN=function(x){purposeful_selection_algorithm(outcome=pheno,variables=variables,dataset=x,entry_criteria=entry_criteria,retention_criteria=retention_criteria,confounding_criteria=confounding_criteria)})  %>% `names<-`(names(datasets))
     results[['multivariable']] <- multivariable
-  }
-  if(multivariable=='AIC'){
+  } else if(multivariable=='AIC'){
     multivariable <- lapply(datasets,FUN=function(x){
       model = as.formula(paste0(pheno," ~ 1 +",paste0(variables,collapse = " + ")))
       glm_model <- glm(model, data = x,family = 'binomial')
@@ -31,8 +30,7 @@ phyloaware_regression <- function(pheno,variables,df,first_present=NULL,patient_
       return(final)
     }) %>% `names<-`(names(datasets))
   results[['multivariable']] <- multivariable
-  }
-  if(multivariable=='pvalue'){
+  } else if(multivariable=='pvalue'){
   multivariable <- lapply(datasets,FUN=function(x){
     pvalue_informed_regression(outcome=pheno,dataset=x,variables=variables,pvalue_threshold=entry_criteria) %>% .['final_model']
   }) %>% `names<-`(names(datasets))

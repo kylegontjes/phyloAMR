@@ -1,10 +1,14 @@
 purposeful_selection_algorithm <- function(outcome,variables,dataset,entry_criteria,retention_criteria,confounding_criteria){
   ps_step1 <- purposeful_selection_step_1(outcome = outcome,variables = variables,dataset = dataset,entry_criteria = entry_criteria)
   ps_step2 <- purposeful_selection_step_2(outcome = outcome,candidate_variables = ps_step1$candidates,dataset = dataset,retention_criteria = retention_criteria,confounding_criteria = confounding_criteria)
-  p3_candidate_variables <- subset(variables,!variables %in% ps_step1$candidates)
-  ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retention_criteria = retention_criteria)
-  final_model_table <- purposeful_table_curation(ps_step3$final_model)
-  results <- list(ps_step1=ps_step1,ps_step2=ps_step2,ps_step3=ps_step3,final_model=ps_step3$final_model,final_model_table=final_model_table)
+  if(length(ps_step2)== 1 & sum(ps_step2 == "No significant variables")>0){
+    results <- list(ps_step1 = ps_step1,warning = 'No multivariable model possible as all candidate variables were not statistically significant.')
+  } else {
+    p3_candidate_variables <- subset(variables,!variables %in% ps_step1$candidates)
+    ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retention_criteria = retention_criteria)
+    final_model_table <- purposeful_table_curation(ps_step3$final_model)
+    results <- list(ps_step1=ps_step1,ps_step2=ps_step2,ps_step3=ps_step3,final_model=ps_step3$final_model,final_model_table=final_model_table)
+  }
   return(results)
 }
 
@@ -35,7 +39,9 @@ purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,rete
       break
     } else {
       if(c(length(tested)+1)==length(candidate_variables) & max_pval$`Pr(>|z|)` > retention_criteria){
-        stop("No significant variables")
+        warning("No significant variables, reporting step 1 analysis")
+        results <- "No significant variables"
+        break
       } else {
         # Test as confounder
         ## Remove variable from model
@@ -56,12 +62,12 @@ purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,rete
           confounder <- c(confounder,max_pval$term)
 
         }
-
+        model_variables <- glm_model_tbl$term %>% subset(.!="(Intercept)")
+        results <- list(glm_model=glm_model,glm_model_tbl=glm_model_tbl,model_variables =model_variables,confounder=confounder)
       }
     }
   }
-  model_variables <- glm_model_tbl$term %>% subset(.!="(Intercept)")
-  results <- list(glm_model=glm_model,glm_model_tbl=glm_model_tbl,model_variables =model_variables,confounder=confounder)
+
   return(results)
 }
 
