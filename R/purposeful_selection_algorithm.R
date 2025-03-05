@@ -5,7 +5,7 @@ purposeful_selection_algorithm <- function(outcome,variables,dataset,entry_crite
     results <- list(ps_step1 = ps_step1,warning = 'No multivariable model possible as all candidate variables were not statistically significant.')
   } else {
     p3_candidate_variables <- subset(variables,!variables %in% ps_step1$candidates)
-    ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retention_criteria = retention_criteria)
+    ps_step3 <- purposeful_selection_step_3(outcome = outcome,fixed_model_variables= ps_step2$model_variables,candidate_variables = p3_candidate_variables,dataset = dataset,retention_criteria = retention_criteria,confounding_criteria=confounding_criteria)
     final_model_table <- purposeful_table_curation(ps_step3$final_model)
     results <- list(ps_step1=ps_step1,ps_step2=ps_step2,ps_step3=ps_step3,final_model=ps_step3$final_model,final_model_table=final_model_table)
   }
@@ -71,7 +71,7 @@ purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,rete
   return(results)
 }
 
-purposeful_selection_step_3 <-  function(outcome,fixed_model_variables,candidate_variables,dataset,retention_criteria){
+purposeful_selection_step_3 <-  function(outcome,fixed_model_variables,candidate_variables,dataset,retention_criteria,confounding_criteria){
   input_formula <- paste0(outcome," ~ 1 + ",paste0(fixed_model_variables,collapse="+")) %>% trimws(.,whitespace = "\\+")
   # Determine candidates for retension analysis
   model_additions <- lapply(candidate_variables,FUN=function(x){glm(formula = paste0(input_formula,"+",x),data=dataset,family = "binomial")})
