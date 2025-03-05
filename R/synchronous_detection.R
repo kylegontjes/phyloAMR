@@ -48,6 +48,6 @@ synchronous_detection <- function(comparitor_parent_child_df,trait_parent_child_
   summary <- data.frame(num_trait_gains,synchronous_gains=synchronous_gains_str,synchronous_gains_num,synchronous_gains_prop,
                         synchronous_gain_loss=synchronous_gain_loss_str,synchronous_gain_loss_num,synchronous_gain_loss_prop,
                         num_trait_loss,synchronous_losses=synchronous_losses_str,synchronous_losses_num,synchronous_losses_prop,
-                        synchronous_loss_gai=synchronous_loss_gain_str,synchronous_loss_gain_num,synchronous_loss_gain_prop,stringsAsFactors = T)
+                        synchronous_loss_gain=synchronous_loss_gain_str,synchronous_loss_gain_num,synchronous_loss_gain_prop,stringsAsFactors = T)
   return(summary)
 }
