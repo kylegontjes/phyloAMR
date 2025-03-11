@@ -19,8 +19,13 @@ phyloaware_regression <- function(pheno,variables,df,first_present=NULL,patient_
   } else if(multivariable=='AIC'){
     multivariable <- lapply(datasets,FUN=function(x){
       model = as.formula(paste0(pheno," ~ 1 +",paste0(variables,collapse = " + ")))
-      glm_model <- glm(model, data = x,family = 'binomial')
-      stepwise_glm_model <- suppressMessages(stats::step(glm_model,scope = model,direction = stepwise_direction))
+      if(stepwise_direction =='forward'){
+        initialize_model <- glm(formula =  as.formula(paste0(pheno," ~ 1")),data=x,family='binomial')
+        stepwise_glm_model <- suppressMessages(stats::step(initialize_model,direction = stepwise_direction, scope =model))
+      }   else {
+        glm_model <- glm(model, data = x,family = 'binomial')
+        stepwise_glm_model <- suppressMessages(stats::step(glm_model,direction = stepwise_direction))
+      }
       ci <- suppressMessages(confint(stepwise_glm_model))
       final <- cbind(exp(cbind(OR = coef(stepwise_glm_model), ci)) %>% round(., 2),
                      abs(summary(stepwise_glm_model)$coefficients[, "Pr(>|z|)"]) %>%
