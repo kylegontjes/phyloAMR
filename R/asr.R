@@ -82,6 +82,7 @@ check_rates_at_local_max <- function(corHMM_out,upper_bound,lower_bound){
   }
 }
 
+#' @export
 get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold=0.875, node_states){
   # Tree edge info
   edge <- tr$edge %>% as.data.frame
@@ -133,6 +134,7 @@ get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold=0.875
   return(edge)
 }
 
+#' @export
 get_phenotypic_continuation_data <- function(parent_child_df,node_states){
   if(node_states =="joint"){
     parent_child_df <- parent_child_df %>% dplyr::mutate(transition = ifelse(parent_val != child_val, 1, 0),
