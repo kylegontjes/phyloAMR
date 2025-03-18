@@ -25,8 +25,18 @@ asr_transition_analysis <- function(parent_child_df,node_states="joint"){
   continuations <- parent_child_df[["continuation"]] %>% sum
   continuations_present <-  parent_child_df[["continuation_present"]]  %>% sum
   continuations_absent <-  parent_child_df[["continuation_absent"]]  %>% sum
+  
+  # Parent data for summary stats
+  parents_w_trait <- parent_child_df[["parent_val"]] %>% sum
+  parents_wo_trait <- total_edges - parents_w_trait 
+  
+  # Summary Statistics
+  gain_frequency <- gains/parents_wo_trait
+  loss_frequency <- losses/parents_w_trait
+  continuation_present_frequency <- continuations_present/total_edges
+  continuation_absent_frequency <- continuations_absent/total_edges
 
-  results <- cbind.data.frame(total_edges,transitions,gains,gains_tip,losses,losses_tip,continuations,continuations_present,continuations_absent)
+  results <- cbind.data.frame(total_edges,transitions,gains,gains_tip,losses,losses_tip,continuations,continuations_present,continuations_absent,gain_frequency,loss_frequency,continuation_present_frequency,continuation_absent_frequency)
 
   if(node_states =="marginal"){
     # Transition data
@@ -40,7 +50,7 @@ asr_transition_analysis <- function(parent_child_df,node_states="joint"){
     # Continuation data
     continuations_unsure <- (parent_child_df[["continuation"]] == 1 & parent_child_df[["child_val"]]==0.5) %>% sum
 
-    results <- cbind.data.frame(results,transitions_high,transitions_low,gains_high,gains_tip_high,losses_high,losses_tip_high,continuations_unsure) %>% select(total_edges,transitions,transitions_high,transitions_low,gains,gains_high,gains_tip,gains_tip_high,losses,losses_high,losses_tip,losses_tip_high,continuations,continuations_present,continuations_absent,continuations_unsure)
+    results <- cbind.data.frame(results,transitions_high,transitions_low,gains_high,gains_tip_high,losses_high,losses_tip_high,continuations_unsure) %>% select(total_edges,transitions,transitions_high,transitions_low,gains,gains_high,gains_tip,gains_tip_high,losses,losses_high,losses_tip,losses_tip_high,continuations,continuations_present,continuations_absent,continuations_unsure,gain_frequency, loss_frequency,continuation_present_frequency,continuation_absent_frequency)
   }
 
   return(results)
