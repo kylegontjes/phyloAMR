@@ -38,7 +38,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
   }
 
   if(faux_clusters == "relabel"){
-    clustering_data$asr_cluster <- remove_faux_clusters(clustering_data)
+    clustering_data$asr_cluster <- relabel_faux_clusters(clustering_data)
   }
 
   # Simplify strings
@@ -101,7 +101,7 @@ get_clustering_data <- function (isolate, edge_data,node_states, confidence){
   }
   if (classification == "singleton") {
     classification <- reclassify_singletons(node_data = tip_row,
-                                                         edge_data = edge_data,node_states=node_states,confidence=confidence)
+                                                         edge_data = edge_data,node_states=node_states,confidence=confidence)  %>% {ifelse(.=="singleton",.,paste0("cluster_",.))}
   }
   if (classification == "no feature") {
     classification <- get_largest_anc_reversion(node_data = tip_row,
@@ -186,7 +186,7 @@ get_parent_node <- function(node_data,edge_data){
 }
 
 remove_faux_clusters <- function(cluster_data){
-  cluster_size <- table(cluster_data$asr_cluster) %>% subset(grepl("r_",names(.))) %>% subset(!grepl("singleton",names(.)))
+  cluster_size <- table(cluster_data$asr_cluster) %>% subset(grepl("cluster_",names(.))) %>% subset(!grepl("singleton",names(.)))
   # Isolates where gain at internal node was called, but no other isolate was connected to it
   true_clusters <- subset(cluster_size,cluster_size>1) %>% names
   not_cluster <- names(cluster_size[!names(cluster_size) %in% true_clusters])
