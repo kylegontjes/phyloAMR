@@ -1,0 +1,77 @@
+---
+title: "ancestral_state_reconstruction_of_a_trait"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ancestral_state_reconstruction_of_a_trait}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(phylosuite)
+library(ape)
+library(ggtree)
+```
+
+# Load test data
+## Dataframe
+1. tip_name_var = variable with tip names
+2. Patient_ID = Patient_IDs
+3. clades = what clade the isolate belongs to
+4. colistin_ns = colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
+```{r}
+df <- phylosuite::df  
+paste0("Total of 413 isolates")
+paste0("Number of patients: ",length(unique(df$Patient_ID)))
+dim(df)
+paste0("First few isolates")
+head(df)
+paste0("Frequency of non-susceptibility to colistin: ")
+table(df$colistin_ns)
+```
+## Tree
+```{r}
+tr <- phylosuite::tr
+ggtree(tr)
+```
+
+# Step 1: Run ancestral state reconstruction 
+```{r}
+asr_obj <- phylosuite::asr(df,tr,"tip_name_var","colistin_ns","ER","joint")
+
+paste0("Output names: ")
+names(asr_obj)
+
+paste0("corHMM_out: the corHMM output")
+asr_obj$corHMM_out
+
+paste0("corHMM_model_summary: A summary of the corHMM model, including the number of parameters, model, number of rate categories, rates, log likelihood, AIC, and AICc")
+asr_obj$corHMM_model_summary
+
+paste0("node_states: Chosen node state that was modeled")
+asr_obj$node_states
+
+paste0("parent_child_df: Parent child dataframe, which contains the edge dataset, parent and child values, the child name (for tips), and transition data (i.e., gain, loss, and continuation)")
+head(asr_obj$parent_child_df)
+```
+
+# Step 3: Characterize the model (i.e., number of gains, losses, and continuation events)
+```{r}
+phylosuite::asr_transition_analysis(asr_obj$parent_child_df)
+```
+
+# Step 4: Paint it on the tree
+```{r}
+phylosuite::paint_tree_with_states(asr_obj$parent_child_df,tr)
+```
+
+
+
+
