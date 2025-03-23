@@ -25,16 +25,16 @@ asr_transition_analysis <- function(parent_child_df,node_states="joint"){
   continuations <- parent_child_df[["continuation"]] %>% sum
   continuations_present <-  parent_child_df[["continuation_present"]]  %>% sum
   continuations_absent <-  parent_child_df[["continuation_absent"]]  %>% sum
-  
+
   # Parent data for summary stats
   parents_w_trait <- parent_child_df[["parent_val"]] %>% sum
-  parents_wo_trait <- total_edges - parents_w_trait 
-  
+  parents_wo_trait <- total_edges - parents_w_trait
+
   # Summary Statistics
-  gain_frequency <- gains/parents_wo_trait
-  loss_frequency <- losses/parents_w_trait
-  continuation_present_frequency <- continuations_present/total_edges
-  continuation_absent_frequency <- continuations_absent/total_edges
+  gain_frequency <- (gains/parents_wo_trait) %>% round(.,2)
+  loss_frequency <- (losses/parents_w_trait) %>% round(.,2)
+  continuation_present_frequency <- (continuations_present/total_edges) %>% round(.,2)
+  continuation_absent_frequency <- (continuations_absent/total_edges) %>% round(.,2)
 
   results <- cbind.data.frame(total_edges,transitions,gains,gains_tip,losses,losses_tip,continuations,continuations_present,continuations_absent,gain_frequency,loss_frequency,continuation_present_frequency,continuation_absent_frequency)
 
