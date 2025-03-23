@@ -95,7 +95,7 @@ get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold=0.875
   } else if (node_states == "joint"){
     state_coding = as.factor(pheno_data) %>% levels %>% `names<-`(1:length(.))
     anc_data = data.frame(pred = anc_data)
-    anc_data$pred =  recode(anc_data$pred, !!!as.list(state_coding)) %>% as.numeric
+    anc_data$pred =  dplyr::recode(anc_data$pred, !!!as.list(state_coding)) %>% as.numeric
   } else {
     stop("Phylosuite is only optimized for marginal and joint corHMM")
   }

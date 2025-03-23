@@ -19,11 +19,11 @@ paint_tree_with_states <- function(parent_child_df,tr,scale_breaks=c(1,0),scale_
   root_node <- length(tr$tip.label) + 1
   root_val <- subset(parent_child_df,parent==root_node) %>% .$parent_val %>% unique
   # Get outcome and parent strings
-  outcome_str = parent_child_df %>% subset(.,child <= length(tr$tip.label)) %>% arrange(child)  %>% .$child_val
-  parent_str = parent_child_df %>% subset(.,child > length(tr$tip.label)) %>% arrange(child) %>% .$child_val
+  outcome_str = parent_child_df %>% subset(.,child <= length(tr$tip.label)) %>% dplyr::arrange(child)  %>% .$child_val
+  parent_str = parent_child_df %>% subset(.,child > length(tr$tip.label)) %>% dplyr::arrange(child) %>% .$child_val
   # Merge as dataframe
   d = data.frame(node=seq_len(num_nodes),state=c(outcome_str,root_val,parent_str))
   # Tree
-  painted_tree <- ggtree(tr) %<+% d + aes(color=as.factor(state)) + edge_color
+  painted_tree <- ggtree::ggtree(tr) %<+% d + aes(color=as.factor(state)) + edge_color
   return(painted_tree)
 }
