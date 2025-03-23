@@ -23,9 +23,12 @@ Imports:
     magrittr,
     ggtree
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Remotes: 
     thej022214/corHMM
 Depends: 
     R (>= 2.10)
 Config/testthat/edition: 3
+VignetteBuilder: knitr
