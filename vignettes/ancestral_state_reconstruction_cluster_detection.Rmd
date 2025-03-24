@@ -1,8 +1,8 @@
 ---
-title: "ancestral_state_reconstruction_of_a_trait"
+title: "ancestral_state_reconstruction_cluster_detection"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ancestral_state_reconstruction_of_a_trait}
+  %\VignetteIndexEntry{ancestral_state_reconstruction_cluster_detection}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,8 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+
+
 ```{r setup}
 library(phylosuite)
+library(tidyverse)
 library(ape)
 library(ggtree)
 ```
@@ -40,6 +43,7 @@ table(df$colistin_ns)
 ```{r,fig.width=7.5,fig.height=7.5}
 tr <- phylosuite::tr
 ggtree(tr)
+p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,color = NULL) + ylim(NA,485)
 ```
 
 # Step 1: Run ancestral state reconstruction 
@@ -62,16 +66,30 @@ paste0("parent_child_df: Parent child dataframe, which contains the edge dataset
 head(asr_obj$parent_child_df)
 ```
 
-# Step 3: Characterize the model (i.e., number of gains, losses, and continuation events)
-```{r}
-phylosuite::asr_transition_analysis(asr_obj$parent_child_df)
-```
-
-# Step 4: Paint it on the tree
+# Step 2: Cluster detection
 ```{r,fig.width=7.5,fig.height=7.5}
-phylosuite::paint_tree_with_states(asr_obj$parent_child_df,tr)
+asr_cluster_obj <- asr_cluster_detection(df = df,tr=tr,tip_name_var = "tip_name_var",patient_id = 'PatientID',pheno = 'colistin_ns',parent_child_df = asr_obj$parent_child_df,node_states = 'joint',confidence = NULL,faux_clusters = 'remove',remove_revertant = 'yes',collapse_cluster = 'yes')
+
+paste0("Cluster detection dataframe")
+colnames(asr_cluster_obj)
+head(asr_cluster_obj)
+
+paste0("asr_cluster: raw clustering data")
+table(asr_cluster_obj$asr_cluster)
+
+paste0("asr_cluster_renamed: Renamed a singleton, cluster, and no feature")
+table(asr_cluster_obj$asr_cluster_renamed)
+
+paste0("asr_cluster_collapsed: Collapsed as singleton, cluster, or no feature")
+table(asr_cluster_obj$asr_cluster_collapsed)
+
+paste0("Cluster on tree")
+p0.1 <- p0+ggnewscale::new_scale_fill()
+gheatmap(p0.1,asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,625)
 ```
-
-
+# Step 3: Cluster statistics
+```{r,fig.width=7.5,fig.height=7.5}
+asr_cluster_analysis(asr_cluster_obj,remove_faux = 'yes')
+```
 
 
