@@ -51,7 +51,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
 
   # Get tip data and merge it with the clustering data
   tip_data <- parent_child_df %>% subset(child <= ape::Nnode(tr)+1) %>% dplyr::mutate(isolate_no=child_name)
-  tip_data_df <- tip_data %>% dplyr::left_join(.,clustering_data) %>% `rownames<-`(.$isolate_no) %>% select(-isolate_no)
+  tip_data_df <- suppressMessages(dplyr::left_join(tip_data,clustering_data) %>% `rownames<-`(.$isolate_no) %>% select(-isolate_no))
 
   # We don't need the parent_child dataframe here, so we are only providing the tip based data
   results <-tip_data_df
