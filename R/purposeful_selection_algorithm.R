@@ -62,12 +62,12 @@ purposeful_selection_step_2 <- function(outcome,candidate_variables,dataset,rete
           confounder <- c(confounder,max_pval$term)
 
         }
-        model_variables <- glm_model_tbl$term %>% subset(.!="(Intercept)")
-        results <- list(glm_model=glm_model,glm_model_tbl=glm_model_tbl,model_variables =model_variables,confounder=confounder)
+
       }
     }
   }
-
+  model_variables <- glm_model_tbl$term %>% subset(.!="(Intercept)")
+  results <- list(glm_model=glm_model,glm_model_tbl=glm_model_tbl,model_variables =model_variables,confounder=confounder)
   return(results)
 }
 
