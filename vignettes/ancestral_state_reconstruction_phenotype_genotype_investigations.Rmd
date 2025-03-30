@@ -1,0 +1,19 @@
+---
+title: "Phenotype and genotype association testing using ancestral state reconstruction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ancestral_state_reconstruction_phenotype_genotype_investigations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(phylosuite)
+```
