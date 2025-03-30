@@ -17,29 +17,31 @@ asr(
 )
 }
 \arguments{
-\item{df}{Dataframe with tip name variable and phenotype}
+\item{df}{Dataframe with tip name (e.g., tip_name_var) and phenotype (e.g., pheno) variables}
 
-\item{tr}{Phylogenetic tree}
+\item{tr}{Phylogenetic tree object. Class must be phylo}
 
 \item{tip_name_var}{Name of variable containing tip names in df}
 
-\item{pheno}{Name of phenotype variable in df}
+\item{pheno}{Name of phenotype/trait variable in df}
 
-\item{model}{Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices.}
+\item{model}{Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER}
 
-\item{node_states}{Whether to perform "joint" or "marginal" reconstruction}
+\item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
 
-\item{conf_threshold}{The confidence threshold to use for marginal state reconstruction}
+\item{conf_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
 
-\item{upper.bound}{Upper bound for likelihood search. The default for my implementation is 1e9}
+\item{upper.bound}{Upper bound for likelihood search. Default: 1e9}
 
-\item{lower.bound}{Lower bound for likelihood search. The default for my implementation is 1e-9}
+\item{lower.bound}{Lower bound for likelihood search.Default: 1e-9}
 }
 \value{
 Description of return value
   \describe{
     \item{corHMM_out}{corHMM output}
-    \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information.}
+    \item{corHMM_model_summary}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
+    \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
+    \item{node_states}{Text string indicating the chosen reconstruction method}
   }
 }
 \description{

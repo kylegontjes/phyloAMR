@@ -2,19 +2,21 @@
 #'
 #' Function to perform ancestral state reconstruction using corHMM. Parse output into informative dataset with episodes of trait gain, loss, and continuation across the phylogenetic tree
 #'
-#' @param df Dataframe with tip name variable and phenotype
-#' @param tr Phylogenetic tree
+#' @param df Dataframe with tip name (e.g., tip_name_var) and phenotype (e.g., pheno) variables
+#' @param tr Phylogenetic tree object. Class must be phylo
 #' @param tip_name_var Name of variable containing tip names in df
-#' @param pheno Name of phenotype variable in df
-#' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices.
-#' @param node_states Whether to perform "joint" or "marginal" reconstruction
-#' @param upper.bound Upper bound for likelihood search. The default for my implementation is 1e9
-#' @param lower.bound Lower bound for likelihood search. The default for my implementation is 1e-9
-#' @param conf_threshold The confidence threshold to use for marginal state reconstruction
+#' @param pheno Name of phenotype/trait variable in df
+#' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER
+#' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
+#' @param upper.bound Upper bound for likelihood search. Default: 1e9
+#' @param lower.bound Lower bound for likelihood search.Default: 1e-9
+#' @param conf_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
 #' @return Description of return value
 #'   \describe{
 #'     \item{corHMM_out}{corHMM output}
-#'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information.}
+#'     \item{corHMM_model_summary}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
+#'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
+#'     \item{node_states}{Text string indicating the chosen reconstruction method}
 #'   }
 #' @export
 asr <- function(df,tr,tip_name_var ,pheno, model="ER", node_states = "joint", upper_bound=1e100, lower_bound=1e-9, conf_threshold=NULL){
