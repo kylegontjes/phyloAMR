@@ -38,3 +38,10 @@ devtools::install_github("kylegontjes/phylosuite", force=TRUE, build_vignettes=T
 | What descriptive characteristics are associated with phenotypic emergence and spread? | Association testing for characteristics and phenotypic emergence (singletons) and clusters | phyloaware_regression() | Cluster calls from asr_cluster_detection() algorithm and a dataframe with characteristics of interest | Statistical association testing results for characteristics of interest | 
 | What genes are mutated more often than expected in my population of interest? | Permutation testing of observed mutations | permute_burden_algorithm() **WIP** | VCF file and dictionary with details on gene length | Statistically significant genes with more mutations than expected | 
 | Who is the nearest neighbor of my isolate? | Evaluation of phylogenetic distance | nearest_neighbor_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | An isolate's nearest neighbor |  
+
+**Tutorials**
+Numerous [vignettes](https://github.com/kylegontjes/phyloaware/tree/master/vignettes) have been constructed to illustrate how to use this package:
+
+1.[Ancestral state reconstruction of a trait](https://github.com/kylegontjes/phylosuite/blob/master/vignettes/ancestral_state_reconstruction_of_a_trait.Rmd)
+
+2.[Detection and characterization of phylogenetic emergence and spread of a trait using ancestral state reconstruction](https://github.com/kylegontjes/phylosuite/blob/master/vignettes/ancestral_state_reconstruction_cluster_detection.Rmd) 
