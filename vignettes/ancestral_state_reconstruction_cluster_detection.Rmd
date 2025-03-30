@@ -14,82 +14,238 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Statement of purpose
 
+This tool's main workhorse is the **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize genome-influenced features' gain, loss, and continuation across a phylogenetic tree.
+
+After performing joint or ancestral state reconstruction, the resultant state predictions of ancestral nodes are parsed to generate a parent-child dataframe. By traversing the phylogenetic tree from the tips to the root, the episodes of trait gain, loss, and continuation are added to the phylogenetic tree's edge matrix.
+
+This information can be leveraged to infer whether an isolate belonged to a circulating trait-containing lineage (e.g., evidence of cross-transmission) or resultant from a within-host emergence event (e.g., evidence of *de novo* evolution).
+
+To this aim, we provide a tutorial to leverage our ancestral state reconstruction wrapper function, asr(), and our tree-traversal algorithm, asr_cluster_detection(), to infer the evolutionary history of a trait.
+
+# Environment
 
 ```{r setup}
 library(phylosuite)
 library(tidyverse)
 library(ape)
 library(ggtree)
+library(hues)
 ```
 
-# Load test data
+# Load example data
+
+This tutorial will focus on the emergence and spread of colistin non-susceptibility in a collection of 413 carbapenem-resistant *Klebsiella pneumoniae* specimens collected across 12 California long-term acute care hospitals.
+
+We focus on the evolution and spread of non-susceptibility to colistin, a last-resort antibiotic used to treat Gram-negative bacteria.
+
 ## Dataframe
-1. tip_name_var = variable with tip names
-2. Patient_ID = Patient_IDs
-3. clades = what clade the isolate belongs to
-4. colistin_ns = colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
+
+1.  **tip_name_var:** variable with tip names
+2.  **Patient_ID:** Identifiers for patients in this study
+3.  **clades:** what clade of epidemic lineage sequence type 258 the isolate belongs to
+4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
+
 ```{r}
 df <- phylosuite::df  
 paste0("Total of 413 isolates")
 paste0("Number of patients: ",length(unique(df$Patient_ID)))
 dim(df)
-paste0("First few isolates")
-head(df)
+paste0("View of dataframe for first 5 isolates")
+head(df,n = 5)
 paste0("Frequency of non-susceptibility to colistin: ")
 table(df$colistin_ns)
 ```
-## Tree
+
+## Phylogenetic tree
+
+This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombination filtered alignment of single-nucleotide polymorphisms using IQ-TREE
+
 ```{r,fig.width=7.5,fig.height=7.5}
 tr <- phylosuite::tr
 ggtree(tr)
-p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,color = NULL) + ylim(NA,485)
 ```
 
-# Step 1: Run ancestral state reconstruction 
+# Step 0: Visualization of the trait across the phylogenetic tree  
+
+Before performing ancestral state reconstruction, it is critical to visualize the tip states of the trait on the phylogeny.
+
+Our ancestral state reconstruction and clustering algorithm is most powerful in settings where frequent emergence and spread of a trait occurs.
+
+Notice the clustering of Colistin non-susceptibility across the phylogeny.
+
+-   Numerous emergence events at ancestral nodes and tips can be visually inferred in this phylogeny
+
+-   Ancestral emergence events had noticeable variations in size. For instance, consider the large cluster of non-susceptibility in the above clade
+
+```{r,fig.width=7.5,fig.height=7.5}
+feature_colors <- c(`1` = "black",`0`="white")
+feature_scale <- scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+
+p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0
+```
+
+# Step 1: Run ancestral state reconstruction
+
+-   The workhorse function, asr(), is used to perform ancestral state reconstruction. This wrapper function implements ancestral state reconstruction with a single rate category using the corHMM R package: <https://github.com/thej022214/corHMM>
+
+-   Using inferred ancestral states and tip-based data, edges on the phylogenetic tree were evaluated to determine episodes where the trait continued (i.e., susceptible -\> susceptible or non-susceptible -\> non-susceptible), was gained (i.e., susceptible -\> non-susceptible), or was lost (i.e., non-susceptible -\> susceptible). This edge matrix can be leveraged for numerous applications, including characterizing the frequency of trait transitions across a phylogeny and investigating phenotype-genotype associations.
+
+-   The following parameters exist for this function
+
+    -   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+
+    -   **tr:** Phylogenetic tree object of class phylo
+
+    -   **model:** This approach permits the use of either the equal rates (ER) or the all rates differ (ARD) transition matrices.
+
+        -   Equal rates: Assumes equal transition rates for trait gain (e.g., trait absence -\> presence) or loss (e.g., trait gain -\> absence)
+
+        -   All rates differ: Assumes different transition rates for trait gain and loss
+
+    -   node_states: Whether to perform 'joint' or 'marginal' ancestral state reconstruction
+
+        -   From our experience, we recommend using joint ancestral state reconstruction.
+
 ```{r}
-asr_obj <- phylosuite::asr(df,tr,"tip_name_var","colistin_ns","ER","joint")
+asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)
 
-paste0("corHMM_out: the corHMM output")
+paste0("corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM")
 asr_obj$corHMM_out
 
-paste0("corHMM_model_summary: A summary of the corHMM model, including the number of parameters, model, number of rate categories, rates, log likelihood, AIC, and AICc")
+paste0("corHMM_model_summary: A summary of the corHMM model, including the number of parameters, model, number of rate categories, inferred transition rates, log likelihood, AIC, and AICc")
+paste0("Rate 1 = transitions from level 1 (i.e., susceptible) to level 2 (i.e., non-susceptible)")
+paste0("Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)")
 asr_obj$corHMM_model_summary
 
-paste0("node_states: Chosen node state that was modeled")
+paste0("node_states: Chosen node state that was modeled.")
 asr_obj$node_states
 
-paste0("parent_child_df: Parent child dataframe, which contains the edge dataset, parent and child values, the child name (for tips), and transition data (i.e., gain, loss, and continuation)")
+paste0("parent_child_df: Parent child dataframe, which contains the edge dataset, parent and child values, the child name (for tips), and transition data (i.e., gain, loss, and continuation of the trait on tree or continuation of trait absence on tree)")
 head(asr_obj$parent_child_df)
 ```
 
-# Step 2: Cluster detection
+# Step 2: Characterize the transition statistics for the trait across the phylogeny  
+
+The frequency and location of trait gain, loss, and continuation events can be characterized using the **asr_transition_analysis()** function
+
+In this case, several important observations occur:
+
+1.  Of 824 edges, 48 contained transition events: 37 gain events and 11 loss events
+2.  Inference of location of these transition events revealed numerous events at the tips:
+    1.  30/37 gain events
+    2.  7/11 loss events
+3.  The number of gain events and large number of non-susceptible isolates not accounted for by gain events at the tip, suggest potential for inferred gain events to be shared across isolates.
+    1.  This is indicative of the emergence and spread of colistin non-susceptible strains in this population
+4.  We also provide frequency statistics for the gain, loss, and continuation of these traits that can be useful to characterize the transition dynamics of this trait:
+
+```{r}
+asr_transition_analysis(asr_obj$parent_child_df,node_states='joint')
+```
+
+# Step 3: Cluster detection
+
+![](images/Phylosuite conceptual figure.png)
+
+Given the numerous gain and loss events, we are well-positioned to leverage our tree traversal algorithm to infer the evolutionary history of our isolates.
+
+In this package, we developed a phylogenetic tree traversal algorithm, **asr_cluster_detection()**, that traces the ancestral states of each isolate to infer their evolutionary history. This algorithm takes an isolate’s trait data and walks upward on the tree to classify trait-containing isolates as phylogenetic singletons (i.e., evidence of de novo evolution) or members of a phylogenetic cluster of the trait (i.e., evidence of acquisition of a circulating trait-containing lineage).
+
+Extending this to the study of Colistin non-susceptibility, non-susceptible isolates with gain events inferred at the tip were classified as phylogenetic singletons. However, instances where a non-susceptible isolate had a gain event at the tip and a reversion event at its parental node were eligible for classification as members of a phylogenetic cluster. Non-susceptible isolates were classified as members of a phylogenetic cluster if their ancestral gain event was shared with at least one additional resistant isolate. Non-susceptible isolates that did not share an ancestral gain event with any other resistant isolate were classified as phylogenetic singletons. Phylogenetic clusters where all isolates belonged to one patient were not considered clusters and were reclassified as redundant phylogenetic singletons. 
+
+**The following parameters exist for this function:**
+
+-   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+
+-   **tr:** Phylogenetic tree object of class phylo
+
+-   **tip_name_var:** Tip name variable
+
+-   **patient_id:** Variable pertaining to a patient identifier
+
+-   **pheno:** Phenotype of interest (e.g., colistin non-susceptibility)
+
+-   **parent_child_df:** The parent child dataframe (e.g., edge matrix)
+
+-   **node_states:** Node states of the ancestral state reconstruction model
+
+-   **confidence:** FOR MARGINAL RECONSTRUCTION, ONLY. Whether to only consider 'high' confidence events (e.g., absent to present) or 'low' confidence transition events (e.g., absent to unsure). We recommend using 'high' confidence transition events.
+
+-   **faux_clusters:** Whether to 'remove' (e.g., reclassify as singletons) or 'rename' (e.g., classify as faux) clusters where isolates belong to just one patient. This is important to consider when classifying clusters of this phenotype
+
+-   **remove_reverant:** Whether to remove ('yes') the episodes of trait reversion (e.g., present -\> absent) or permit them to be labeled
+
+-   **collapse_cluster:** Whether to collapse ('yes') the episodes as either cluster, singleton, or no feature
+
 ```{r,fig.width=7.5,fig.height=7.5}
 asr_cluster_obj <- asr_cluster_detection(df = df,tr=tr,tip_name_var = "tip_name_var",patient_id = 'PatientID',pheno = 'colistin_ns',parent_child_df = asr_obj$parent_child_df,node_states = 'joint',confidence = NULL,faux_clusters = 'remove',remove_revertant = 'yes',collapse_cluster = 'yes')
 
 paste0("Cluster detection dataframe")
 colnames(asr_cluster_obj)
-head(asr_cluster_obj)
+head(asr_cluster_obj,n=5)
 
-paste0("asr_cluster: raw clustering data")
+paste0("asr_cluster: raw clustering data. The numbers for cluster and revertant lineages correspond to the ancestral node where the shared gain (i.e., cluster_527) or loss (e.g., revertant_782) event occured.")
 table(asr_cluster_obj$asr_cluster)
 
-paste0("asr_cluster_renamed: Renamed a singleton, cluster, and no feature")
+paste0("asr_cluster_renamed: Renamed these categories as singleton, cluster X, and no feature")
 table(asr_cluster_obj$asr_cluster_renamed)
 
 paste0("asr_cluster_collapsed: Collapsed as singleton, cluster, or no feature")
 table(asr_cluster_obj$asr_cluster_collapsed)
-
-paste0("Cluster on tree")
-p0.1 <- p0+ggnewscale::new_scale_fill()
-gheatmap(p0.1,asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,625)
 ```
-# Step 3: Cluster statistics
+
+# Step 4: Cluster statistics
+
+To characterize the evolutionary history, we described both the transitional data and the phylogenetic clustering of each antibiotic phenotype.
+
+Descriptive statistics for the phylogenetic clustering can be determined using phylosuite’s **asr_cluster_analysis()** function.
+
+Specifically, the crude frequency of the trait, descriptive statistics on the number of singletons, clusters, and summary statistics for cluster size.
+
+We use two measures to characterize the phylogenetics of a trait: phylogenetic occurrence (**Equation 1**) and clustering (**Equation** **2**). 
+
+1.  **Phylogenetic frequency:** No. singleton events + No. clustersNo. singleton events + No. clusters + No. isolates without feature
+2.  **Clustering frequency:** No. clustersNo. singleton events + No. clusters  
+
 ```{r,fig.width=7.5,fig.height=7.5}
 asr_cluster_analysis(asr_cluster_obj,remove_faux = 'yes')
 ```
 
+# Step 5: Visualize clusters on phylogeny
 
+Finally, it is critical to inspect the lineages on the phylogeny.
+
+Here is a tour of the phylogeny:
+
+-   White indicates susceptibility
+
+-   Red indicates non-susceptible isolate where gain was inferred at tip
+
+    -   Faux clusters (e.g., phylogenetic clusters from one patient) are also relabeled as red
+
+-   Other colors correspond to the seven clusters of Colistin non-susceptibility present in this population
+
+This visualization permits the inspection of cluster calls and characterize the phylogenetic clustering of our trait using ancestral state reconstruction
+
+```{r,fig.width=7.5,fig.height=7.5}
+# Cluster color pallete
+## Number of clusters
+ncluster <- table(asr_cluster_obj$asr_cluster)  %>% subset(names(.) != "singleton" & grepl("cluster",names(.))) %>% as.numeric %>%length 
+## Cluster pallete
+color_palette <- grDevices::colors() %>% subset(grepl("red",.)==F)
+clusters_col <- hues::iwanthue(ncluster,hmin=15,hmax=360,lmin = 5,lmax = 95,cmin=5,cmax=90,random = F,plot = F)
+## Names
+clusters_name <- paste0("Cluster ",1:ncluster)
+names(clusters_col) <- clusters_name
+## Scale
+cluster_scale <- scale_fill_manual(breaks =c("No Feature","Singleton",names(clusters_col)),values=c("No Feature" = "white","Singleton" = "red",clusters_col),labels=c("No Feature","NS Singleton",clusters_name),name="Phylogenetics of Non-susceptibility", guide = guide_legend(ncol=4, title.position = "top", label.position = "right"))
+
+# Phylogenetic visualization
+p0.1 <- p0+ggnewscale::new_scale_fill()
+gheatmap(p0.1,asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,625) + cluster_scale
+```
