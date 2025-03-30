@@ -1,5 +1,5 @@
 ---
-title: "ancestral_state_reconstruction_cluster_detection"
+title: "Detection and characterization of phylogenetic emergence and spread of a trait using ancestral state reconstruction"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ancestral_state_reconstruction_cluster_detection}
@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Statement of purpose
+# Introduction
 
 This tool's main workhorse is the **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize genome-influenced features' gain, loss, and continuation across a phylogenetic tree.
 
@@ -149,8 +149,6 @@ asr_transition_analysis(asr_obj$parent_child_df,node_states='joint')
 ```
 
 # Step 3: Cluster detection
-
-![](images/Phylosuite conceptual figure.png)
 
 Given the numerous gain and loss events, we are well-positioned to leverage our tree traversal algorithm to infer the evolutionary history of our isolates.
 
