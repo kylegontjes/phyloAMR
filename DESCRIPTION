@@ -29,7 +29,8 @@ Suggests:
     testthat (>= 3.0.0),
     hues,
     ggnewscale,
-    ComplexHeatmap
+    ComplexHeatmap,
+    pbmcapply
 Remotes: 
     thej022214/corHMM
 Depends: 
