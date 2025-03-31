@@ -14,64 +14,217 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Introduction
+
+This tool's main workhorse is the asr(), which leverages corHMM's ancestral state reconstruction algorithm to characterize genome-influenced features' gain, loss, and continuation across a phylogenetic tree.
+
+After performing joint or ancestral state reconstruction, the state predictions of ancestral nodes are parsed to generate a parent-child dataframe. By traversing the phylogenetic tree from the tips to the root, the episodes of trait gain, loss, and continuation are added to the phylogenetic tree's edge matrix.
+
+This information can be leveraged, using our downstream algorithms, to address numerous biological questions, including:
+
+1.  How often does a regime with a genome-informed trait emerge and spread across a healthcare network?
+
+2.  Is there evidence of synchronous gain/loss of traits on the phylogenetic tree?
+
+3.  Do compensatory or revertant mutations follow a genome-informed trait?
+
+# Environment
+
 ```{r setup}
 library(phylosuite)
+library(tidyverse)
 library(ape)
 library(ggtree)
+library(corHMM)
 ```
 
-# Load test data
+# Load example data
+
+This tutorial will focus on the emergence and spread of colistin non-susceptibility in a collection of 413 carbapenem-resistant *Klebsiella pneumoniae* specimens collected across 12 California long-term acute care hospitals.
+
+We focus on the evolution and spread of non-susceptibility to colistin, a last-resort antibiotic used to treat Gram-negative bacteria.
+
 ## Dataframe
-1. tip_name_var = variable with tip names
-2. Patient_ID = Patient_IDs
-3. clades = what clade the isolate belongs to
-4. colistin_ns = colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
+
+1.  **tip_name_var:** variable with tip names
+2.  **Patient_ID:** Identifiers for patients in this study
+3.  **clades:** what clade of epidemic lineage sequence type 258 the isolate belongs to
+4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
+
 ```{r}
 df <- phylosuite::df  
 paste0("Total of 413 isolates")
+
 paste0("Number of patients: ",length(unique(df$Patient_ID)))
 dim(df)
-paste0("First few isolates")
-head(df)
+
+paste0("View of dataframe for first 5 isolates")
+head(df,n = 5)
+
 paste0("Frequency of non-susceptibility to colistin: ")
 table(df$colistin_ns)
+
 ```
-## Tree
+
+## Phylogenetic tree
+
+This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombination filtered alignment of single-nucleotide polymorphisms using IQ-TREE
+
 ```{r,fig.width=7.5,fig.height=7.5}
 tr <- phylosuite::tr
 ggtree(tr)
 ```
 
-# Step 1: Run ancestral state reconstruction 
+# Step 0: Visualization of the trait across the phylogenetic tree
+
+Before performing ancestral state reconstruction, it is critical to visualize the tip states of the trait on the phylogeny.
+
+Our ancestral state reconstruction and clustering algorithm is most powerful in settings where frequent emergence and spread of a trait occurs.
+
+Notice the clustering of Colistin non-susceptibility across the phylogeny.
+
+-   Numerous emergence events at ancestral nodes and tips can be visually inferred in this phylogeny
+
+-   Ancestral emergence events had noticeable variations in size. For instance, consider the large cluster of non-susceptibility in the above clade
+
+```{r,fig.width=7.5,fig.height=7.5}
+feature_colors <- c(`1` = "black",`0`="white")
+feature_scale <- scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+
+p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0
+```
+
+# Step 1: Run ancestral state reconstruction
+
+-   The workhorse function, asr(), is used to perform ancestral state reconstruction. This wrapper function implements ancestral state reconstruction with a single rate category using the corHMM R package: <https://github.com/thej022214/corHMM>
+
+-   Using inferred ancestral states and tip-based data, edges on the phylogenetic tree were evaluated to determine episodes where the trait continued (i.e., susceptible -\> susceptible or non-susceptible -\> non-susceptible), was gained (i.e., susceptible -\> non-susceptible), or was lost (i.e., non-susceptible -\> susceptible). This edge matrix can be leveraged for numerous applications, including characterizing the frequency of trait transitions across a phylogeny and investigating phenotype-genotype associations.
+
+-   The following parameters exist for this function
+
+    -   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+
+    -   **tr:** Phylogenetic tree object of class phylo
+
+    -   **model:** This approach permits the use of either the equal rates (ER) or the all rates differ (ARD) transition matrices.
+
+        -   Equal rates: Assumes equal transition rates for trait gain (e.g., trait absence -\> presence) or loss (e.g., trait gain -\> absence)
+
+        -   All rates differ: Assumes different transition rates for trait gain and loss
+
+    -   node_states: Whether to perform 'joint' or 'marginal' ancestral state reconstruction
+
+        -   From our experience, we recommend using joint ancestral state reconstruction.
+
+## Step 1.1: Determining the best model
+
+While we suggest the use of the equal rates (ER) transition matrix as the chosen model for corHMM, some instances permit the modeling of a trait using the all rates differ (ARD) model.
+
+We implemented a function called, find_best_asr_model(), which performs ancestral state reconstruction using both the ER and ARD model.
+
+Next, the best model is chosen using the Akaike information criteria (AIC). Specifically, the model with the lowest AIC is chosen.
+
+The asr() function has the option to run this model finding algorithm using the model = "MF" argument.
+
 ```{r}
-asr_obj <- phylosuite::asr(df,tr,"tip_name_var","colistin_ns","ER","joint")
+best_model_obj <- phylosuite::find_best_asr_model(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = 'colistin_ns',node_states = 'joint')
+
+paste0("Model fit statistics: ")
+best_model_obj$model_options
+
+paste0("Best model: ")
+best_model_obj$best_model
+```
+
+## Step 1.2: Running ancestral state reconstruction using the best model model
+
+```{r}
+asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = best_model_obj$best_model,node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)
 
-paste0("corHMM_out: the corHMM output")
+paste0("corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM")
 asr_obj$corHMM_out
 
-paste0("corHMM_model_summary: A summary of the corHMM model, including the number of parameters, model, number of rate categories, rates, log likelihood, AIC, and AICc")
+paste0("corHMM_model_summary: A summary of the corHMM model, including the number of parameters, model, number of rate categories, inferred transition rates, log likelihood, AIC, and AICc")
+paste0("Rate 1 = transitions from level 1 (i.e., susceptible) to level 2 (i.e., non-susceptible)")
+paste0("Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)")
 asr_obj$corHMM_model_summary
 
-paste0("node_states: Chosen node state that was modeled")
+paste0("node_states: Chosen node state that was modeled.")
 asr_obj$node_states
 
-paste0("parent_child_df: Parent child dataframe, which contains the edge dataset, parent and child values, the child name (for tips), and transition data (i.e., gain, loss, and continuation)")
+paste0("parent_child_df: Parent child dataframe, which contains the edge dataset, parent and child values, the child name (for tips), and transition data (i.e., gain, loss, and continuation of the trait on tree or continuation of trait absence on tree)")
 head(asr_obj$parent_child_df)
 ```
 
-# Step 3: Characterize the model (i.e., number of gains, losses, and continuation events)
+# Step 2: Describe the model (e.g., rates and fit)
+
+The function, characterize_asr_model(), can be leveraged on corHMM output to identify the inferred rates and model fit statistics (i.e., log likelihood and AIC values)
+
+Interpretation:
+
+-   We used one rate category, but the ARD model has two rates: rate1 and rate 2.
+
+    -   Rate 1 (transition from susceptible [0] to non-susceptible [1] is 81827.86
+
+    -   Rate 2 (transition from non-susceptible [1] to susceptible [0] is 136867.1
+
 ```{r}
-phylosuite::asr_transition_analysis(asr_obj$parent_child_df)
+phylosuite::characterize_asr_model(asr_obj$corHMM_out)
 ```
 
-# Step 4: Paint it on the tree
+# Step 3: Characterize the transition statistics for the trait across the phylogeny
+
+The frequency and location of trait gain, loss, and continuation events can be characterized using the **asr_transition_analysis()** function
+
+In this case, several important observations occur:
+
+1.  Of 824 edges, 48 contained transition events: 37 gain events and 11 loss events
+2.  Inference of location of these transition events revealed numerous events at the tips:
+    1.  30/37 gain events
+    2.  7/11 loss events
+3.  The number of gain events and large number of non-susceptible isolates not accounted for by gain events at the tip, suggest potential for inferred gain events to be shared across isolates.
+    1.  This is indicative of the emergence and spread of colistin non-susceptible strains in this population
+4.  We also provide frequency statistics for the gain, loss, and continuation of these traits that can be useful to characterize the transition dynamics of this trait:
+
+```{r}
+asr_transition_analysis(asr_obj$parent_child_df,node_states='joint')
+```
+
+# Step 4: Paint the states on the phylogeny
+
+## Paint the tree
+
 ```{r,fig.width=7.5,fig.height=7.5}
-phylosuite::paint_tree_with_states(asr_obj$parent_child_df,tr)
+painted_tree <- phylosuite::paint_tree_with_states(asr_obj$parent_child_df,tr)
+painted_tree
 ```
 
+## Add non-suceptibility matrix to the painted tree
 
+```{r,fig.width=7.5,fig.height=7.5}
+gheatmap(painted_tree,df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+```
 
+# What's next?
 
+This algorithm can be leveraged to ask numerous questions. Specifically, we build the following functions to address questions of interest:
+
+|  |  |
+|----|----|
+| Do isolates belong to episodes of trait emergence or spread? | asr() + asr_cluster_detection() + asr_cluster_analysis() |
+
+|  |  |
+|----|----|
+| Genetic features associated with trait/lineage emergence/spread? | asr() + synchronous_detection() + synchronous_permutation_test() |
+
+|  |  |
+|----|----|
+| What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations) | asr() + downstream_gain_loss() + downstream_permutation_test() |
+
+|  |  |
+|----|----|
+| What descriptive characteristics are associated with phenotypic emergence and spread? | phyloaware_regression() |
