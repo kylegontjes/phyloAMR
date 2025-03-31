@@ -7,7 +7,7 @@ Authors@R: c(
   )
 Maintainer: Kyle Gontjes <kgontjes@umich.edu>
 Description: Collection of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.
-    Many of our tools leverage phylogenetic distance or ancestral state analyses
+    Many of these tools leverage phylogenetic distance or ancestral state reconstruction
 License: MIT
 Encoding: UTF-8
 LazyData: true
