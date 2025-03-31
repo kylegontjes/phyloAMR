@@ -1,10 +1,12 @@
 library(testthat)
+library(phylosuite)
+library(ape)
 tr <- phylosuite::tr
 df <- phylosuite::df
 pheno <-  'colistin_ns'
 tip_name_var <- "tip_name_var"
 
-asr_out <- phylosuite::asr(df,tr,tip_name_var,pheno,model="ER",node_states="joint",conf_threshold=0.875)
+asr_out <- phylosuite::asr(df = df,tr = tr,tip_name_var = tip_name_var,pheno = pheno,model="ER",node_states="joint")
 
 expect_s3_class(asr_out$corHMM_out, "corhmm")
 expect_s3_class(asr_out$parent_child_df, "data.frame")

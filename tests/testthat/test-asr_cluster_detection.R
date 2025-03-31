@@ -8,10 +8,9 @@ df$isolate_no <- df$tip_name_var
 pheno <-  'colistin_ns'
 tip_name_var <- "tip_name_var"
 
-asr_obj <- asr(df,tr,tip_name_var ,pheno,model="ARD",node_states = "joint",conf_threshold=0.875)
-asr_cluster <- asr_cluster_detection(df = df,tr = tr,pheno = "colistin_ns",parent_child_df = asr_obj$parent_child_df,remove_faux = "yes",confidence = "high",remove_revertant = "yes",collapse_cluster = "yes")
+asr_obj <- asr(df = df,tr = tr,tip_name_var = tip_name_var ,pheno = pheno,model="ARD",node_states = "joint")
+asr_cluster <- asr_cluster_detection(df = df,tr = tr,pheno = "colistin_ns",tip_name_var = "tip_name_var",patient_id = "PatientID",node_states = 'joint',faux_clusters = 'remove',parent_child_df = asr_obj$parent_child_df,confidence = NULL,remove_revertant = "yes",collapse_cluster = "yes")
 
-expect_s3_class(asr_cluster$parent_child_df, "data.frame")
-expect_s3_class(asr_cluster$tip_data_df, "data.frame")
+expect_s3_class(asr_cluster, "data.frame")
 
-expect_equal(object = nrow(asr_cluster$parent_child_df),expected = nrow(tr$edge))
+expect_equal(object = nrow(asr_cluster),expected = length(tr$tip.label))
