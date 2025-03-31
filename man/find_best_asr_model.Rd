@@ -24,6 +24,10 @@ find_best_asr_model(
 \item{pheno}{Name of phenotype variable in df}
 
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction}
+
+\item{upper_bound}{Upper bound for likelihood search. Default: 1e100}
+
+\item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
 }
 \value{
 Description of return value

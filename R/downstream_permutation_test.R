@@ -6,9 +6,12 @@
 #' @param df Dataframe with trait and comparitor and tip_name_var
 #' @param tr Phylogenetic tree
 #' @param tip_name_var Tip name variable
+#' @param trait Trait of interest. Their stretches of trait presence will be characterized and evaluated
 #' @param node_states Joint or marginal reconstruction
 #' @param conf_threshold Set value for confidence threshold of MLE calls if marginal
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
+#' @param num_permutations Number of permutations. Default = 1000
+#' @param num_cores Number of cores. Default = 6
 #' @return Summary stats for downstream gain and loss of a trait
 #' @export
 downstream_permutation_test <- function(comparitor,df,tr,tip_name_var,trait,node_states = "joint",conf_threshold=NULL,confidence=NULL,num_permutations=1000,num_cores = 6){

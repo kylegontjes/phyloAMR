@@ -8,8 +8,8 @@
 #' @param pheno Name of phenotype/trait variable in df
 #' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
-#' @param upper.bound Upper bound for likelihood search. Default: 1e9
-#' @param lower.bound Lower bound for likelihood search.Default: 1e-9
+#' @param upper_bound Upper bound for likelihood search. Default: 1e100
+#' @param lower_bound Lower bound for likelihood search. Default: 1e-9
 #' @param conf_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
 #' @return Description of return value
 #'   \describe{

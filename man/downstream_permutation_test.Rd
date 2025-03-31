@@ -26,11 +26,17 @@ downstream_permutation_test(
 
 \item{tip_name_var}{Tip name variable}
 
+\item{trait}{Trait of interest. Their stretches of trait presence will be characterized and evaluated}
+
 \item{node_states}{Joint or marginal reconstruction}
 
 \item{conf_threshold}{Set value for confidence threshold of MLE calls if marginal}
 
 \item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
+
+\item{num_permutations}{Number of permutations. Default = 1000}
+
+\item{num_cores}{Number of cores. Default = 6}
 }
 \value{
 Summary stats for downstream gain and loss of a trait

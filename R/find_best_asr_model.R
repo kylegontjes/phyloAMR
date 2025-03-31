@@ -7,6 +7,8 @@
 #' @param tip_name_var Name of variable containing tip names in df
 #' @param pheno Name of phenotype variable in df
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction
+#' @param upper_bound Upper bound for likelihood search. Default: 1e100
+#' @param lower_bound Lower bound for likelihood search. Default: 1e-9
 #' @return Description of return value
 #'   \describe{
 #'     \item{model_options}{Summary of model options}

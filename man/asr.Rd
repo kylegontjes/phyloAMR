@@ -29,11 +29,11 @@ asr(
 
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
 
+\item{upper_bound}{Upper bound for likelihood search. Default: 1e100}
+
+\item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
+
 \item{conf_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
-
-\item{upper.bound}{Upper bound for likelihood search. Default: 1e9}
-
-\item{lower.bound}{Lower bound for likelihood search.Default: 1e-9}
 }
 \value{
 Description of return value
