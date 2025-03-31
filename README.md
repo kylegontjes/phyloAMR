@@ -1,6 +1,6 @@
 # phylosuite: a package to perform phylogenetically-informed analysis of genome-influenced traits
 
-[![CI](https://github.com/kylegontjes/phylosuite/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phylosuite/actions/workflows/ci.yml)
+[![CI](https://github.com/kylegontjes/phylosuite/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phylosuite/actions/workflows/ci.yml) [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 **Description**
 
