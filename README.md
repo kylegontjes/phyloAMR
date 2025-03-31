@@ -1,5 +1,7 @@
 # phylosuite: a package to perform phylogenetically-informed analysis of genome-influenced traits
 
+[![CI](https://github.com/kylegontjes/phylosuite/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phylosuite/actions/workflows/ci.yml)
+
 **Description**
 
 This R package, phylosuite, is a collection of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance, infection severity, or source of isolation. 
