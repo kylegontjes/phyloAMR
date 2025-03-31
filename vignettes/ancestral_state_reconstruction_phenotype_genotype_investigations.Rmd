@@ -28,7 +28,9 @@ This information can be leveraged to infer whether a genotype is associated with
 
 ```{r setup}
 library(phylosuite)
-library(tidyverse)
+library(dplyr)
+library(stringr)
+library(ggplot2)
 library(ape)
 library(ggtree)
 library(hues)
@@ -146,9 +148,11 @@ head(asr_obj$parent_child_df)
 ```
 
 # Step 2. Synchronous genotype-phenotype analyses
+
+For sake of time, we will only run the analysis on the first twelve genotypes in this matrix
 ```{r,echo=F,message=F}
 genotype_mat$isolate_no <- rownames(genotype_mat)
-variables <- colnames(genotype_mat %>% select(-isolate_no))
+variables <- colnames(genotype_mat %>% select(-isolate_no)) %>% .[1:12]
 genotypes<- genotype_mat %>% .[match(tr$tip.label,.[['isolate_no']]),]
 
 asr_of_genotypes <- pbmcapply::pbmclapply(variables,FUN=function(x){

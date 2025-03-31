@@ -17,6 +17,7 @@ RoxygenNote: 7.3.2
 Imports: 
     dplyr,
     stringr,
+    ggplot2,
     ape,
     corHMM,
     pbapply,
@@ -25,7 +26,8 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    hues
 Remotes: 
     thej022214/corHMM
 Depends: 

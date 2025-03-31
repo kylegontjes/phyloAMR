@@ -28,7 +28,8 @@ To this aim, we provide a tutorial to leverage our ancestral state reconstructio
 
 ```{r setup}
 library(phylosuite)
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
 library(ape)
 library(ggtree)
 library(hues)
