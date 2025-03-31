@@ -1,5 +1,8 @@
 library(testthat)
-library(tidyverse)
+library(phylosuite)
+library(dplyr)
+library(stringr)
+library(ggplot2)
 tr <- phylosuite::tr
 df <- phylosuite::df
 pheno <-  'colistin_ns'

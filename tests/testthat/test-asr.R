@@ -1,5 +1,8 @@
 library(testthat)
 library(phylosuite)
+library(dplyr)
+library(stringr)
+library(ggplot2)
 library(ape)
 tr <- phylosuite::tr
 df <- phylosuite::df

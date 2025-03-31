@@ -1,5 +1,8 @@
 library(testthat)
-library(tidyverse)
+library(phylosuite)
+library(dplyr)
+library(stringr)
+library(ggplot2)
 library(ape)
 library(phytools)
 tr <- phylosuite::tr
