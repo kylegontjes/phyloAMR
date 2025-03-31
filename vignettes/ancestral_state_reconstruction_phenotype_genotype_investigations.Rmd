@@ -14,6 +14,181 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Introduction
+
+This tool's main workhorse is the **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize genome-influenced features' gain, loss, and continuation across a phylogenetic tree.
+
+After performing joint or ancestral state reconstruction, the resultant state predictions of ancestral nodes are parsed to generate a parent-child dataframe. By traversing the phylogenetic tree from the tips to the root, the episodes of trait gain, loss, and continuation are added to the phylogenetic tree's edge matrix.
+
+This information can be leveraged to infer whether a genotype is associated with a phenotype. We wrote two functions to assess this:
+1. synchronous_detection(): Detection of synchronous genotype-phenotype transitions
+2. downstream_gain_loss(): Detection of downstream genotype gain/loss events on phenotypic stretches
+
+# Environment
+
 ```{r setup}
 library(phylosuite)
+library(tidyverse)
+library(ape)
+library(ggtree)
+library(hues)
+```
+
+# Load example data
+
+This tutorial will focus on the emergence and spread of colistin non-susceptibility in a collection of 413 carbapenem-resistant *Klebsiella pneumoniae* specimens collected across 12 California long-term acute care hospitals.
+
+We focus on the evolution and spread of non-susceptibility to colistin, a last-resort antibiotic used to treat Gram-negative bacteria.
+
+## Dataframe
+
+1.  **tip_name_var:** variable with tip names
+2.  **Patient_ID:** Identifiers for patients in this study
+3.  **clades:** what clade of epidemic lineage sequence type 258 the isolate belongs to
+4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
+
+```{r}
+df <- phylosuite::df  
+paste0("Total of 413 isolates")
+paste0("Number of patients: ",length(unique(df$Patient_ID)))
+dim(df)
+paste0("View of dataframe for first 5 isolates")
+head(df,n = 5)
+paste0("Frequency of non-susceptibility to colistin: ")
+table(df$colistin_ns)
+```
+
+## Phylogenetic tree
+
+This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombination filtered alignment of single-nucleotide polymorphisms using IQ-TREE
+
+```{r,fig.width=7.5,fig.height=7.5}
+tr <- phylosuite::tr
+ggtree(tr)
+```
+
+# Step 0.1: Visualization of the trait across the phylogenetic tree  
+
+Before performing ancestral state reconstruction, it is critical to visualize the tip states of the trait on the phylogeny.
+
+Our ancestral state reconstruction and clustering algorithm is most powerful in settings where frequent emergence and spread of a trait occurs.
+
+Notice the clustering of Colistin non-susceptibility across the phylogeny.
+
+-   Numerous emergence events at ancestral nodes and tips can be visually inferred in this phylogeny
+
+-   Ancestral emergence events had noticeable variations in size. For instance, consider the large cluster of non-susceptibility in the above clade
+
+```{r,fig.width=7.5,fig.height=7.5}
+feature_colors <- c(`1` = "black",`0`="white")
+feature_scale <- scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+
+p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0
+```
+
+# Step 0.2: Visualization of the genotypes across the phylogenetic tree 
+
+We provide genotypes associated with colistin non-susceptibility. These can be leveraged to demonstrate genotype-phenotype algorithms developed in this package. 
+```{r,fig.height=10,fig.width=10}
+genotype_mat <- phylosuite::genotype_mat
+
+paste0("Total of ",ncol(genotype_mat)," genotypes")
+ 
+paste0("Genotypes present in this matrix: ")
+colnames(genotype_mat)
+
+paste0("Visualization of the genotypes")
+ComplexHeatmap::Heatmap(as.matrix(genotype_mat),col = c("white","black"),show_row_names = F,name = "Genotype presence",show_column_names = F) 
+```
+
+# Step 1: Run ancestral state reconstruction
+
+-   The workhorse function, asr(), is used to perform ancestral state reconstruction. This wrapper function implements ancestral state reconstruction with a single rate category using the corHMM R package: <https://github.com/thej022214/corHMM>
+
+-   Using inferred ancestral states and tip-based data, edges on the phylogenetic tree were evaluated to determine episodes where the trait continued (i.e., susceptible -\> susceptible or non-susceptible -\> non-susceptible), was gained (i.e., susceptible -\> non-susceptible), or was lost (i.e., non-susceptible -\> susceptible). This edge matrix can be leveraged for numerous applications, including characterizing the frequency of trait transitions across a phylogeny and investigating phenotype-genotype associations.
+
+-   The following parameters exist for this function
+
+    -   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+
+    -   **tr:** Phylogenetic tree object of class phylo
+
+    -   **model:** This approach permits the use of either the equal rates (ER) or the all rates differ (ARD) transition matrices.
+
+        -   Equal rates: Assumes equal transition rates for trait gain (e.g., trait absence -\> presence) or loss (e.g., trait gain -\> absence)
+
+        -   All rates differ: Assumes different transition rates for trait gain and loss
+
+    -   node_states: Whether to perform 'joint' or 'marginal' ancestral state reconstruction
+
+        -   From our experience, we recommend using joint ancestral state reconstruction.
+
+```{r}
+asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+
+paste0("Output names: ")
+names(asr_obj)
+
+paste0("corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM")
+asr_obj$corHMM_out
+
+paste0("corHMM_model_summary: A summary of the corHMM model, including the number of parameters, model, number of rate categories, inferred transition rates, log likelihood, AIC, and AICc")
+paste0("Rate 1 = transitions from level 1 (i.e., susceptible) to level 2 (i.e., non-susceptible)")
+paste0("Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)")
+asr_obj$corHMM_model_summary
+
+paste0("node_states: Chosen node state that was modeled.")
+asr_obj$node_states
+
+paste0("parent_child_df: Parent child dataframe, which contains the edge dataset, parent and child values, the child name (for tips), and transition data (i.e., gain, loss, and continuation of the trait on tree or continuation of trait absence on tree)")
+head(asr_obj$parent_child_df)
+```
+
+# Step 2. Synchronous genotype-phenotype analyses
+```{r,echo=F,message=F}
+genotype_mat$isolate_no <- rownames(genotype_mat)
+variables <- colnames(genotype_mat %>% select(-isolate_no))
+genotypes<- genotype_mat %>% .[match(tr$tip.label,.[['isolate_no']]),]
+
+asr_of_genotypes <- pbmcapply::pbmclapply(variables,FUN=function(x){
+  asr(genotype_mat,tr,"isolate_no",x,"ER","joint") %>% .$parent_child_df
+},mc.cores = 6)
+```
+
+```{r,fig.height=9}
+# Synchronous impact
+synchronous_df <- lapply(asr_of_genotypes,synchronous_detection,asr_obj$parent_child_df) %>% do.call(rbind,.) %>% mutate(genotype = variables)   
+
+paste0("Synchronous data frame")
+head(synchronous_df)
+
+paste0("Number of synchronous gain events per genotype")
+table(synchronous_df$synchronous_gains_num)
+
+paste0("Number of synchronous phenotype gain and genotype loss events per genotype")
+table(synchronous_df$synchronous_gain_loss_num)
+
+paste0("Number of synchronous phenotype and genotype loss events per genotype")
+table(synchronous_df$synchronous_losses_num)
+
+paste0("Number of synchronous phenotype los and genotype gain events per genotype")
+table(synchronous_df$synchronous_loss_gain_num)
+```
+
+# Step 3: Downstream gain/loss events
+```{r} 
+downstream_df <- lapply(asr_of_genotypes,downstream_gain_loss,asr_obj$parent_child_df,tr=tr,node_states='joint') %>% do.call(rbind,.) %>% mutate(genotype = variables)
+
+paste0("Downstream data frame")
+head(downstream_df)
+
+paste0("Number of downstream gain events per genotype")
+table(downstream_df$stretches_w_gains_num) 
+
+paste0("Number of downstream loss events per genotype")
+table(downstream_df$stretches_w_losses_num) 
+
+paste0("Number of downstream loss events per genotype")
+table(downstream_df$stretches_w_losses_num) 
 ```
