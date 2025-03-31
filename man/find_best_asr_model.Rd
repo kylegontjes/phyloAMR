@@ -10,7 +10,7 @@ find_best_asr_model(
   tip_name_var,
   pheno,
   node_states = "joint",
-  upper_bound = 1e+09,
+  upper_bound = 1e+100,
   lower_bound = 1e-09
 )
 }

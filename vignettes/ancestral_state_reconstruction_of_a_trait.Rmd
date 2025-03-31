@@ -209,17 +209,17 @@ gheatmap(painted_tree,df %>% select(colistin_ns) %>% mutate_all(as.factor),colna
 This algorithm can be leveraged to ask numerous questions. Specifically, we build the following functions to address questions of interest:
 
 |  |  |
-|------------------------------------|------------------------------------|
+|----|----|
 | Do isolates belong to episodes of trait emergence or spread? | asr() + asr_cluster_detection() + asr_cluster_analysis() |
 
 |  |  |
-|------------------------------------|------------------------------------|
+|----|----|
 | Genetic features associated with trait/lineage emergence/spread? | asr() + synchronous_detection() + synchronous_permutation_test() |
 
 |  |  |
-|------------------------------------|------------------------------------|
+|----|----|
 | What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations) | asr() + downstream_gain_loss() + downstream_permutation_test() |
 
 |  |  |
-|------------------------------------|------------------------------------|
+|----|----|
 | What descriptive characteristics are associated with phenotypic emergence and spread? | phyloaware_regression() |
