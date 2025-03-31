@@ -53,6 +53,10 @@ We focus on the evolution and spread of non-susceptibility to colistin, a last-r
 
 ```{r}
 df <- phylosuite::df  
+
+paste0("Adjust rownames")
+df<- df %>% .[match(tr$tip.label,.[['tip_name_var']]),]
+
 paste0("Total of 413 isolates")
 
 paste0("Number of patients: ",length(unique(df$Patient_ID)))
@@ -61,9 +65,8 @@ dim(df)
 paste0("View of dataframe for first 5 isolates")
 head(df,n = 5)
 
-paste0("Frequency of non-susceptibility to colistin: ")
+paste0("Frequency of non-susceptibility to colistin: ") 
 table(df$colistin_ns)
-
 ```
 
 ## Phylogenetic tree
@@ -117,7 +120,7 @@ p0
 
         -   From our experience, we recommend using joint ancestral state reconstruction.
 
-## Step 1.1: Determining the best model
+## Aside: Determining the best model
 
 While we suggest the use of the equal rates (ER) transition matrix as the chosen model for corHMM, some instances permit the modeling of a trait using the all rates differ (ARD) model.
 
@@ -137,10 +140,10 @@ paste0("Best model: ")
 best_model_obj$best_model
 ```
 
-## Step 1.2: Running ancestral state reconstruction using the best model model
+## Running ancestral state reconstruction
 
 ```{r}
-asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = best_model_obj$best_model,node_states = "joint")
+asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)
@@ -163,14 +166,6 @@ head(asr_obj$parent_child_df)
 # Step 2: Describe the model (e.g., rates and fit)
 
 The function, characterize_asr_model(), can be leveraged on corHMM output to identify the inferred rates and model fit statistics (i.e., log likelihood and AIC values)
-
-Interpretation:
-
--   We used one rate category, but the ARD model has two rates: rate1 and rate 2.
-
-    -   Rate 1 (transition from susceptible [0] to non-susceptible [1] is 81827.86
-
-    -   Rate 2 (transition from non-susceptible [1] to susceptible [0] is 136867.1
 
 ```{r}
 phylosuite::characterize_asr_model(asr_obj$corHMM_out)
@@ -214,17 +209,17 @@ gheatmap(painted_tree,df %>% select(colistin_ns) %>% mutate_all(as.factor),colna
 This algorithm can be leveraged to ask numerous questions. Specifically, we build the following functions to address questions of interest:
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | Do isolates belong to episodes of trait emergence or spread? | asr() + asr_cluster_detection() + asr_cluster_analysis() |
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | Genetic features associated with trait/lineage emergence/spread? | asr() + synchronous_detection() + synchronous_permutation_test() |
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations) | asr() + downstream_gain_loss() + downstream_permutation_test() |
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | What descriptive characteristics are associated with phenotypic emergence and spread? | phyloaware_regression() |
