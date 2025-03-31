@@ -32,13 +32,9 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
   # Get clustering data
   clustering_data$asr_cluster <- sapply(clustering_data$isolate_no,FUN=get_clustering_data,parent_child_df,node_states=node_states,confidence=confidence)
 
-  # Clean clusters
-  if(faux_clusters == "remove"){
-    clustering_data$asr_cluster <- remove_faux_clusters(clustering_data)
-  }
-
-  if(faux_clusters == "relabel"){
-    clustering_data$asr_cluster <- relabel_faux_clusters(clustering_data)
+  # Account for faux clusters (e.g., belong to >1)
+  if(faux_clusters != F){
+    clustering_data$asr_cluster <- account_for_faux_clusters(clustering_data,faux_clusters)
   }
 
   # Simplify strings
@@ -55,6 +51,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
 
   # We don't need the parent_child dataframe here, so we are only providing the tip based data
   results <-tip_data_df
+
   return(results)
 }
 
@@ -185,7 +182,8 @@ get_parent_node <- function(node_data,edge_data){
   return(step_up)
 }
 
-remove_faux_clusters <- function(cluster_data){
+account_for_faux_clusters <- function(cluster_data,faux_clusters){
+  # Determine cluster size
   cluster_size <- table(cluster_data$asr_cluster) %>% subset(grepl("cluster_",names(.))) %>% subset(!grepl("singleton",names(.)))
   # Isolates where gain at internal node was called, but no other isolate was connected to it
   true_clusters <- subset(cluster_size,cluster_size>1) %>% names
@@ -195,34 +193,14 @@ remove_faux_clusters <- function(cluster_data){
     cluster_data  %>% subset(asr_cluster == x) %>% .$patient_id %>% unique %>% length
   })
   not_more_than_one_pt <- subset(cluster_size_pts,cluster_size_pts==1) %>% names(.)
-  # Reclassify these isolates as singletons
-  cluster_fin <-  ifelse(cluster_data$asr_cluster  %in% c(not_more_than_one_pt,not_cluster),"singleton",cluster_data$asr_cluster)
-
-  return(cluster_fin)
-}
-
-relabel_faux_clusters <- function(cluster_data) {
-  cluster_size <- table(cluster_data$asr_cluster) %>% subset(grepl("r_",
-                                                                   names(.))) %>% subset(!grepl("singleton", names(.)))
-
-  # Isolates where gain at internal node was called, but no other isolate was connected to it
-  true_clusters <- subset(cluster_size, cluster_size > 1) %>%
-    names
-  not_cluster <- names(cluster_size[!names(cluster_size) %in%
-                                      true_clusters])
-
-  # Clusters with only one patient
-  cluster_size_pts <- sapply(true_clusters, FUN = function(x) {
-    cluster_data %>% subset(asr_cluster == x) %>% .$patient_id %>%
-      unique %>% length
-  })
-  not_more_than_one_pt <- subset(cluster_size_pts, cluster_size_pts ==
-                                   1) %>% names(.)
-  # Rename only one isolate as singleton & add _1pt_only label to the faux single patient cluster
-  cluster_fin <- ifelse(cluster_data$asr_cluster %in% not_cluster,"singleton",
-                        ifelse(cluster_data$asr_cluster %in% not_more_than_one_pt,paste0(cluster_data$asr_cluster,"_1pt_only"),
-                               cluster_data$asr_cluster))
-
+  if(faux_clusters == 'remove'){
+    cluster_fin <-  ifelse(cluster_data$asr_cluster  %in% c(not_more_than_one_pt,not_cluster),"singleton",cluster_data$asr_cluster)
+  }
+  if(faux_clusters == 'relabel'){
+    cluster_fin <- ifelse(cluster_data$asr_cluster %in% not_cluster,"singleton",
+                               ifelse(cluster_data$asr_cluster %in% not_more_than_one_pt,paste0(cluster_data$asr_cluster,"_1pt_only"),
+                                      cluster_data$asr_cluster))
+  }
   return(cluster_fin)
 }
 
