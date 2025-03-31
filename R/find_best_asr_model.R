@@ -14,7 +14,7 @@
 #'   }
 #' @export
 
-find_best_asr_model = function(df,tr,tip_name_var,pheno,node_states = "joint",upper_bound=1e9,lower_bound=1e-9){
+find_best_asr_model = function(df,tr,tip_name_var,pheno,node_states = "joint",upper_bound=1e100,lower_bound=1e-9){
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
 
