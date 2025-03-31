@@ -1,5 +1,5 @@
 ---
-title: "Detection and characterization of phylogenetic emergence and spread of a trait using ancestral state reconstruction"
+title: "ancestral_state_reconstruction_cluster_detection"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ancestral_state_reconstruction_cluster_detection}
