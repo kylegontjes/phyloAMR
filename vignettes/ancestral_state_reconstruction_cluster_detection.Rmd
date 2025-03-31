@@ -33,6 +33,7 @@ library(ggplot2)
 library(ape)
 library(ggtree)
 library(hues)
+library(ggnewscale)
 ```
 
 # Load example data

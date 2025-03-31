@@ -27,7 +27,9 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    hues
+    hues,
+    ggnewscale,
+    ComplexHeatmap
 Remotes: 
     thej022214/corHMM
 Depends: 
