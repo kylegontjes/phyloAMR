@@ -243,10 +243,16 @@ simplify_acr_clustering_string <-  function(string,df,tr,faux_clusters,remove_re
   return(df_reset_order$string)
 }
 
-group_by_category <- function(string){
-  ifelse(string =="no feature","no feature",
-         ifelse(string == "singleton","singleton",
-                ifelse(grepl("cluster_",string)==T,"cluster",
-                       ifelse(grepl("revertant_tip",string)==T,"revertant tip",
-                              ifelse(grepl("revertant_",string)==T,"revertant lineage",NA)))))
+group_by_category <- function(string,remove_revertant){
+  if(remove_revertant=="yes"){
+    string <- ifelse(grepl("revertant",string),"no feature",string)
+  }
+
+  collapsed_string <- ifelse(string =="no feature","No Feature",
+         ifelse(string == "singleton","Singleton",
+                ifelse(grepl("cluster_",string)==T,"Cluster",
+                       ifelse(grepl("revertant_tip",string)==T,"Revertant tip",
+                              ifelse(grepl("revertant_",string)==T,"Revertant lineage",NA)))))
+
+  return(collapsed_string)
 }
