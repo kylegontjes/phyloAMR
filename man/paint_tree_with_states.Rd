@@ -18,7 +18,7 @@ paint_tree_with_states(
 
 \item{tr}{Phylogenetic tree}
 
-\item{scale_breaks}{Values for scale breaks (marginal = c(1,0.5,0); joint = c(1,0))}
+\item{scale_breaks}{Values for breaks (marginal = c(1,0.5,0); joint = c(1,0))}
 
 \item{scale_labels}{Labels for present and absent, marginal should be c('present','unsure','absent')}
 

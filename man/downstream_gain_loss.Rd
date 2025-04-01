@@ -2,7 +2,7 @@
 % Please edit documentation in R/downstream_gain_loss.R
 \name{downstream_gain_loss}
 \alias{downstream_gain_loss}
-\title{downstream_gain_loss: Analysis of downstream gain and loss of comparitor trains}
+\title{downstream_gain_loss: Analysis of downstream gain and loss of comparitor traits}
 \usage{
 downstream_gain_loss(
   comparitor_parent_child_df,

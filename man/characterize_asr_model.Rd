@@ -2,7 +2,7 @@
 % Please edit documentation in R/characterize_asr_model.R
 \name{characterize_asr_model}
 \alias{characterize_asr_model}
-\title{Characterize binary ancestral state reconstruction model}
+\title{characterize_asr_model: Characterize ancestral state reconstruction model}
 \usage{
 characterize_asr_model(corHMM_obj)
 }
@@ -10,7 +10,7 @@ characterize_asr_model(corHMM_obj)
 \item{corHMM_obj}{Ancestral reconstruction model from corHMM::corHMM}
 }
 \value{
-A dataframe containing the log-likelihoods of the models, the rates and standard errors, and the model type
+Dataframe containing model fit, rates, and model type
 }
 \description{
 This function provides general model statistics for a binary ancestral state reconstruction model

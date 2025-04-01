@@ -33,7 +33,7 @@ find_best_asr_model(
 Description of return value
   \describe{
     \item{model_options}{Summary of model options}
-    \item{best_model}{Best model to use for the ancestral state reconstruction}
+    \item{best_model}{Best model for ancestral state reconstruction}
   }
 }
 \description{
