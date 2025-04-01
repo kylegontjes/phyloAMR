@@ -42,7 +42,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
 
   # Simplify to cluster
   if(collapse_cluster=="yes"){
-    clustering_data$asr_cluster_collapsed <- group_by_category(clustering_data$asr_cluster)
+    clustering_data$asr_cluster_collapsed <- group_by_category(string=clustering_data$asr_cluster,remove_revertant=remove_revertant)
   }
 
   # Get tip data and merge it with the clustering data
