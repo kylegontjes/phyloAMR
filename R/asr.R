@@ -85,7 +85,7 @@ check_rates_at_local_max <- function(corHMM_out, upper_bound, lower_bound) {
 }
 
 #' @export
-get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold = 0.875, node_states) {
+get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold = NULL, node_states) {
   # Tree edge info
   edge <- tr$edge %>% as.data.frame
   colnames(edge) <- c("parent", "child")
@@ -103,7 +103,7 @@ get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold = 0.8
   }
 
   # Add node data
-  anc_data[, "node"] <-  seq_len(anc_data) + (nrow(anc_data) + 1)
+  anc_data[, "node"] <-  seq_len(nrow(anc_data)) + (nrow(anc_data) + 1)
   num_edges <- nrow(edge)
   internal_nodes <- c(length(pheno_data) + 1):(unlist(edge) %>% max)
 
