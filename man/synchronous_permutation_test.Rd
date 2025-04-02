@@ -33,6 +33,10 @@ synchronous_permutation_test(
 \item{conf_threshold}{Confidence threshold if using marginal reconstruction}
 
 \item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
+
+\item{num_permutations}{Number of permutations. Default: 1000}
+
+\item{num_cores}{Number of cores. Default: 6}
 }
 \value{
 Synchronous gain and loss events of two traits with p-value permutation testing results
