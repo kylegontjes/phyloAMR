@@ -84,6 +84,19 @@ check_rates_at_local_max <- function(corHMM_out, upper_bound, lower_bound) {
   }
 }
 
+#' get_parent_child_data: Get parent child data from ancestral state reconstruction
+#'
+#' Function to generate an annotated edge matrix
+#'
+#' @param tr Phylogenetic tree object. Class must be phylo
+#' @param anc_data Ancestral states inferred by corHMM
+#' @param pheno_data Named phenotype string
+#' @param conf_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
+#' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
+#' @return Description of return value
+#'   \describe{
+#'     \item{edge}{Edge matrix with states}
+#'   }
 #' @export
 get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold = NULL, node_states) {
   # Tree edge info
@@ -136,6 +149,16 @@ get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold = NUL
   return(edge)
 }
 
+#' get_continuation_data: Annotate parent child data from ancestral state reconstructionwith transition data
+#'
+#' Function to generate an annotated edge matrix with transition data
+#'
+#' @param parent_child_df Edge matrix with ancestral states
+#' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
+#' @return Description of return value
+#'   \describe{
+#'     \item{parent_child_df}{Final parent child dataset with transition data}
+#'   }
 #' @export
 get_continuation_data <- function(parent_child_df, node_states) {
   if (node_states == "joint") {
