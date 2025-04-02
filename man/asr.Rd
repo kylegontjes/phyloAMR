@@ -11,7 +11,7 @@ asr(
   pheno,
   model = "ER",
   node_states = "joint",
-  upper_bound = 1e+10,
+  upper_bound = 1e+50,
   lower_bound = 1e-09,
   conf_threshold = NULL
 )
@@ -29,7 +29,7 @@ asr(
 
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
 
-\item{upper_bound}{Upper bound for likelihood search. Default: 1e10}
+\item{upper_bound}{Upper bound for likelihood search. Default: 1e50}
 
 \item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
 

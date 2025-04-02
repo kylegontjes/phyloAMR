@@ -7,7 +7,7 @@
 #' @param tip_name_var Name of variable containing tip names in df
 #' @param pheno Name of phenotype variable in df
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction
-#' @param upper_bound Upper bound for likelihood search. Default: 1e1dev0
+#' @param upper_bound Upper bound for likelihood search. Default: 1e50
 #' @param lower_bound Lower bound for likelihood search. Default: 1e-9
 #' @return Description of return value
 #'   \describe{
@@ -16,7 +16,7 @@
 #'   }
 #' @export
 
-find_best_asr_model <- function(df, tr, tip_name_var, pheno, node_states = "joint", upper_bound = 1e10, lower_bound = 1e-9) {
+find_best_asr_model <- function(df, tr, tip_name_var, pheno, node_states = "joint", upper_bound = 1e50, lower_bound = 1e-9) {
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
 

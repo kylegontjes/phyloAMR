@@ -8,7 +8,7 @@
 #' @param pheno Name of phenotype/trait variable in df
 #' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
-#' @param upper_bound Upper bound for likelihood search. Default: 1e10
+#' @param upper_bound Upper bound for likelihood search. Default: 1e50
 #' @param lower_bound Lower bound for likelihood search. Default: 1e-9
 #' @param conf_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
 #' @return Description of return value
@@ -19,7 +19,7 @@
 #'     \item{node_states}{Text string indicating the chosen reconstruction method}
 #'   }
 #' @export
-asr <- function(df, tr, tip_name_var, pheno, model = "ER", node_states = "joint", upper_bound = 1e10, lower_bound = 1e-9, conf_threshold = NULL) {
+asr <- function(df, tr, tip_name_var, pheno, model = "ER", node_states = "joint", upper_bound = 1e50, lower_bound = 1e-9, conf_threshold = NULL) {
   # Check if phenotype is 0,1
   check_phenotype(df[[pheno]])
   # Check if tree is rooted
