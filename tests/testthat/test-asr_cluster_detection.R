@@ -4,7 +4,6 @@ library(dplyr)
 library(stringr)
 library(ggplot2)
 library(ape)
-library(phytools)
 tr <- phylosuite::tr
 df <- phylosuite::df
 df$isolate_no <- df$tip_name_var
