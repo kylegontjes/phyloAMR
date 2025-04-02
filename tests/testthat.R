@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(phylosuite)
+library(phyloAMR)
 
-test_check("phylosuite")
+test_check("phyloAMR")
