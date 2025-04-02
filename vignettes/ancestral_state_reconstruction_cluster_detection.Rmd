@@ -27,7 +27,7 @@ To this aim, we provide a tutorial to leverage our ancestral state reconstructio
 # Environment
 
 ```{r setup}
-library(phylosuite)
+library(phyloAMR)
 library(dplyr)
 library(ggplot2)
 library(ape)
@@ -51,7 +51,7 @@ We focus on the evolution and spread of non-susceptibility to colistin, a last-r
 4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
 
 ```{r}
-df <- phylosuite::df  
+df <- phyloAMR::df  
 paste0("Total of 413 isolates")
 paste0("Number of patients: ",length(unique(df$Patient_ID)))
 dim(df)
@@ -66,7 +66,7 @@ table(df$colistin_ns)
 This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombination filtered alignment of single-nucleotide polymorphisms using IQ-TREE
 
 ```{r,fig.width=7.5,fig.height=7.5}
-tr <- phylosuite::tr
+tr <- phyloAMR::tr
 ggtree(tr)
 ```
 
@@ -113,7 +113,7 @@ p0
         -   From our experience, we recommend using joint ancestral state reconstruction.
 
 ```{r}
-asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)
@@ -204,7 +204,7 @@ table(asr_cluster_obj$asr_cluster_collapsed)
 
 To characterize the evolutionary history, we described both the transitional data and the phylogenetic clustering of each antibiotic phenotype.
 
-Descriptive statistics for the phylogenetic clustering can be determined using phylosuite’s **asr_cluster_analysis()** function.
+Descriptive statistics for the phylogenetic clustering can be determined using phyloAMR’s **asr_cluster_analysis()** function.
 
 Specifically, the crude frequency of the trait, descriptive statistics on the number of singletons, clusters, and summary statistics for cluster size.
 

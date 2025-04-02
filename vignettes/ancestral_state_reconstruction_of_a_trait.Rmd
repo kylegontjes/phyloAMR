@@ -31,7 +31,7 @@ This information can be leveraged, using our downstream algorithms, to address n
 # Environment
 
 ```{r setup}
-library(phylosuite)
+library(phyloAMR)
 library(dplyr)
 library(stringr)
 library(ggplot2)
@@ -54,7 +54,7 @@ We focus on the evolution and spread of non-susceptibility to colistin, a last-r
 4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
 
 ```{r}
-df <- phylosuite::df  
+df <- phyloAMR::df  
 
 paste0("Adjust rownames")
 df<- df %>% .[match(tr$tip.label,.[['tip_name_var']]),]
@@ -76,7 +76,7 @@ table(df$colistin_ns)
 This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombination filtered alignment of single-nucleotide polymorphisms using IQ-TREE
 
 ```{r,fig.width=7.5,fig.height=7.5}
-tr <- phylosuite::tr
+tr <- phyloAMR::tr
 ggtree(tr)
 ```
 
@@ -133,7 +133,7 @@ Next, the best model is chosen using the Akaike information criteria (AIC). Spec
 The asr() function has the option to run this model finding algorithm using the model = "MF" argument.
 
 ```{r}
-best_model_obj <- phylosuite::find_best_asr_model(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = 'colistin_ns',node_states = 'joint')
+best_model_obj <- phyloAMR::find_best_asr_model(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = 'colistin_ns',node_states = 'joint')
 
 paste0("Model fit statistics: ")
 best_model_obj$model_options
@@ -145,7 +145,7 @@ best_model_obj$best_model
 ## Running ancestral state reconstruction
 
 ```{r}
-asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)
@@ -170,7 +170,7 @@ head(asr_obj$parent_child_df)
 The function, characterize_asr_model(), can be leveraged on corHMM output to identify the inferred rates and model fit statistics (i.e., log likelihood and AIC values)
 
 ```{r}
-phylosuite::characterize_asr_model(asr_obj$corHMM_out)
+phyloAMR::characterize_asr_model(asr_obj$corHMM_out)
 ```
 
 # Step 3: Characterize the transition statistics for the trait across the phylogeny
@@ -196,7 +196,7 @@ asr_transition_analysis(asr_obj$parent_child_df,node_states='joint')
 ## Paint the tree
 
 ```{r,fig.width=7.5,fig.height=7.5}
-painted_tree <- phylosuite::paint_tree_with_states(asr_obj$parent_child_df,tr)
+painted_tree <- phyloAMR::paint_tree_with_states(asr_obj$parent_child_df,tr)
 painted_tree
 ```
 
@@ -211,17 +211,17 @@ gheatmap(painted_tree,df %>% select(colistin_ns) %>% mutate_all(as.factor),colna
 This algorithm can be leveraged to ask numerous questions. Specifically, we build the following functions to address questions of interest:
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | Do isolates belong to episodes of trait emergence or spread? | asr() + asr_cluster_detection() + asr_cluster_analysis() |
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | Genetic features associated with trait/lineage emergence/spread? | asr() + synchronous_detection() + synchronous_permutation_test() |
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations) | asr() + downstream_gain_loss() + downstream_permutation_test() |
 
 |  |  |
-|----|----|
+|------------------------------------|------------------------------------|
 | What descriptive characteristics are associated with phenotypic emergence and spread? | phyloaware_regression() |

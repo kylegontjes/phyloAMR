@@ -1,12 +1,12 @@
 library(testthat)
-library(phylosuite)
+library(phyloAMR)
 library(dplyr)
 library(stringr)
 library(ggplot2)
 library(ape)
-tr <- phylosuite::tr
-df <- phylosuite::df
-geno <- phylosuite::genotype_mat
+tr <- phyloAMR::tr
+df <- phyloAMR::df
+geno <- phyloAMR::genotype_mat
 df <- left_join(df,geno %>% mutate(tip_name_var = rownames(.)))
 df$isolate_no <- df$tip_name_var
 pheno <-  'colistin_ns'

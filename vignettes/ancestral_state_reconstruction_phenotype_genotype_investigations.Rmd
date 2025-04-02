@@ -27,7 +27,7 @@ This information can be leveraged to infer whether a genotype is associated with
 # Environment
 
 ```{r setup}
-library(phylosuite)
+library(phyloAMR)
 library(dplyr)
 library(stringr)
 library(ggplot2)
@@ -52,7 +52,7 @@ We focus on the evolution and spread of non-susceptibility to colistin, a last-r
 4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
 
 ```{r}
-df <- phylosuite::df  
+df <- phyloAMR::df  
 paste0("Total of 413 isolates")
 paste0("Number of patients: ",length(unique(df$Patient_ID)))
 dim(df)
@@ -67,7 +67,7 @@ table(df$colistin_ns)
 This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombination filtered alignment of single-nucleotide polymorphisms using IQ-TREE
 
 ```{r,fig.width=7.5,fig.height=7.5}
-tr <- phylosuite::tr
+tr <- phyloAMR::tr
 ggtree(tr)
 ```
 
@@ -95,7 +95,7 @@ p0
 
 We provide genotypes associated with colistin non-susceptibility. These can be leveraged to demonstrate genotype-phenotype algorithms developed in this package. 
 ```{r,fig.height=10,fig.width=10}
-genotype_mat <- phylosuite::genotype_mat
+genotype_mat <- phyloAMR::genotype_mat
 
 paste0("Total of ",ncol(genotype_mat)," genotypes")
  
@@ -129,7 +129,7 @@ ComplexHeatmap::Heatmap(as.matrix(genotype_mat),col = c("white","black"),show_ro
         -   From our experience, we recommend using joint ancestral state reconstruction.
 
 ```{r}
-asr_obj <- phylosuite::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)

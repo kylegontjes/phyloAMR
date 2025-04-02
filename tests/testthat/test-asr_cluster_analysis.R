@@ -1,11 +1,11 @@
 library(testthat)
-library(phylosuite)
+library(phyloAMR)
 library(dplyr)
 library(stringr)
 library(ggplot2)
 library(ape)
-tr <- phylosuite::tr
-df <- phylosuite::df
+tr <- phyloAMR::tr
+df <- phyloAMR::df
 df$isolate_no <- df$tip_name_var
 pheno <-  'colistin_ns'
 tip_name_var <- "tip_name_var"
