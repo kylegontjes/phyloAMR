@@ -2,6 +2,18 @@
 #'
 #' This function performs regression on our dataset
 #'
+#' @param pheno Trait of interest
+#' @param variables Exposure variables of interest
+#' @param df Dataframe
+#' @param first_present Whether to identify first present isolate from a patient
+#' @param patient_id Patient identifier variable stored in dataframe df
+#' @param culture_date Culture date variable
+#' @param multivariable Boolean whether to perform multivariable regression
+#' @param stepwise_direction Direction if stepwise multivariable regression is chosen
+#' @param entry_criteria P-value for defining candidate variables for multivariable regression
+#' @param retention_criteria P-value for retaining candidate variables in model
+#' @param confounding_criteria Impact on effect size
+#' @return List with univariable and multivariable results (if requested)
 #' @export
 phyloaware_regression <- function(pheno, variables, df, first_present = NULL, patient_id = NULL, culture_date = NULL, multivariable = NULL, stepwise_direction = NULL, entry_criteria = NULL, retention_criteria = NULL, confounding_criteria = NULL) {
   # Get dataset with first isolate

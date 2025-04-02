@@ -18,6 +18,32 @@ phyloaware_regression(
   confounding_criteria = NULL
 )
 }
+\arguments{
+\item{pheno}{Trait of interest}
+
+\item{variables}{Exposure variables of interest}
+
+\item{df}{Dataframe}
+
+\item{first_present}{Whether to identify first present isolate from a patient}
+
+\item{patient_id}{Patient identifier variable stored in dataframe df}
+
+\item{culture_date}{Culture date variable}
+
+\item{multivariable}{Boolean whether to perform multivariable regression}
+
+\item{stepwise_direction}{Direction if stepwise multivariable regression is chosen}
+
+\item{entry_criteria}{P-value for defining candidate variables for multivariable regression}
+
+\item{retention_criteria}{P-value for retaining candidate variables in model}
+
+\item{confounding_criteria}{Impact on effect size}
+}
+\value{
+List with univariable and multivariable results (if requested)
+}
 \description{
 This function performs regression on our dataset
 }

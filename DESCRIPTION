@@ -19,6 +19,7 @@ Imports:
     stringr,
     ggplot2,
     ape,
+    phytools,
     corHMM,
     pbapply,
     magrittr,
