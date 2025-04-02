@@ -23,7 +23,8 @@ Imports:
     corHMM,
     pbapply,
     magrittr,
-    ggtree
+    ggtree,
+    data.table
 Suggests: 
     knitr,
     rmarkdown,
