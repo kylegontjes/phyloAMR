@@ -11,11 +11,10 @@
 #' @param conf_threshold Confidence threshold if using marginal reconstruction
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
 #' @param num_permutations Number of permutations. Default: 1000
-#' @param num_cores Number of cores. Default: 6
+#' @param num_cores Number of cores. Default: 6roxy
 #' @return Synchronous gain and loss events of two traits with p-value permutation testing results
 #' @export
 synchronous_permutation_test <- function(comparitor, df, tr, tip_name_var, trait, node_states = "joint", conf_threshold = NULL, confidence = NULL, num_permutations = 1000, num_cores = 6) {
-  library(pbmcapply)
   # Trait
   trait_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, pheno = pheno, model = "ER", node_states = node_states, conf_threshold = conf_threshold) %>% .$parent_child_df
 
