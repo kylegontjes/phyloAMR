@@ -6,7 +6,7 @@ library(ggplot2)
 library(ape)
 tr <- phyloAMR::tr
 df <- phyloAMR::df
-geno <- phylosuite::genotype_mat
+geno <- phyloAMR::genotype_mat
 df <- left_join(df,geno %>% mutate(tip_name_var = rownames(.)))
 df$isolate_no <- df$tip_name_var
 pheno <-  'colistin_ns'
