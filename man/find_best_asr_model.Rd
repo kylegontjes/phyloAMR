@@ -10,7 +10,7 @@ find_best_asr_model(
   tip_name_var,
   pheno,
   node_states = "joint",
-  upper_bound = 1e+100,
+  upper_bound = 1e+10,
   lower_bound = 1e-09
 )
 }
@@ -25,7 +25,7 @@ find_best_asr_model(
 
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction}
 
-\item{upper_bound}{Upper bound for likelihood search. Default: 1e100}
+\item{upper_bound}{Upper bound for likelihood search. Default: 1e1dev0}
 
 \item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
 }
