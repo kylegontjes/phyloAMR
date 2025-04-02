@@ -1,4 +1,4 @@
-Package: phylosuite
+Package: phyloAMR
 Type: Package
 Title: Phylogenetic Analysis of Genome-Influenced Traits
 Version: 0.1.0
@@ -6,8 +6,7 @@ Authors@R: c(
   person(given = "Kyle",family = "Gontjes",email = "kgontjes@umich.edu",role=c("cre","aut"),comment = c(ORCID = "0000-0001-8671-7990"))
   )
 Maintainer: Kyle Gontjes <kgontjes@umich.edu>
-Description: Collection of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.
-    Many of these tools leverage phylogenetic distance or ancestral state reconstruction
+Description: Suite of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.
 License: MIT
 Encoding: UTF-8
 LazyData: true
