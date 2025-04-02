@@ -112,16 +112,24 @@ get_gain_loss_on_stretches <- function(comparitor_parent_child_df, stretches, no
   # Num paths
   num_stretches <- length(merged_paths)
   #Gains
-  stretches_w_gains <- lapply(merged_paths, FUN = function(x) {
+  stretches_w_gains <- if(length(merged_paths) == 0){
+    NULL
+    } else {
+    lapply(merged_paths, FUN = function(x) {
     x[which(x %in% comparitor_gains)] %>% sum %>% {ifelse(. > 0, TRUE, FALSE)}
   }) %>% unlist %>% which %>% names %>% as.numeric %>% sort
+  }
   stretches_w_gains_str <- ifelse(length(stretches_w_gains) > 0, paste0(stretches_w_gains, collapse = ","), "")
   stretches_w_gains_num <- length(stretches_w_gains)
   stretches_w_gains_prop <- stretches_w_gains_num / num_stretches
   # Losses
-  stretches_w_losses <- lapply(merged_paths, FUN = function(x) {
+  stretches_w_losses <- if(length(merged_paths) == 0){
+    NULL
+  } else {
+    lapply(merged_paths, FUN = function(x) {
     x[which(x %in% comparitor_losses)] %>% sum %>% {ifelse(. > 0, TRUE, FALSE)}
   }) %>% unlist %>% which %>% names %>% as.numeric %>% sort
+  }
   stretches_w_losses_str <- ifelse(length(stretches_w_losses) > 0, paste0(stretches_w_losses, collapse = ","), "")
   stretches_w_losses_num <- length(stretches_w_losses)
   stretches_w_losses_prop <- stretches_w_losses_num / num_stretches
