@@ -179,12 +179,12 @@ Extending this to the study of Colistin non-susceptibility, non-susceptible isol
 
 -   **faux_clusters:** Whether to 'remove' (e.g., reclassify as singletons) or 'rename' (e.g., classify as faux) clusters where isolates belong to just one patient. This is important to consider when classifying clusters of this phenotype
 
--   **remove_reverant:** Whether to remove ('yes') the episodes of trait reversion (e.g., present -\> absent) or permit them to be labeled
+-   **remove_reverant:** Whether to remove (TRUE) the episodes of trait reversion (e.g., present -\> absent) or permit them to be labeled
 
--   **collapse_cluster:** Whether to collapse ('yes') the episodes as either cluster, singleton, or no feature
+-   **collapse_cluster:** Whether to collapse (TRUE) the episodes as either cluster, singleton, or no feature
 
 ```{r,fig.width=7.5,fig.height=7.5}
-asr_cluster_obj <- asr_cluster_detection(df = df,tr=tr,tip_name_var = "tip_name_var",patient_id = 'PatientID',pheno = 'colistin_ns',parent_child_df = asr_obj$parent_child_df,node_states = 'joint',confidence = NULL,faux_clusters = 'remove',remove_revertant = 'yes',collapse_cluster = 'yes')
+asr_cluster_obj <- asr_cluster_detection(df = df,tr=tr,tip_name_var = "tip_name_var",patient_id = 'PatientID',pheno = 'colistin_ns',parent_child_df = asr_obj$parent_child_df,node_states = 'joint',confidence = NULL,faux_clusters = 'remove',remove_revertant = TRUE,collapse_cluster = TRUE)
 
 paste0("Cluster detection dataframe")
 colnames(asr_cluster_obj)
@@ -214,7 +214,7 @@ We use two measures to characterize the phylogenetics of a trait: phylogenetic o
 2.  **Clustering frequency:** No. clustersNo. singleton events + No. clusters  
 
 ```{r,fig.width=7.5,fig.height=7.5}
-asr_cluster_analysis(asr_cluster_obj,remove_faux = 'yes')
+asr_cluster_analysis(asr_cluster_obj,remove_faux = TRUE)
 ```
 
 # Step 5: Visualize clusters on phylogeny

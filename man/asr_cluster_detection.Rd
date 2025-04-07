@@ -13,9 +13,9 @@ asr_cluster_detection(
   parent_child_df,
   node_states = "joint",
   confidence = NULL,
-  faux_clusters = F,
-  remove_revertant = "yes",
-  collapse_cluster = "yes"
+  faux_clusters = FALSE,
+  remove_revertant = TRUE,
+  collapse_cluster = TRUE
 )
 }
 \arguments{
@@ -37,9 +37,9 @@ asr_cluster_detection(
 
 \item{faux_clusters}{Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)}
 
-\item{remove_revertant}{Whether to remove revertant episodes from consideration in a cleaned}
+\item{remove_revertant}{Boolean (i.e., TRUE/FALSE). Whether to remove revertant episodes from consideration in a cleaned}
 
-\item{collapse_cluster}{Whether to create a variable that collapses cluster calls into one category}
+\item{collapse_cluster}{Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category}
 }
 \value{
 A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired

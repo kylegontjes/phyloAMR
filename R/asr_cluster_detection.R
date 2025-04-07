@@ -11,11 +11,11 @@
 #' @param node_states Whether the reconstruction was "joint" or "marginal"
 #' @param confidence Whether to use 'high' (i.e., 0 -> 1) or 'low' (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS
 #' @param faux_clusters Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)
-#' @param remove_revertant Whether to remove revertant episodes from consideration in a cleaned
-#' @param collapse_cluster Whether to create a variable that collapses cluster calls into one category
+#' @param remove_revertant Boolean (i.e., TRUE/FALSE). Whether to remove revertant episodes from consideration in a cleaned
+#' @param collapse_cluster Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category
 #' @return A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired
 #' @export
-asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,node_states="joint",confidence=NULL,faux_clusters=F,remove_revertant="yes",collapse_cluster="yes"){
+asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,node_states="joint",confidence=NULL,faux_clusters=FALSE,remove_revertant=TRUE,collapse_cluster=TRUE){
   # Check if states are as desired
   check_joint_confidence(node_states,confidence)
   # Check faux_cluster
@@ -33,7 +33,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
   clustering_data$asr_cluster <- sapply(clustering_data$isolate_no,FUN=get_clustering_data,parent_child_df,node_states=node_states,confidence=confidence)
 
   # Account for faux clusters (e.g., belong to >1)
-  if(faux_clusters != F){
+  if(faux_clusters != FALSE){
     clustering_data$asr_cluster <- account_for_faux_clusters(clustering_data,faux_clusters)
   }
 
@@ -41,7 +41,7 @@ asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,paren
   clustering_data$asr_cluster_renamed <- simplify_acr_clustering_string(string = "asr_cluster",df = clustering_data,tr = tr,faux_clusters =faux_clusters,remove_revertant = remove_revertant)
 
   # Simplify to cluster
-  if(collapse_cluster=="yes"){
+  if(collapse_cluster==TRUE){
     clustering_data$asr_cluster_collapsed <- group_by_category(string=clustering_data$asr_cluster,remove_revertant=remove_revertant)
   }
 
@@ -233,7 +233,7 @@ simplify_acr_clustering_string <-  function(string,df,tr,faux_clusters,remove_re
       df_ordered$string <- factor(levels = c("No Feature","Revertant Tip","Singleton",paste0("Cluster ",1:length(cluster_names))),x = df_ordered$string)
     }
   }
-  if(remove_revertant=="yes"){
+  if(remove_revertant==TRUE){
     df_ordered$string <- dplyr::recode(df_ordered$string,"Revertant Tip" = "No Feature")
   }
 
@@ -244,7 +244,7 @@ simplify_acr_clustering_string <-  function(string,df,tr,faux_clusters,remove_re
 }
 
 group_by_category <- function(string,remove_revertant){
-  if(remove_revertant=="yes"){
+  if(remove_revertant==TRUE){
     string <- ifelse(grepl("revertant",string),"no feature",string)
   }
 

@@ -11,8 +11,8 @@ pheno <-  'colistin_ns'
 tip_name_var <- "tip_name_var"
 
 asr_obj <- asr(df = df,tr = tr,tip_name_var = tip_name_var ,pheno = pheno,model="ARD",node_states = "joint")
-asr_cluster <- asr_cluster_detection(df = df,tr = tr,pheno = "colistin_ns",tip_name_var = "tip_name_var",patient_id = "PatientID",node_states = 'joint',faux_clusters = 'remove',parent_child_df = asr_obj$parent_child_df,confidence = NULL,remove_revertant = "yes",collapse_cluster = "yes")
-asr_cluster_analysis <- asr_cluster_analysis(tip_data_df = asr_cluster,remove_faux = "yes")
+asr_cluster <- asr_cluster_detection(df = df,tr = tr, pheno = "colistin_ns", tip_name_var = "tip_name_var", patient_id = "PatientID",node_states = 'joint', faux_clusters = 'remove', parent_child_df = asr_obj$parent_child_df, confidence = NULL, remove_revertant = TRUE, collapse_cluster = TRUE)
+asr_cluster_analysis <- asr_cluster_analysis(tip_data_df = asr_cluster,remove_faux = TRUE)
 
 expect_s3_class(asr_cluster_analysis, "data.frame")
 
