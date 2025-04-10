@@ -10,7 +10,7 @@
 #' @return Summary stats for downstream gain and loss of a trait
 #' @export
 downstream_gain_loss <- function(comparitor_parent_child_df, trait_parent_child_df, tr, node_states = "joint", confidence = NULL) {
-  stretches <- get_trait_traces_on_tree(parent_child_df = comparitor_parent_child_df, tr = tr, node_states = node_states)
+  stretches <- get_trait_traces_on_tree(parent_child_df = trait_parent_child_df, tr = tr, node_states = node_states)
   downstream_changes <- get_gain_loss_on_stretches(comparitor_parent_child_df = comparitor_parent_child_df, stretches = stretches, node_states = node_states, confidence = confidence)
   return(downstream_changes)
 }
