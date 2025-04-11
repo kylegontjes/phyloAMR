@@ -1,0 +1,531 @@
+---
+title: "ancestral_state_reconstruction_analysis_of_colistin"
+author: "Kyle Gontjes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This tool's main workhorse is the **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize genome-influenced features' gain, loss, and continuation across a phylogenetic tree.
+
+After performing joint or ancestral state reconstruction, the resultant state predictions of ancestral nodes are parsed to generate a parent-child dataframe. By traversing the phylogenetic tree from the tips to the root, the episodes of trait gain, loss, and continuation are added to the phylogenetic tree's edge matrix.
+
+This information can be leveraged to infer whether an isolate belonged to a circulating trait-containing lineage (e.g., evidence of cross-transmission) or resultant from a within-host emergence event (e.g., evidence of *de novo* evolution).
+
+To this aim, we provide a tutorial to leverage our ancestral state reconstruction wrapper function, asr(), and our tree-traversal algorithm, asr_cluster_detection(), to infer the evolutionary history of colistin, a last-resort antibiotic.
+
+After completion of this part of the tutorial, we will be comparing the evolutionary history of this trait to 76 candidate genotypes that may be associated with our trait of interest. We will test the following genotype-phenotype associations using two functions:
+
+1.  synchronous_detection(): Calculate synchronous gain and loss events
+
+2.  downstream_gain_loss(): Calculate downstream gain and loss events
+
+We will ask the following questions:
+
+1.  How many lineages of colistin resistant organisms exist in this population? What is the antibiotic's dynamics of emergene and spread?
+
+2.  What genotypes are associated with resitance emergence and spread? Are there any genotypes associated with phylogenetic emergence or are there any downstream compensatory mutations?
+
+# Tool installation:
+
+1.  Consider installing the package without vignettes, if you want to save time
+2.  This tool is in active development and thus please download from GitHub
+
+```{r,eval=FALSE}
+# Install devtools
+install.packages("devtools", dep = TRUE)
+
+# Install phyloaware from GitHub
+devtools::install_github("kylegontjes/phyloAMR", force = TRUE, build_vignettes = TRUE)
+
+```
+
+# Environment for this tutorial 
+
+```{r setup}
+library(phyloAMR)
+library(dplyr)
+library(ggplot2)
+library(ape)
+library(ggtree)
+library(hues)
+library(ggnewscale)
+library(pbmcapply)
+library(ComplexHeatmap)
+library(grid)
+library(cowplot) 
+library(colorRamp2) 
+```
+
+# Load data
+
+This tutorial will focus on the emergence and spread of colistin non-susceptibility in a collection of 413 carbapenem-resistant *Klebsiella pneumoniae* specimens collected across 12 California long-term acute care hospitals.
+
+We focus on the evolution and spread of non-susceptibility to colistin, a last-resort antibiotic used to treat Gram-negative bacteria.
+
+## Dataframe
+
+1.  **tip_name_var:** variable with tip names
+2.  **Patient_ID:** Identifiers for patients in this study
+3.  **clades:** what clade of epidemic lineage sequence type 258 the isolate belongs to
+4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
+
+```{r}
+df <- phyloAMR::df  
+paste0("Total of 413 isolates")
+paste0("Number of patients: ",length(unique(df$Patient_ID)))
+dim(df)
+paste0("View of dataframe for first 5 isolates")
+head(df,n = 5)
+paste0("Frequency of non-susceptibility to colistin: ")
+table(df$colistin_ns)
+```
+
+## Phylogenetic tree
+
+This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombination filtered alignment of single-nucleotide polymorphisms using IQ-TREE
+
+```{r,fig.width=7.5,fig.height=7.5}
+tr <- phyloAMR::tr
+ggtree(tr)
+```
+
+# Part 0: Visualization of the trait across the phylogenetic tree
+
+Before performing ancestral state reconstruction, it is critical to visualize the tip states of the trait on the phylogeny.
+
+Our ancestral state reconstruction and clustering algorithm is most powerful in settings where frequent emergence and spread of a trait occurs.
+
+Notice the clustering of colistin non-susceptibility across the phylogeny.
+
+-   Numerous emergence events at ancestral nodes and tips can be visually inferred in this phylogeny
+
+-   Ancestral emergence events likely had noticeable variations in size. For instance, consider the large cluster of non-susceptibility in the above clade
+
+-   While we could visually categorize our data, we implemented an ancestral state reconstruction tool to characterize the data.
+
+```{r,fig.width=7.5,fig.height=7.5}
+feature_colors <- c(`1` = "black",`0`="white")
+feature_scale <- scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+
+p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0
+```
+
+# Part 1: Ancestral state reconstruction to characterize colistin resistance
+
+## Step 1: Run ancestral state reconstruction
+
+-   The workhorse function, asr(), is used to perform ancestral state reconstruction. This wrapper function implements ancestral state reconstruction with a single rate category using the corHMM R package: <https://github.com/thej022214/corHMM>
+
+-   Using inferred ancestral states and tip-based data, edges on the phylogenetic tree were evaluated to determine episodes where the trait continued (i.e., susceptible -\> susceptible or non-susceptible -\> non-susceptible), was gained (i.e., susceptible -\> non-susceptible), or was lost (i.e., non-susceptible -\> susceptible). This edge matrix can be leveraged for numerous applications, including characterizing the frequency of trait transitions across a phylogeny and investigating phenotype-genotype associations.
+
+-   The following parameters exist for this function
+
+    -   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+
+    -   **tr:** Phylogenetic tree object of class phylo
+
+    -   **model:** This approach permits the use of either the equal rates (ER) or the all rates differ (ARD) transition matrices.
+
+        -   Equal rates (ER): Assumes equal transition rates for trait gain (e.g., trait absence -\> presence) or loss (e.g., trait gain -\> absence)
+
+        -   All rates differ (ARD): Assumes different transition rates for trait gain and loss
+
+    -   node_states: Whether to perform 'joint' or 'marginal' ancestral state reconstruction
+
+        -   From our experience, we recommend using joint ancestral state reconstruction.
+
+```{r}
+asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+
+paste0("Output names: ")
+names(asr_obj)
+
+paste0("corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM")
+asr_obj$corHMM_out
+
+paste0("corHMM_model_summary: A summary of the corHMM model, including the number of parameters, model, number of rate categories, inferred transition rates, log likelihood, AIC, and AICc")
+paste0("Rate 1 = transitions from level 1 (i.e., susceptible) to level 2 (i.e., non-susceptible)")
+paste0("Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)")
+asr_obj$corHMM_model_summary
+
+paste0("node_states: Chosen node state that was modeled.")
+asr_obj$node_states
+
+paste0("parent_child_df: Parent child dataframe, which contains the edge dataset, parent and child values, the child name (for tips), and transition data (i.e., gain, loss, and continuation of the trait on tree or continuation of trait absence on tree)")
+head(asr_obj$parent_child_df)
+```
+
+## Step 2: Characterize the transition statistics for the trait across the phylogeny
+
+The frequency and location of trait gain, loss, and continuation events can be characterized using the **asr_transition_analysis()** function
+
+In this case, several important observations occur:
+
+1.  Of 824 edges, 48 contained transition events: 37 gain events and 11 loss events
+2.  Inference of location of these transition events revealed numerous events at the tips:
+    1.  30/37 gain events
+    2.  7/11 loss events
+3.  The number of gain events and large number of non-susceptible isolates not accounted for by gain events at the tip, suggest potential for inferred gain events to be shared across isolates.
+    1.  This is indicative of the emergence and spread of colistin non-susceptible strains in this population
+4.  We also provide frequency statistics for the gain, loss, and continuation of these traits that can be useful to characterize the transition dynamics of this trait:
+
+```{r}
+asr_transition_analysis(asr_obj$parent_child_df,node_states='joint')
+```
+
+## Sidebar: Visualization on the phylogenetic tree
+
+It is often helpful to visualize ancestral states on the phylogenetic tree, we build the function paint_tree_with_states() to visualize the edge matrix on the tree.
+
+Very useful to understand the ancestral states of the traits.
+
+```{r,fig.width=7.5,fig.height=7.5}
+painted_tree <- phyloAMR::paint_tree_with_states(asr_obj$parent_child_df,tr)
+painted_tree
+```
+
+## Step 3: Cluster detection
+
+Given the numerous gain and loss events, we are well-positioned to leverage our tree traversal algorithm to infer the evolutionary history of our isolates.
+
+In this package, we developed a phylogenetic tree traversal algorithm, **asr_cluster_detection()**, that traces the ancestral states of each isolate to infer their evolutionary history. This algorithm takes an isolate’s trait data and walks upward on the tree to classify trait-containing isolates as phylogenetic singletons (i.e., evidence of de novo evolution) or members of a phylogenetic cluster of the trait (i.e., evidence of acquisition of a circulating trait-containing lineage).
+
+Extending this to the study of Colistin non-susceptibility, non-susceptible isolates with gain events inferred at the tip were classified as phylogenetic singletons. However, instances where a non-susceptible isolate had a gain event at the tip and a reversion event at its parental node were eligible for classification as members of a phylogenetic cluster. Non-susceptible isolates were classified as members of a phylogenetic cluster if their ancestral gain event was shared with at least one additional resistant isolate. Non-susceptible isolates that did not share an ancestral gain event with any other resistant isolate were classified as phylogenetic singletons. Phylogenetic clusters where all isolates belonged to one patient were not considered clusters and were reclassified as redundant phylogenetic singletons. 
+
+**The following parameters exist for this function:**
+
+-   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+
+-   **tr:** Phylogenetic tree object of class phylo
+
+-   **tip_name_var:** Tip name variable
+
+-   **patient_id:** Variable pertaining to a patient identifier
+
+-   **pheno:** Phenotype of interest (e.g., colistin non-susceptibility)
+
+-   **parent_child_df:** The parent child dataframe (e.g., edge matrix)
+
+-   **node_states:** Node states of the ancestral state reconstruction model
+
+-   **confidence:** FOR MARGINAL RECONSTRUCTION, ONLY. Whether to only consider 'high' confidence events (e.g., absent to present) or 'low' confidence transition events (e.g., absent to unsure). We recommend using 'high' confidence transition events.
+
+-   **faux_clusters:** Whether to 'remove' (e.g., reclassify as singletons) or 'rename' (e.g., classify as faux) clusters where isolates belong to just one patient. This is important to consider when classifying clusters of this phenotype
+
+-   **remove_reverant:** Whether to remove (TRUE) the episodes of trait reversion (e.g., present -\> absent) or permit them to be labeled
+
+-   **collapse_cluster:** Whether to collapse (TRUE) the episodes as either cluster, singleton, or no feature
+
+```{r,fig.width=7.5,fig.height=7.5}
+asr_cluster_obj <- asr_cluster_detection(df = df,tr=tr,tip_name_var = "tip_name_var",patient_id = 'PatientID',pheno = 'colistin_ns',parent_child_df = asr_obj$parent_child_df,node_states = 'joint',confidence = NULL,faux_clusters = 'remove',remove_revertant = TRUE,collapse_cluster = TRUE)
+
+paste0("Cluster detection dataframe")
+colnames(asr_cluster_obj)
+head(asr_cluster_obj,n=5)
+
+paste0("asr_cluster: raw clustering data. The numbers for cluster and revertant lineages correspond to the ancestral node where the shared gain (i.e., cluster_527) or loss (e.g., revertant_782) event occured.")
+table(asr_cluster_obj$asr_cluster)
+
+paste0("asr_cluster_renamed: Renamed these categories as singleton, cluster X, and no feature")
+table(asr_cluster_obj$asr_cluster_renamed)
+
+paste0("asr_cluster_collapsed: Collapsed as singleton, cluster, or no feature")
+table(asr_cluster_obj$asr_cluster_collapsed)
+```
+
+## Step 4: Cluster statistics
+
+To characterize the evolutionary history, we described both the transitional data and the phylogenetic clustering of each antibiotic phenotype.
+
+Descriptive statistics for the phylogenetic clustering can be determined using phyloAMR’s **asr_cluster_analysis()** function.
+
+Specifically, the crude frequency of the trait, descriptive statistics on the number of singletons, clusters, and summary statistics for cluster size.
+
+We use two measures to characterize the phylogenetics of a trait: phylogenetic occurrence (**Equation 1**) and clustering (**Equation** **2**). 
+
+1.  **Phylogenetic frequency:** No. singleton events + No. clustersNo. singleton events + No. clusters + No. isolates without feature
+2.  **Clustering frequency:** No. clustersNo. singleton events + No. clusters  
+
+```{r,fig.width=7.5,fig.height=7.5}
+asr_cluster_analysis(asr_cluster_obj,remove_faux = TRUE)
+```
+
+## Step 5: Visualize clusters on phylogeny
+
+Finally, it is critical to inspect the lineages on the phylogeny.
+
+Here is a tour of the phylogeny:
+
+-   White indicates susceptibility
+
+-   Red indicates non-susceptible isolate where gain was inferred at tip
+
+    -   Faux clusters (e.g., phylogenetic clusters from one patient) are also relabeled as red
+
+-   Other colors correspond to the seven clusters of Colistin non-susceptibility present in this population
+
+This visualization permits the inspection of cluster calls and characterize the phylogenetic clustering of our trait using ancestral state reconstruction
+
+-   For instance, look at the large clusters in the top clade versus the bottom clade.
+
+-   This hints at a potential association between a shared genotype and these large clusters.
+
+```{r,fig.width=7.5,fig.height=7.5}
+# Cluster color pallete
+## Number of clusters
+ncluster <- table(asr_cluster_obj$asr_cluster)  %>% subset(names(.) != "singleton" & grepl("cluster",names(.))) %>% as.numeric %>%length 
+## Cluster pallete
+color_palette <- grDevices::colors() %>% subset(grepl("red",.)==F)
+clusters_col <- hues::iwanthue(ncluster,hmin=15,hmax=360,lmin = 5,lmax = 95,cmin=5,cmax=90,random = F,plot = F)
+## Names
+clusters_name <- paste0("Cluster ",1:ncluster)
+names(clusters_col) <- clusters_name
+## Scale
+cluster_scale <- scale_fill_manual(breaks =c("No Feature","Singleton",names(clusters_col)),values=c("No Feature" = "white","Singleton" = "red",clusters_col),labels=c("No Feature","NS Singleton",clusters_name),name="Phylogenetics of Non-susceptibility", guide = guide_legend(ncol=4, title.position = "top", label.position = "right"))
+
+# Phylogenetic visualization
+p0.1 <- p0 +ggnewscale::new_scale_fill()
+p1 <- gheatmap(p0.1,asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,625) + cluster_scale
+p1
+```
+
+# Part 2: Analysis of genotype and phenotype relationships
+
+Inspection of the phylogenetic tree and clustering of colistin resistance indicates a potential association between the acquisition of resistance and genotypes. Whether it be the acquisition of genotypes and our singletons OR the synchronous or downstream acquisition of cluster-defining genotypes.
+
+We will evaluate the following questions:
+
+1.  What genotypes are associated with resitance emergence and spread? Are there any genotypes associated with phylogenetic emergence or are there any downstream compensatory mutations?
+
+The following algorithms will be performed:
+
+1.  synchronous_detection(): Calculate synchronous gain and loss events
+
+2.  downstream_gain_loss(): Calculate downstream gain and loss events
+
+## Step 0 : Describe data
+
+1.  This data is a collection of 66 resistance-associated genotypes compiled in <https://github.com/Snitkin-Lab-Umich/ltach-crkp-colistin-ms>
+2.  They have different predictions of association (i.e., resistance, reversion, or compensatory)
+    1.  Notice how some are joined with our phylogenetic clusters! It will be interesting to see how their evolutionary histories align with our colistin resistance phenotype
+
+```{r,fig.width=12.5,fig.height=8}
+genotype_mat <- phyloAMR::genotype_mat %>% mutate_all(as.numeric) %>% `colnames<-`(paste0("geno_",seq_len(ncol(.))))
+
+
+presence <- scale_fill_manual(breaks =c(0,1),values=c("white","black"),labels=c("No Feature","Feature"),name="Presence", guide = guide_legend(ncol=1, title.position = "top", label.position = "right"))
+
+
+p1.1 <- p1 + ggnewscale::new_scale_fill()
+gheatmap(p1.1,genotype_mat %>% mutate_all(as.factor),colnames_position = 'top',width = 5,colnames_angle = 90,hjust = 0,offset=0.0000175,color=NULL,colnames = T) + ylim(NA,625)  + theme(legend.position = 'bottom') + presence
+```
+
+## Step 1: Generate ancestral state reconstruction
+
+1.  We performed ancestral state reconstruction on each individual genotype. It is best to attempt to parallelize this.
+2.  For downstream analyses, we will leverage and compare the parent_child_df matrices, which provide the gain and loss data for our traits.
+
+```{r}
+genotypes <- colnames(genotype_mat)
+genotype_mat$tip_name_var <- rownames(genotype_mat)
+  
+genotypes_asr <- pbmcapply::pbmclapply(genotypes,FUN=function(x){
+   phyloAMR::asr(df = genotype_mat,tr = tr,tip_name_var = "tip_name_var",pheno = x,model = "ER",node_states = "joint")
+},mc.cores=5)
+
+genotypes_asr_parent_child_df <- lapply(genotypes_asr,FUN=function(x){
+  x$parent_child_df
+})  %>% `names<-`(genotypes)
+```
+
+## Step 2: Are there genotypes that were synchronously gained or lost when the phenotype was gain/lost?
+
+### Step 2a: Perform synchronous comparison
+
+This algorithm looks for synchronous episodes where colistin and our genotypes both have a gain/loss event.
+
+This method will be useful in evaluating resistance or reversion associated genotypes.
+
+```{r}
+synchronous_gain_loss_df <- pbmcapply::pbmclapply(genotypes_asr_parent_child_df,FUN=function(x){
+  phyloAMR::synchronous_detection(x,asr_obj$parent_child_df)
+},mc.cores=6) %>% do.call(rbind,.) %>% mutate(genotype = genotypes)
+```
+
+### Step 2b: Generate summary statistics
+
+1.  We have 22 genotypes that had gain events when the phenotype had a gain event
+2.  Interestingly, 3 genotypes were gained directly when the phenotype is lost. A potential reversion mutation
+
+```{r}
+table(synchronous_gain_loss_df$synchronous_gains_num,dnn="Number of synchronous gain events")
+table(synchronous_gain_loss_df$synchronous_gain_loss_num,dnn="Number of synchronous gain + loss events")
+table(synchronous_gain_loss_df$synchronous_losses_num,dnn="Number of synchronous loss events")
+table(synchronous_gain_loss_df$synchronous_loss_gain_num,dnn="Number of synchronous loss + genotype gain events")
+```
+
+## Step 3: Evaluate downstream genotype events on stretches of the tree
+
+### Step 3a: Perform downstream comparison
+
+This algorithm identifies stretches on the tree where the colistin resistance is continued.
+
+As we are intested in compensatory, reversion, or resistance mutations, we can look at these stretches for potential signature of resistance evolution
+
+```{r}
+downstream_df <- pbmcapply::pbmclapply(genotypes_asr_parent_child_df,FUN=function(x){
+  comparitor_df <- x %>% as.data.frame
+  phyloAMR::downstream_gain_loss(comparitor_parent_child_df = comparitor_df,trait_parent_child_df = asr_obj$parent_child_df,tr=tr)
+},mc.cores=6) %>% do.call(rbind,.) %>% mutate(genotype = genotypes)
+```
+
+### Step 3b: Generate summary statistics
+
+1.  We identify 19 genotypes that were gained on phenotypic stretches, these could include downstream compensatory mutations or the resistance-associated genotype that did not have a gain event that matched the upstream phenotype gain event.
+
+```{r}
+table(downstream_df$stretches_w_gains_num,dnn="Number of stretches with genotype gain events")
+table(downstream_df$stretches_w_losses_num,dnn="Number of stretches with genotype loss events") 
+```
+
+## Step 4: Categorize genotypes
+
+Next, we should categorize our genotypes:
+
+1.  Resistance gain-associated: Synchronous gain event of trait + genotype
+2.  Reversion-associated: Synchronous loss of trait + gain of genotype
+3.  Downtream gain-associated: Genotype gained on phenotype stretch
+
+### Step 4.1: Get categories
+
+```{r}
+gain_associated_genotypes <- synchronous_gain_loss_df %>% subset(synchronous_gains_num>0) %>% .$genotype
+reversion_associated_genotypes <- synchronous_gain_loss_df %>% subset(synchronous_loss_gain_num>0) %>% .$genotype
+downstream_gain_genotypes <- downstream_df %>% subset(stretches_w_gains_num>0) %>% .$genotype
+not_characterized <- synchronous_gain_loss_df$genotype %>% subset(.,!. %in% c(gain_associated_genotypes,reversion_associated_genotypes,downstream_gain_genotypes))
+
+genotypes_named <- c(rep('gain',length(gain_associated_genotypes)) %>% `names<-`(gain_associated_genotypes) ,rep('reversion',length(reversion_associated_genotypes)) %>% `names<-`(reversion_associated_genotypes) ,rep('downstream',length(downstream_gain_genotypes)) %>% `names<-`(downstream_gain_genotypes) ,rep('not categorized',length(not_characterized)) %>% `names<-`(not_characterized))
+
+ggVennDiagram::ggVennDiagram(list(gain_sync=gain_associated_genotypes,reversion=reversion_associated_genotypes,gain_down = downstream_gain_genotypes,neither=not_characterized))
+```
+
+### Step 4.2: Add the genotype to the tree
+
+```{r,fig.width=15,fig.height=12.5}
+gain <- scale_fill_manual(breaks =c(0,1),values=c("white","purple"),labels=c("No Feature","Synchronous Gain"),name="Synchronous Gain", guide = guide_legend(ncol=1, title.position = "top", label.position = "right"))
+gain_down <- scale_fill_manual(breaks =c(0,1),values=c("white","green"),labels=c("No Feature","Downstream Gain"),name="Downstream Gain", guide = guide_legend(ncol=1, title.position = "top", label.position = "right"))
+reversion <- scale_fill_manual(breaks =c(0,1),values=c("white","red"),labels=c("No Feature","Reversion"),name="Reversion", guide = guide_legend(ncol=1, title.position = "top", label.position = "right"))
+not <- scale_fill_manual(breaks =c(0,1),values=c("white","black"),labels=c("No Feature","Present"),name="Not categorized", guide = guide_legend(ncol=1, title.position = "top", label.position = "right"))
+
+rownames(genotype_mat) <- genotype_mat$tip_name_var
+
+p1.1 <- p1 + ggnewscale::new_scale_fill()
+p2 <- gheatmap(p1.1,genotype_mat %>% select(gain_associated_genotypes) %>% mutate_all(as.factor),colnames_position = 'top',width = 2.625,colnames_angle = 90,hjust = 0,offset=0.0000175,color=NULL,colnames = T) + ylim(NA,625) + gain + theme(legend.position = 'bottom')
+p2.1 <- p2 + ggnewscale::new_scale_fill()
+p3 <- gheatmap(p2.1,genotype_mat %>% select(downstream_gain_genotypes) %>% mutate_all(as.factor),colnames_position = 'top',width = 2.375,colnames_angle = 90,hjust = 0,offset=0.0001,color=NULL,colnames = T) + ylim(NA,625) + gain_down + theme(legend.position = 'bottom')
+p3.1 <- p3 + ggnewscale::new_scale_fill()
+p4 <- gheatmap(p3.1,genotype_mat %>% select(reversion_associated_genotypes) %>% mutate_all(as.factor),colnames_position = 'top',width = .375,colnames_angle = 90,hjust = 0,offset=0.000175,color=NULL,colnames = T) + ylim(NA,625) + reversion + theme(legend.position = 'bottom')
+p4.1 <- p4 + ggnewscale::new_scale_fill()
+
+p5 <- gheatmap(p4.1,genotype_mat %>% select(not_characterized) %>% mutate_all(as.factor),colnames_position = 'top',width = 4,colnames_angle = 90,hjust = 0,offset=0.0001875,color=NULL,colnames = T) + ylim(NA,490) + not + theme(legend.position = 'bottom')
+p5
+```
+
+### Step 4.3: Characterize explanation of resistant strains with these synchronou and downstream gain events
+
+```{r}
+numerical_data <- function(variable,df){
+  isolates_w_variant <- df %>% subset(get(variable) ==1)
+  representation_in_clusters <-  table(isolates_w_variant %>% .$asr_cluster_renamed)
+  true_cluster_size <- table(df %>% .$asr_cluster_renamed)
+  
+  res_prop_df <-lapply(names(true_cluster_size),FUN=function(x){
+    if(x %in% names(representation_in_clusters) == F){
+      prop =0
+    }
+    if(x %in% names(representation_in_clusters) == T){
+      prop = representation_in_clusters[[x]] / true_cluster_size[[x]]
+    }
+    return(prop)
+  }) %>% do.call(cbind.data.frame,.) %>% `colnames<-`(paste0(names(true_cluster_size),"_prop"))
+  
+  res_ct_df <-lapply(names(true_cluster_size),FUN=function(x){
+    if(x %in% names(representation_in_clusters) == F){
+      ct =0
+    }
+    if(x %in% names(representation_in_clusters) == T){
+      ct = representation_in_clusters[[x]]  
+    }
+    return(ct)
+  }) %>% do.call(cbind.data.frame,.) %>% `colnames<-`(paste0(names(true_cluster_size),"_ct"))
+  
+  
+  
+  res_prop_df$Cluster_prop <- nrow(isolates_w_variant %>% subset(!asr_cluster_renamed %in% c("Singleton","No Feature"))) / nrow(df %>% subset(!asr_cluster_renamed %in% c("Singleton","No Feature")))   
+  res_ct_df$Cluster_ct <- nrow(isolates_w_variant %>% subset(!asr_cluster_renamed %in% c("Singleton","No Feature")))  
+  results <- cbind(res_prop_df,res_ct_df)
+  return(results)
+}
+
+```
+
+```{r,fig.width=7,fig.height=9.5}
+genotype_mat <- left_join(genotype_mat,asr_cluster_obj %>% mutate(tip_name_var = child_name))
+
+prop_data <- lapply(genotypes,numerical_data,df=genotype_mat) %>% do.call(rbind,.) %>% `rownames<-`(genotypes) 
+prop_columns <- colnames(prop_data) %>% subset(. != "Cluster_prop" & grepl("_prop",.)) %>% sort
+ct_columns <- colnames(prop_data) %>% subset(. != "Cluster_ct" & grepl("_ct",.)) %>% sort
+genotype_mat$asr_cluster_renamed <- factor(genotype_mat$asr_cluster_renamed,levels = c(prop_columns %>% gsub("_prop","",.)))
+total_ct <-  table(genotype_mat %>% .$asr_cluster_renamed)  
+total_genotype_ct <- prop_data %>% select(ct_columns) %>% `colnames<-`(gsub("_ct","",colnames(.))) %>% rowSums()
+column_names <- prop_columns %>% gsub("_prop","",.) %>% paste0(.," (n=",total_ct,")")
+ct_matrix <-  prop_data %>% select(ct_columns) %>% `colnames<-`(gsub("_ct","",colnames(.)))  %>% round(.,0)  %>% as.matrix %>% {ifelse(. ==0,"",.)}
+ 
+prop_matrix <- prop_data %>% select(prop_columns) %>% `colnames<-`(gsub("_prop","",colnames(.))) %>% round(.,3) %>% as.matrix 
+
+# Legend
+one_hundred_breaks <- c()
+for(i in 1:100){
+  one_hundred_breaks[i] <- 1*i
+}  
+
+fig_legend <- ComplexHeatmap::Legend(at = c(0, 0.25, 0.50, 0.75, 1.00),labels = c("0%", "25%", "50%", "75%", "100%"),title = "Proportion",direction = "horizontal",col_fun = colorRamp2(breaks = c(0, 1.00),colors = c("white","red")), title_gp = gpar(fontsize = 16),labels_gp=gpar(fontsize=14),legend_width = unit(12, "cm"))
+
+genotype_names <- genotypes_named  %>% as.data.frame %>% `colnames<-`("category")
+genotype_names$genotype <- rownames(genotype_names)
+prop_matrix <- left_join(prop_matrix %>% as.data.frame %>% mutate(genotype = rownames(.)),genotype_names)
+rowannot <-  rowAnnotation(category = prop_matrix$category)
+# Heatmap
+A_heatmap <- ComplexHeatmap::Heatmap(prop_matrix %>% select(-genotype,-category),show_heatmap_legend = F,show_row_names = T,col = c("white","red"),cluster_columns = F,cluster_rows=T,name = "Proportion",column_labels = column_names,  cell_fun = function(j, i, x, y, width, height, fill) {
+    grid.text(sprintf("%.3s", ct_matrix[i, j]), x, y, gp = gpar(fontsize = 8))
+},border_gp = gpar(col = "black", lty = 1), rect_gp = gpar(col = "white", lwd = 1),right_annotation = rowannot) 
+
+
+fig_heatmap_image <- grid.grabExpr(draw(A_heatmap))
+fig_legend_image <- grid.grabExpr(draw(fig_legend))
+
+A <- cowplot::plot_grid(fig_heatmap_image,NULL,fig_legend_image,ncol=1,axis="l", align="hv",rel_heights = c(1,-.085,.2))   
+A
+```
+
+### 
+
+# Conclusion:
+
+1.  We found numerous episodes of gain, loss, and clustering of colistin in this population, evidence of complex dynamics of antibiotic resistance
+2.  Our clustering algorithm identified large colistin-resistant lineages that are circulating in this facility.
+3.  Investigation of these associations with a panel of previously curated genotypes found several genotypes associated with gain, reversion, and our clusters.
+4.  Future would should investigate the function of these genotypes and test for statistical significance.
+5.  A few brief notes about our genotype-phenotype testing:
+    1.  Synchronous transitions often aligned well with singletons
+    2.  Consider using downstream analysis for clade-defining and cluster-defining mutations. Often, the genotype will be gained after the phenotype in reconstruction, often due to the phenotype being considered across the whole tree and genotype being confined to a specific spot on the tree.

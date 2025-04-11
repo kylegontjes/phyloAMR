@@ -8,7 +8,7 @@ Specifically, we can ask the following question:
 1. How many lineages of colistin resistant organisms exist in this population? What is the antibiotic's dynamics of emergene and spread?
 2. What genotypes are associated with resitance emergence and spread? Are there any genotypes associated with phylogenetic emergence or are there any downstream compensatory mutations? 
 
-Knowing what we know about colistin resisastance, we expect for there to be numerous emergence and spread events. Given the cost of colistin resistance, I anticipate several reversion events and the identification of genotype associated with both gain (i.e., synchronous gain events) and loss (i.e., synchronous trait loss and genotype gain events). I anticipate that this tool will help us better characterize our genotypes in this paper using a data-driven approach. 
+Knowing what we know about colistin resistance, we expect for there to be numerous emergence and spread events. Given the cost of colistin resistance, I anticipate several reversion events and the identification of genotype associated with both gain (i.e., synchronous gain events) and loss (i.e., synchronous trait loss and genotype gain events). I anticipate that this tool will help us better characterize our genotypes in this paper using a data-driven approach. 
 
 **Attached dataset for using the tool**
 
