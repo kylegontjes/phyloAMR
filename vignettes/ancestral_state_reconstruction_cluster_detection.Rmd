@@ -86,7 +86,7 @@ Notice the clustering of Colistin non-susceptibility across the phylogeny.
 feature_colors <- c(`1` = "black",`0`="white")
 feature_scale <- scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
 
-p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,450) + feature_scale
 p0
 ```
 
@@ -248,5 +248,5 @@ cluster_scale <- scale_fill_manual(breaks =c("No Feature","Singleton",names(clus
 
 # Phylogenetic visualization
 p0.1 <- p0+ggnewscale::new_scale_fill()
-gheatmap(p0.1,asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,625) + cluster_scale
+gheatmap(p0.1,asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,500) + cluster_scale
 ```
