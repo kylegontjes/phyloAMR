@@ -1,16 +1,16 @@
-pvalue_informed_regression <- function(outcome,dataset,variables,pvalue_threshold){
+pvalue_informed_regression <- function(outcome,dataset,variables,entry_criteria,retention_criteria){
   datatable <- lapply(variables,FUN=function(x){
     datatable <- univariable_regression(x,outcome,dataset) %>% as.data.frame
     return(datatable)
   })%>% do.call(rbind,.)
 
-  pval_less_threshold <- datatable %>% subset(p_value < as.numeric(pvalue_threshold))  %>% arrange(p_value)
+  pval_less_threshold <- datatable %>% subset(p_value < as.numeric(entry_criteria))  %>% arrange(p_value)
   variables <- rownames(pval_less_threshold)
   # Loop through variables to create final model
-  if(min(pval_less_threshold$p_value)>0.05){
-    return("No model - no variables < 0.05")
+  if(min(pval_less_threshold$p_value)>retention_criteria){
+    return(paste0("No model - no variables < ",retention_criteria))
   }
-  if(min(pval_less_threshold$p_value)<0.05){
+  if(min(pval_less_threshold$p_value)<retention_criteria){
     # Now loop through variables
     null_model <- paste(outcome,"1", sep = "~")
     null_model_out <- glm(null_model, data = dataset, family = "binomial")
@@ -22,10 +22,10 @@ pvalue_informed_regression <- function(outcome,dataset,variables,pvalue_threshol
       null_model_new <- paste0(null_model_out$formula,"+",i)
       null_model_out_new <- glm(null_model_new, data = dataset, family = "binomial")
       pvals <- abs(summary(null_model_out_new)$coefficients[,'Pr(>|z|)']) %>% round(.,4)
-      if(pvals[length(pvals)] >0.05){
+      if(pvals[length(pvals)] >retention_criteria){
         null_model_out <- null_model_out
       }
-      if(pvals[length(pvals)] <0.05){
+      if(pvals[length(pvals)] <retention_criteria){
         null_model_out <- null_model_out_new
       }
     }
