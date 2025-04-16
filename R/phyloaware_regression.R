@@ -34,22 +34,8 @@ phyloaware_regression <- function(pheno, variables, df, first_present = NULL, pa
     })  %>% `names<-`(names(datasets))
     results[["multivariable"]] <- multivariable
   } else if (multivariable == "AIC") {
-    multivariable <- lapply(datasets, FUN = function(x) {
-      model <- as.formula(paste0(pheno, " ~ 1 +", paste0(variables, collapse = " + ")))
-      if (stepwise_direction == "forward") {
-        initialize_model <- glm(formula =  as.formula(paste0(pheno, " ~ 1")), data = x, family = "binomial")
-        stepwise_glm_model <- suppressMessages(stats::step(initialize_model, direction = stepwise_direction, scope = model))
-      }   else {
-        glm_model <- glm(model, data = x, family = "binomial")
-        stepwise_glm_model <- suppressMessages(stats::step(glm_model, direction = stepwise_direction))
-      }
-      ci <- suppressMessages(confint(stepwise_glm_model))
-      final <- cbind(exp(cbind(OR = coef(stepwise_glm_model), ci)) %>% round(., 2),
-                     abs(summary(stepwise_glm_model)$coefficients[, "Pr(>|z|)"]) %>%
-                       round(., 4)) %>% subset(rownames(.) != "(Intercept)") %>%
-        `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
-        as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (", `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`, p_value)
-      return(final)
+    multivariable <- lapply(datasets, FUN = function (x) {
+      AIC_stepwise_regression(outcome = pheno, dataset = x, variables = variables, stepwise_direction = stepwise_direction)
     }) %>% `names<-`(names(datasets))
     results[["multivariable"]] <- multivariable
   } else if (multivariable == "pvalue") {
