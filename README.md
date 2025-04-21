@@ -20,8 +20,7 @@ This information can be leveraged, using our downstream algorithms, to address n
 
 Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed:
 1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree
-2. **permute_burden_algorithm()**: Permutation test to identify genes with elevated mutation frequency. 
- 
+
 **How to install phyloAMR**
 
 ```
@@ -41,7 +40,6 @@ devtools::install_github("kylegontjes/phyloAMR", force = TRUE, build_vignettes =
 | Genetic features associated with trait/lineage emergence/spread? | Ancestral state reconstruction of phenotype and genotype | asr() + synchronous_detection() + synchronous_permutation_test()  **WIP** | Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree | Two traits with synchronous episodes of gain or loss 
 | What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations) | Ancestral state reconstruction of phenotype and genotypes | asr() + downstream_gain_loss()  + downstream_permutation_test()  **WIP** | Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree | Genotypes classified as downstream mutations from a traits gain event |  
 | What descriptive characteristics are associated with phenotypic emergence and spread? | Association testing for characteristics and phenotypic emergence (singletons) and clusters | phyloaware_regression() | Cluster calls from asr_cluster_detection() algorithm and a dataframe with characteristics of interest | Statistical association testing results for characteristics of interest | 
-| What genes are mutated more often than expected in my population of interest? | Permutation testing of observed mutations | permute_burden_algorithm() **WIP** | VCF file and dictionary with details on gene length | Statistically significant genes with more mutations than expected | 
 | Who is my isolate's closest related strain (i.e., nearest neighbor)? | Evaluation of phylogenetic distance | nearest_neighbor_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | An isolate's nearest neighbor |  
 
 **Package Vignettes**
