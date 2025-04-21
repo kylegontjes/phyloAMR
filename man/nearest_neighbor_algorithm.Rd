@@ -20,15 +20,15 @@ nearest_neighbor_algorithm(
 
 \item{phylogenetic_distance}{Matrix of phylogenetic distance}
 
-\item{variant_distance}{While rate, it is encouraged to provide variant distance}
+\item{variant_distance}{Provide a secondary distance measure}
 
-\item{metadata}{Dataframe with metadata of interest. This should include the trait of interest}
+\item{metadata}{Dataframe with trait and variables of interest}
 
-\item{annotate}{Boolean (TRUE/FALSE) indicating whether to annotate the output with variables of interest}
+\item{annotate}{Boolean (TRUE/FALSE) indicating if annotation is necessary}
 
 \item{variables_of_interest}{Variables found in the metadata}
 
-\item{comparison}{Boolean (TRUE/FALSE) indicating whether to focus on individuals without a trait of interest.}
+\item{comparison}{Boolean (TRUE/FALSE) indicating whether to focus on isolates with/without a trait}
 
 \item{comparison_feature}{Name of variable to compare.}
 }
@@ -36,5 +36,5 @@ nearest_neighbor_algorithm(
 The nearest neighbor of interest.
 }
 \description{
-This function will use the phylogenetic tree to identify an isolate's nearest neighbor.
+This function uses phylogenetics to identify an isolate's nearest neighbor.
 }
