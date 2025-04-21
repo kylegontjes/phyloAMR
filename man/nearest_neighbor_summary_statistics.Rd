@@ -6,20 +6,18 @@
 \usage{
 nearest_neighbor_summary_statistics(
   nn_diff_df,
-  cat_vars = NULL,
+  categorical_vars = NULL,
   binary_vars = NULL,
-  cont_vars = NULL,
+  continuous_vars = NULL,
   log_2 = FALSE
 )
 }
 \arguments{
 \item{nn_diff_df}{Dataframe with isolates and their nearest neighbors, generated from nearest_neighbor_analysis.}
 
-\item{cat_vars}{Categorical variables. Must be in the comparison_df}
-
 \item{binary_vars}{Binary variables. Must be in the comparison_df AND coded 0 and 1.}
 
-\item{cont_vars}{Continuous variables. Must be in the comparison_df}
+\item{continuous_vars}{Continuous variables. Must be in the comparison_df}
 
 \item{log_2}{Boolean (TRUE/FALSE) Whether to perform log-2 transformation on continuous variables}
 }
