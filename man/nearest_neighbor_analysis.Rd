@@ -4,16 +4,24 @@
 \alias{nearest_neighbor_analysis}
 \title{nearest_neighbor_analysis: Generate nearest neighbor comparisons for isolate pairs}
 \usage{
-nearest_neighbor_analysis(comparison_df, cat_vars, cont_vars, log_2)
+nearest_neighbor_analysis(
+  comparison_df,
+  cat_vars = NULL,
+  binary_vars = NULL,
+  cont_vars = NULL,
+  log_2 = FALSE
+)
 }
 \arguments{
 \item{comparison_df}{Dataframe with isolates and their nearest neighbors.}
 
 \item{cat_vars}{Categorical variables. Must be in the comparison_df}
 
+\item{binary_vars}{Binary variables. Must be in the comparison_df AND coded 0 and 1.}
+
 \item{cont_vars}{Continuous variables. Must be in the comparison_df}
 
-\item{log_2}{Whether to perform log-2 transformation on continuous variables}
+\item{log_2}{Boolean (TRUE/FALSE) Whether to perform log-2 transformation on continuous variables}
 }
 \value{
 Dataframe with differences in the categorical and continuous variables between an isolate and their nearest neighbor
