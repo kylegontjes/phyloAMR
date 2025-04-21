@@ -1,6 +1,13 @@
-#' Generate summary statistics of nearest neighbor comparisons for isolate pairs
+#' nearest_neighbor_summary_statistics: Generate summary statistics of nearest neighbor comparisons for isolate pairs
 #'
 #' This function will generate summary statistics for nearest neighbor comparisons
+#'
+#' @param nn_diff_df Dataframe with isolates and their nearest neighbors, generated from nearest_neighbor_analysis.
+#' @param cat_vars Categorical variables. Must be in the comparison_df
+#' @param cont_vars Continuous variables. Must be in the comparison_df
+#' @param log_2 Whether to perform log-2 transformation on continuous variables
+#' @return Dataframe with differences in the categorical and continuous variables between an isolate and their nearest neighbor
+#' @export
 
 nearest_neighbor_summary_statistics <- function (nn_diff_df, cat_vars, cont_vars, log_2){
   n <- nrow(nn_diff_df)

@@ -1,10 +1,18 @@
-# Nearest neighbor algorithm
-
-#' Generate nearest neighbor using phylogenetic distance
+# nearest_neighbor_algorithm: Nearest neighbor algorithm
 #'
-#' This function will use the phylogenetic tree to identify an isolate's nearest neighbor. This genetically
-#' similar strain can be used later.
-
+#' Identify the phylogenetic nearest neighbor of a tip
+#'
+#' This function will use the phylogenetic tree to identify an isolate's nearest neighbor.
+#' @param isolate Isolate of interest
+#' @param phylogenetic_distance Matrix of phylogenetic distance
+#' @param variant_distance While rate, it is encouraged to provide variant distance
+#' @param metadata Dataframe with metadata of interest. This should include the trait of interest
+#' @param annotate Boolean (TRUE/FALSE) indicating whether to annotate the output with variables of interest
+#' @param variables_of_interest Variables found in the metadata
+#' @param comparison Boolean (TRUE/FALSE) indicating whether to focus on individuals without a trait of interest.
+#' @param comparison_feature Name of variable to compare.
+#' @return The nearest neighbor of interest.
+#' @export
 nearest_neighbor_algorithm <- function(isolate,phylogenetic_distance,variant_distance,metadata,annotate=NULL,variables_of_interest=NULL,comparison=NULL,comparison_feature=NULL){
   # Get nearest neighbor
   nearest_neighbor <- get_nearest_neighbor(isolate = isolate,phylogenetic_distance = phylogenetic_distance,variant_distance=variant_distance,metadata=metadata,comparison=comparison,comparison_feature=comparison_feature)

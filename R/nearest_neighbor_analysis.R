@@ -1,7 +1,14 @@
-#' Generate nearest neighbor comparisons for isolate pairs
+#' nearest_neighbor_analysis: Generate nearest neighbor comparisons for isolate pairs
 #'
 #' This function will compare the isolate to their nearest neighbor. Has functionality for categorical and continuous variables.
-
+#'
+#' This function will use the phylogenetic tree to identify an isolate's nearest neighbor.
+#' @param comparison_df Dataframe with isolates and their nearest neighbors.
+#' @param cat_vars Categorical variables. Must be in the comparison_df
+#' @param cont_vars Continuous variables. Must be in the comparison_df
+#' @param log_2 Whether to perform log-2 transformation on continuous variables
+#' @return Dataframe with differences in the categorical and continuous variables between an isolate and their nearest neighbor
+#' @export
 nearest_neighbor_analysis <- function(comparison_df, cat_vars, cont_vars, log_2){
   nn_cat_diff <- function(df, var) {
     cat_diff <- ifelse(df[, var] == 1 & df[, paste0(var,

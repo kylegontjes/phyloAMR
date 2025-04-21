@@ -35,11 +35,11 @@ phyloaware_regression(
 
 \item{stepwise_direction}{Direction if stepwise multivariable regression is chosen}
 
-\item{entry_criteria}{P-value for defining candidate variables for multivariable regression}
+\item{entry_criteria}{P-value for defining candidate variables for multivariable regression (used in pvalue and purposeful selection)}
 
-\item{retention_criteria}{P-value for retaining candidate variables in model}
+\item{retention_criteria}{P-value for retaining candidate variables in model (used in pvalue and purposeful selection)}
 
-\item{confounding_criteria}{Impact on effect size}
+\item{confounding_criteria}{Impact on effect size for purposeful selectoin}
 }
 \value{
 List with univariable and multivariable results (if requested)
