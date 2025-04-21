@@ -45,7 +45,7 @@ phyloaware_regression <- function(pheno, variables, df, first_present = NULL, pa
     results[["multivariable"]] <- multivariable
   } else if (multivariable == "multivariable"){
     multivariable <- lapply(datasets,FUN=function(x){
-      model <- model <- as.formula(paste0(pheno, " ~ 1 +", paste0(variables, collapse = " + ")))
+      model <- as.formula(paste0(pheno, " ~ 1 +", paste0(variables, collapse = " + ")))
       glm_model <- glm(model, data = x, family = "binomial")
       ci <- suppressMessages(confint(glm_model))
       final <- cbind(exp(cbind(OR = coef(glm_model), ci)) %>% round(., 2),
@@ -54,8 +54,8 @@ phyloaware_regression <- function(pheno, variables, df, first_present = NULL, pa
         `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
         as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (", `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`, p_value)
       return(final)
-      results[["multivariable"]] <- multivariable
     })
+    results[["multivariable"]] <- multivariable
   }
   return(results)
 }
