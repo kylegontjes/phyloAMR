@@ -16,8 +16,8 @@ nearest_neighbor_summary_statistics <- function(nn_diff_df, categorical_vars = N
   comps_sum <- cbind.data.frame(n = n)
 
   # Categorical differences
-  if (is.null(continuous_vars) == FALSE) {
-    continuous_vars_names <- paste0(continuous_vars, "_cat_diff")
+  if (is.null(categorical_vars) == FALSE) {
+    continuous_vars_names <- paste0(categorical_vars, "_cat_diff")
     cat_sum_df <- lapply(continuous_vars_names, FUN = function(x) {
       cat_summary(x, nn_diff_df = nn_diff_df, n = n)
     }) %>% do.call(cbind.data.frame, .)
