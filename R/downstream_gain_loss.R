@@ -15,6 +15,7 @@ downstream_gain_loss <- function(comparitor_parent_child_df, trait_parent_child_
   return(downstream_changes)
 }
 
+#' @export
 get_trait_traces_on_tree <- function(parent_child_df, tr, node_states) {
   all_possible_paths <- nodepath(tr)
 
@@ -64,6 +65,7 @@ get_trait_traces_on_tree <- function(parent_child_df, tr, node_states) {
   return(true_stretches)
 }
 
+#' @export
 get_gain_loss_on_stretches <- function(comparitor_parent_child_df, stretches, node_states, confidence) {
   if (node_states == "joint") {
     comparitor_gains <- comparitor_parent_child_df  %>% subset(gain == 1) %>% .$child
@@ -134,10 +136,22 @@ get_gain_loss_on_stretches <- function(comparitor_parent_child_df, stretches, no
   stretches_w_losses_num <- length(stretches_w_losses)
   stretches_w_losses_prop <- stretches_w_losses_num / num_stretches
 
+  stretches_w_transitions <- unique(c(stretches_w_losses,stretches_w_gains))
+  stretches_w_transitions_str <- ifelse(length(stretches_w_transitions) > 0, paste0(stretches_w_transitions, collapse = ","), "")
+  stretches_w_transitions_num <- length(stretches_w_transitions_str)
+  stretches_w_transitions_prop <- stretches_w_transitions_num / num_stretches
+
+  transitions <- c(gains,loss)
+  transitions_str <-  ifelse(length(transitions) > 0, paste0(transitions, collapse = ","), "")
+  transitions_num <- length(transitions)
+  transitions_prop <- transitions_num / num_downstream_edges
+
   summary <- cbind.data.frame(num_stretches,
+                             stretches_w_transitions = stretches_w_transitions_str, stretches_w_transitions_num,
                              stretches_w_gains = stretches_w_gains_str, stretches_w_gains_num, stretches_w_gains_prop,
                              stretches_w_losses = stretches_w_losses_str, stretches_w_losses_num, stretches_w_losses_prop,
                              num_downstream_edges,
+                             transitions = transitions_str, transitions_num,transitions_prop,
                              gains = gains_str, gains_num, gains_prop,
                              loss = loss_str, loss_num, loss_prop)
   return(summary)

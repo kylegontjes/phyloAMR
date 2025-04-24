@@ -15,36 +15,66 @@
 #' @return Summary stats for downstream gain and loss of a trait
 #' @export
 downstream_permutation_test <- function(comparitor, df, tr, tip_name_var, trait, node_states = "joint", conf_threshold = NULL, confidence = NULL, num_permutations = 1000, num_cores = 6) {
+  tr$node.label <- NULL
+
   # trait
   trait_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, pheno = trait, model = "ER", node_states = node_states, conf_threshold = conf_threshold) %>% .$parent_child_df
 
-  # comparitor
-  comparitor_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, pheno = comparitor, model = "ER", node_states = node_states, conf_threshold = conf_threshold) %>% .$parent_child_df
+  # Comparitor
+  comparitor_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, pheno = comparitor, model = "ER", node_states = node_states, conf_threshold = conf_threshold)
+  comparitor_asr_parent_child <- comparitor_asr$parent_child_df
 
   # Get observed
-  trait_downstream_obs <- downstream_gain_loss(comparitor_asr, trait_asr, tr, node_states = node_states, confidence = confidence)
-  # permute
+  stretches <- get_trait_traces_on_tree(parent_child_df = trait_asr, tr = tr, node_states = node_states)
+  downstream_changes <- get_gain_loss_on_stretches(comparitor_parent_child_df = comparitor_asr_parent_child, stretches = stretches, node_states = node_states, confidence = confidence)
+
+  # Break if transitions = 0
+  if(downstream_changes$transitions_num == 0) {
+    downstream_changes$transition_pval <-  1
+    downstream_changes$transition_stretches_pval <- 1
+    downstream_changes$gain_pval <- 1
+    downstream_changes$gains_stretches_pval <- 1
+    downstream_changes$loss_pval <- 1
+    downstream_changes$loss_stretches_pval <- 1
+    asr_permutation <- NULL
+  } else {
+
+  # Generate rate data
+  comparitor_asr_corHMM <- comparitor_asr$corHMM_out
+  comparitor_index_mat <- comparitor_asr$corHMM_out$index.mat
+  comparitor_solution_mat <- comparitor_asr$corHMM_out$solution
+  comparitor_root.p <- comparitor_asr$corHMM_out$root.p
+  comparitor_p <- sapply(1:max(comparitor_index_mat, na.rm = TRUE), function(x)
+      na.omit(c(comparitor_solution_mat))[na.omit(c(comparitor_index_mat) == x)][1]) %>% `names<-`("1")
+
+  # Expected data from permutation testing
   num_isolates <- nrow(df)
-  num_features <- sum(as.numeric(df[[comparitor]]))
-
   trait_runs <- pbmclapply(seq_len(num_permutations), FUN = function(x) {
-    sample(df[[comparitor]], num_isolates, replace = FALSE)
+      sample(df[[comparitor]], num_isolates, replace = FALSE)
   }, mc.cores = num_cores) %>% do.call(cbind, .) %>% data.frame
-  rownames(trait_runs) <- df[, tip_name_var]
-  permutation_names <- paste0("p", seq_len(num_permutations))
+  permutation_names <- paste0("T", seq_len(num_permutations))
   colnames(trait_runs) <- permutation_names
-  trait_runs <- data.frame(trait_runs, tip_name_var = df[, tip_name_var])
-  asr_permutation <- pbmclapply(permutation_names, FUN = function(x) {
-    asr_result <- asr(df = trait_runs, tr = tr, tip_name_var = "tip_name_var", pheno = x, model = "ER", node_states = node_states, conf_threshold = confidence) %>% .$parent_child_df
-    downstream_perm <- downstream_gain_loss(asr_result, trait_asr, tr)
+  trait_runs <- data.frame(trait_runs %>% mutate_all(as.integer), tip_name_var = df[, tip_name_var])
 
+  # Permutation test
+  asr_permutation <- pbmclapply(permutation_names, FUN = function(x) {
+    dataset =  trait_runs[,c('tip_name_var',x)]
+    outcome_str <- trait_runs[, x] %>% `names<-`(trait_runs[['tip_name_var']])
+    asr_recon <- ancRECON(tr,dataset,p = comparitor_p,method = 'joint',rate.cat = 1,rate.mat = comparitor_asr_corHMM$index.mat)
+    asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,pheno_data = outcome_str,conf_threshold = NULL,node_states = 'joint') %>% get_continuation_data(.,'joint')
+    downstream_perm <- get_gain_loss_on_stretches(comparitor_parent_child_df = asr_result, stretches = stretches, node_states = node_states, confidence = confidence)
     return(downstream_perm)
   }, mc.cores = num_cores) %>% do.call(rbind, .)
 
-  trait_downstream_obs$gain_pval <- c(1 + sum(asr_permutation$gains_num >= trait_downstream_obs$gains_num)) / c(1 + num_permutations)
-  trait_downstream_obs$gains_strecthes_pval <- c(1 + sum(asr_permutation$stretches_w_gains_num >= trait_downstream_obs$stretches_w_gains_num)) / c(1 + num_permutations)
-  trait_downstream_obs$loss_pval <- c(1 + sum(asr_permutation$loss_num >= trait_downstream_obs$loss_num)) / c(1 + num_permutations)
-  trait_downstream_obs$loss_streches_pval <- c(1 + sum(asr_permutation$stretches_w_losses_num >= trait_downstream_obs$stretches_w_losses_num)) / c(1 + num_permutations)
+  downstream_changes$transition_pval <-  c(1 + sum(asr_permutation$transitions_num >= downstream_changes$transitions_num)) / c(1 + num_permutations)
+  downstream_changes$transition_stretches_pval <-  c(1 + sum(asr_permutation$stretches_w_transitions_num >= downstream_changes$stretches_w_transitions_num)) / c(1 + num_permutations)
+  downstream_changes$gain_pval <- c(1 + sum(asr_permutation$gains_num >= downstream_changes$gains_num)) / c(1 + num_permutations)
+  downstream_changes$gains_stretches_pval <- c(1 + sum(asr_permutation$stretches_w_gains_num >= downstream_changes$stretches_w_gains_num)) / c(1 + num_permutations)
+  downstream_changes$loss_pval <- c(1 + sum(asr_permutation$loss_num >= downstream_changes$loss_num)) / c(1 + num_permutations)
+  downstream_changes$loss_stretches_pval <- c(1 + sum(asr_permutation$stretches_w_losses_num >= downstream_changes$stretches_w_losses_num)) / c(1 + num_permutations)
+  }
 
-  return(trait_downstream_obs)
+  results <- list(downstream_permutation_testing = downstream_changes, permutations = asr_permutation)
+
+  return(results)
 }

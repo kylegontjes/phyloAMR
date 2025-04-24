@@ -14,7 +14,7 @@ synchronous_permutation_test(
   conf_threshold = NULL,
   confidence = NULL,
   num_permutations = 1000,
-  num_cores = 6
+  num_cores = 1
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ synchronous_permutation_test(
 
 \item{num_permutations}{Number of permutations. Default: 1000}
 
-\item{num_cores}{Number of cores. Default: 6}
+\item{num_cores}{Number of cores. Default: 1}
 }
 \value{
 Synchronous gain and loss events of two traits with p-value permutation testing results
