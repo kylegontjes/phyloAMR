@@ -17,7 +17,7 @@
 #' @export
 phyloaware_regression <- function(pheno, variables, df, first_present = NULL, patient_id = NULL, culture_date = NULL, multivariable = NULL, stepwise_direction = NULL, entry_criteria = NULL, retention_criteria = NULL, confounding_criteria = NULL) {
   # Get dataset with first isolate
-  datasets <- phyloaware_dataset_curation(pheno, df, first_present = first_present, patient_id = patient_id, culture_date = culture_date)
+  datasets <- phyloaware_dataset_curation(pheno = pheno, df = df, first_present = first_present, patient_id = patient_id, culture_date = culture_date)
   # Unadjusted
   univariable <- lapply(datasets, FUN = function(x) {
     univariable_regression_table(outcome = pheno, dataset = x, variables = variables)
@@ -25,7 +25,6 @@ phyloaware_regression <- function(pheno, variables, df, first_present = NULL, pa
   results <- list(datasets = datasets, univariable = univariable)
   # Multivariable
   if (is.null(multivariable) == TRUE) {
-    stop("No multivariable regression requested")
     return(results)
   }
   if (multivariable == "purposeful") {
@@ -56,6 +55,7 @@ phyloaware_regression <- function(pheno, variables, df, first_present = NULL, pa
       return(final)
     })
     results[["multivariable"]] <- multivariable
+
   }
   return(results)
 }
