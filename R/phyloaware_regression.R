@@ -47,9 +47,9 @@ phyloaware_regression <- function(pheno, variables, df, first_present = NULL, pa
       model <- as.formula(paste0(pheno, " ~ 1 +", paste0(variables, collapse = " + ")))
       glm_model <- glm(model, data = x, family = "binomial")
       ci <- suppressMessages(confint(glm_model))
-      final <- cbind(exp(cbind(OR = coef(glm_model), ci)) %>% round(., 2),
+      final <- cbind(exp(cbind(OR = coef(glm_model), ci)) %>% round(., 2) %>% formatC(.,format='f',digits=2),
                      abs(summary(glm_model)$coefficients[, "Pr(>|z|)"]) %>%
-                       round(., 4)) %>% subset(rownames(.) != "(Intercept)") %>%
+                       round(., 4) %>% formatC(.,format='f',digits=4)) %>% subset(rownames(.) != "(Intercept)") %>%
         `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
         as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (", `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`, p_value)
       return(final)

@@ -4,9 +4,9 @@ univariable_regression <- function (variable, outcome, data){
   model <- paste(outcome, paste(variable, collapse = " + "), sep = "~")
   output <- glm(model, data = dataset, family = "binomial")
   ci <- suppressMessages(confint(output))
-  final <- cbind(exp(cbind(OR = coef(output), ci)) %>% round(., 2),
+  final <- cbind(exp(cbind(OR = coef(output), ci)) %>% round(., 2)  %>% formatC(.,format='f',digits=2),
                  abs(summary(output)$coefficients[, "Pr(>|z|)"]) %>%
-                   round(., 4)) %>% subset(rownames(.) != "(Intercept)") %>%
+                   round(., 4) %>% formatC(.,format='f',digits=4)) %>% subset(rownames(.) != "(Intercept)") %>%
     `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
     as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (", `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`, p_value)
   return(final)

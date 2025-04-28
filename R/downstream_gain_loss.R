@@ -138,7 +138,7 @@ get_gain_loss_on_stretches <- function(comparitor_parent_child_df, stretches, no
 
   stretches_w_transitions <- unique(c(stretches_w_losses,stretches_w_gains))
   stretches_w_transitions_str <- ifelse(length(stretches_w_transitions) > 0, paste0(stretches_w_transitions, collapse = ","), "")
-  stretches_w_transitions_num <- length(stretches_w_transitions_str)
+  stretches_w_transitions_num <- length(stretches_w_transitions %>% subset(.!=''))
   stretches_w_transitions_prop <- stretches_w_transitions_num / num_stretches
 
   transitions <- c(gains,loss)

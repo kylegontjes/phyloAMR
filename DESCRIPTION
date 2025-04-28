@@ -32,7 +32,7 @@ Suggests:
     ggnewscale,
     ComplexHeatmap,
     pbmcapply
-Remotes: 
+Remotes:
     thej022214/corHMM
 Depends: 
     R (>= 2.10)

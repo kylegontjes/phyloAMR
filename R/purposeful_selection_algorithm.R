@@ -135,9 +135,9 @@ test_confounding <- function(model1,model2,confounding_criteria,tested_variable)
 
 purposeful_table_curation <- function(final_model){
   ci <- suppressMessages(confint(final_model))
-  final <- cbind(exp(cbind(OR = coef(final_model), ci)) %>% round(.,
-                                                                  2), abs(summary(final_model)$coefficients[, "Pr(>|z|)"]) %>%
-                   round(., 4)) %>% subset(rownames(.) != "(Intercept)") %>%
+  final <- cbind(exp(cbind(OR = coef(final_model), ci)) %>% round(., 2) %>% formatC(.,format='f',digits=2),
+                 abs(summary(final_model)$coefficients[, "Pr(>|z|)"]) %>%
+                   round(., 4) %>% formatC(.,format='f',digits=4)) %>% subset(rownames(.) != "(Intercept)") %>%
     `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
     as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (",
                                                     `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`,

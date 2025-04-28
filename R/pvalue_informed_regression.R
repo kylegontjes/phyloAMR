@@ -31,7 +31,8 @@ pvalue_informed_regression <- function(outcome,dataset,variables,entry_criteria,
     }
     output <- null_model_out
     ci <- suppressMessages(confint(output))
-    final <- cbind(exp(cbind(OR = coef(output), ci)) %>% round(.,2),abs(summary(output)$coefficients[,'Pr(>|z|)']) %>% round(.,4)) %>% subset(rownames(.) != "(Intercept)")  %>% `colnames<-`(c("OR","2.5%","97.5%","p_value")) %>%  as.data.frame %>%
+    final <- cbind(exp(cbind(OR = coef(output), ci)) %>% round(.,2) %>% formatC(.,format='f',digits=2),
+                   abs(summary(output)$coefficients[,'Pr(>|z|)']) %>% round(.,4) %>% formatC(.,format='f',digits=4)) %>% subset(rownames(.) != "(Intercept)")  %>% `colnames<-`(c("OR","2.5%","97.5%","p_value")) %>%  as.data.frame %>%
       mutate(`OR (95% CI)` = paste0(OR," (",`2.5%`,"-",`97.5%`,")")) %>% select(`OR (95% CI)`,p_value)
     results <- list(final_model=final,univariable=datatable)
     return(results)

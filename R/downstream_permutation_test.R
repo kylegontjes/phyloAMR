@@ -40,29 +40,23 @@ downstream_permutation_test <- function(comparitor, df, tr, tip_name_var, trait,
   } else {
 
   # Generate rate data
-  comparitor_asr_corHMM <- comparitor_asr$corHMM_out
   comparitor_index_mat <- comparitor_asr$corHMM_out$index.mat
-  comparitor_solution_mat <- comparitor_asr$corHMM_out$solution
-  comparitor_root.p <- comparitor_asr$corHMM_out$root.p
   comparitor_p <- sapply(1:max(comparitor_index_mat, na.rm = TRUE), function(x)
-      na.omit(c(comparitor_solution_mat))[na.omit(c(comparitor_index_mat) == x)][1]) %>% `names<-`("1")
+      na.omit(c(comparitor_asr$corHMM_out$solution))[na.omit(c(comparitor_index_mat) == x)][1])
 
   # Expected data from permutation testing
   num_isolates <- nrow(df)
-  trait_runs <- pbmclapply(seq_len(num_permutations), FUN = function(x) {
-      sample(df[[comparitor]], num_isolates, replace = FALSE)
-  }, mc.cores = num_cores) %>% do.call(cbind, .) %>% data.frame
-  permutation_names <- paste0("T", seq_len(num_permutations))
-  colnames(trait_runs) <- permutation_names
-  trait_runs <- data.frame(trait_runs %>% mutate_all(as.integer), tip_name_var = df[, tip_name_var])
+  comparitor_vals <- df[[comparitor]]
+  trait_runs <- replicate(num_permutations,comparitor_vals[sample.int(num_isolates)],simplify = F)
 
   # Permutation test
-  asr_permutation <- pbmclapply(permutation_names, FUN = function(x) {
-    dataset =  trait_runs[,c('tip_name_var',x)]
-    outcome_str <- trait_runs[, x] %>% `names<-`(trait_runs[['tip_name_var']])
-    asr_recon <- ancRECON(tr,dataset,p = comparitor_p,method = 'joint',rate.cat = 1,rate.mat = comparitor_asr_corHMM$index.mat)
-    asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,pheno_data = outcome_str,conf_threshold = NULL,node_states = 'joint') %>% get_continuation_data(.,'joint')
-    downstream_perm <- get_gain_loss_on_stretches(comparitor_parent_child_df = asr_result, stretches = stretches, node_states = node_states, confidence = confidence)
+  asr_permutation <- pbmclapply(trait_runs, FUN = function(x) {
+    dataset <- cbind(tip_names,x)
+    outcome_str <- setNames(x,tip_names)
+    asr_recon <- ancRECON(tr,dataset,p = comparitor_p, method = node_states, rate.cat = 1, rate.mat = comparitor_asr$corHMM_out$index.mat, root.p = comparitor_asr$corHMM_out$root.p, get.likelihood = F, get.tip.states = F)
+    asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,pheno_data = outcome_str,conf_threshold = NULL,node_states = node_states)
+    asr_parent_child_df <- get_continuation_data(asr_result,node_states)
+    downstream_perm <- get_gain_loss_on_stretches(comparitor_parent_child_df = asr_parent_child_df, stretches = stretches, node_states = node_states, confidence = confidence)
     return(downstream_perm)
   }, mc.cores = num_cores) %>% do.call(rbind, .)
 
