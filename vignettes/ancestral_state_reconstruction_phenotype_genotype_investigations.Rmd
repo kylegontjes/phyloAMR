@@ -33,8 +33,6 @@ library(stringr)
 library(ggplot2)
 library(ape)
 library(ggtree)
-library(hues)
-library(ComplexHeatmap)
 library(pbmcapply)
 ```
 
@@ -103,7 +101,7 @@ paste0("Genotypes present in this matrix: ")
 colnames(genotype_mat)
 
 paste0("Visualization of the genotypes")
-ComplexHeatmap::Heatmap(as.matrix(genotype_mat),col = c("white","black"),show_row_names = F,name = "Genotype presence",show_column_names = F) 
+ gheatmap(ggtree(tr),genotype_mat %>% mutate_all(as.factor),width = 0.8,colnames = F) + feature_scale
 ```
 
 # Step 1: Run ancestral state reconstruction
