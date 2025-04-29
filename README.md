@@ -1,4 +1,4 @@
-# phyloAMR: a package to perform PHYLOgenetic analysis of AntiMicrobial Resistance 
+# phyloAMR: an R package to perform PHYLOgenetic analysis of AntiMicrobial Resistance 
 
 [![CI](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml) 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -6,20 +6,15 @@
 
 **Description**
 
-This R package, phyloAMR, is a suite of tools for performing phylogenetic analysis of genome-influenced traits, such as antibiotic resistance, infection severity, or source of isolation. 
+phyloAMR is an R package that leverages ancestral state reconstruction and other phylogenetically-informed algorithms to characterize the evolutionary history of genome-influenced traits and investigate phenotype-genotype associations. While this package was built to analyze the phylogenetics of antimicrobial resistance, it can be applied to diverse genome-influenced traits, including infection severity and source of infection.
 
-This package was built for several reasons. Notably, with an increased appreciation of how bacterial phenotypes emerge and spread across populations, we recognized a noticeable technological gap. That is the absence of easy-to-use tools that can characterize how traits emerge and spread across a population, alongside how genotypes and phenotypes interact. While genome-wide association studies (GWAS), such as hogwash and treeWAS, can directly or indirectly address these questions, their output does not permit easy downstream manipulations. These tools often rely upon ancestral state reconstruction algorithms, notably ape's ace function or corHMM. Recognizing the power of these algorithms, we wanted to provide a direct-to-consumer algorithm that produces easy-to-use output and addresses several questions that traditional GWAS studies are unable to answer in their current state.
- 
-This tool's main workhorse is the **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize a trait's gain, loss, and continuation across a phylogenetic tree. This function requires a phylogenetic tree and a dataframe with variables corresponding to the trait of interest and the phylogeny tip labels. After performing ancestral state reconstruction using corHMM, the resultant state predictions are parsed to generate a parent-child dataframe. By traversing the phylogenetic tree from the tips to the root, the episodes of trait gain, loss, and continuation are added to the phylogenetic tree's edge matrix.
-
-This information can be leveraged, using our downstream algorithms, to address numerous biological questions, including: 
-1. How often does a bacterium with a genome-informed trait emerge and spread across a healthcare network?
-2. Is there evidence of synchronous gain/loss of two traits on the phylogenetic tree?
-3. Do compensatory or revertant mutations follow a genome-informed trait?
-4. Do subpopulations have unique or shared mutational pathways?  
+This package's main workhorse function is **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize a trait's gain, loss, and continuation across a phylogenetic tree. This function's resultant ancestral state predictions can be leveraged, using our downstream algorithms, to address numerous biological questions, including: 
+1. How often does an antibiotic-resistant bacterium emerge and spread across a healthcare network?
+2. Are there genotypes associated with the gain or loss of antibiotic resistance?  
+3. Do compensatory or revertant mutations follow a genome-informed trait? 
 
 Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed:
-1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree
+1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree. Can be leveraged to identify an isolate's nearest neighbor without a feature (i.e., antibiotic resistance).  
 
 **How to install phyloAMR**
 
