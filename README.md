@@ -16,7 +16,7 @@ This package's workhorse function is **asr()**, which leverages corHMM's ancestr
 3. Do compensatory or revertant mutations follow a genome-informed trait? 
 
 Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed:
-1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree. Can be leveraged to identify an isolate's nearest neighbor without a feature (i.e., antibiotic resistance).  
+1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree. Can be used to identify an isolate's nearest neighbor without a feature (i.e., susceptible neighbor of a resistant isolate).  
 
 **How to install phyloAMR**
 
@@ -24,7 +24,11 @@ Additional phylogenetically-informed algorithms, that do not use ancestral state
 # Install devtools
 install.packages("devtools", dep = TRUE)
 
-# Install phyloaware from GitHub
+# Install corHMM & phyloAMR from GitHub
+## corHMM - installed because the GitHub version is preferred
+devtools::install_github("thej022214/corHMM", force = TRUE, build_vignettes = FALSE)
+
+## phyloAMR
 devtools::install_github("kylegontjes/phyloAMR", force = TRUE, build_vignettes = TRUE)
 ```
 
