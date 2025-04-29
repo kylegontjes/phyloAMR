@@ -10,7 +10,7 @@ Description: Suite of phylogenetically informed algorithms for analyzing genome-
 License: MIT
 Encoding: UTF-8
 LazyData: true
-URL: https://kylegontjes.github.io/phyloAMR, https://github.com/kylegontjes/phyloAMR, 
+URL: https://github.com/kylegontjes/phyloAMR, https://kylegontjes.github.io/phyloAMR/
 BugReports: https://github.com/kylegontjes/phyloAMR/issues
 RoxygenNote: 7.3.2 
 Imports: 
