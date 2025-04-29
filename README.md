@@ -6,9 +6,11 @@
 
 **Description**
 
-phyloAMR is an R package that leverages ancestral state reconstruction and other phylogenetically-informed algorithms to characterize the evolutionary history of genome-influenced traits and investigate phenotype-genotype associations. While this package was built to analyze the phylogenetics of antimicrobial resistance, it can be applied to diverse genome-influenced traits, including infection severity and source of infection.
+phyloAMR is an R package that leverages ancestral state reconstruction and other phylogenetically-informed algorithms to characterize the evolutionary history of genome-influenced traits and investigate phenotype-genotype associations. 
 
-This package's main workhorse function is **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize a trait's gain, loss, and continuation across a phylogenetic tree. This function's resultant ancestral state predictions can be leveraged, using our downstream algorithms, to address numerous biological questions, including: 
+While this package was built to analyze the phylogenetics of antimicrobial resistance, it can be applied to genome-influenced traits, including infection severity and source of infection.
+
+This package's workhorse function is **asr()**, which leverages corHMM's ancestral state reconstruction algorithm to characterize a trait's gain, loss, and continuation across a phylogenetic tree. This function's inferred ancestral states can be leveraged, using our downstream algorithms, to address numerous questions, including: 
 1. How often does an antibiotic-resistant bacterium emerge and spread across a healthcare network?
 2. Are there genotypes associated with the gain or loss of antibiotic resistance?  
 3. Do compensatory or revertant mutations follow a genome-informed trait? 
