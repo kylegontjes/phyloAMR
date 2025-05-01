@@ -3,6 +3,8 @@
 [![CI](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml) 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
+[![Visit Website](https://img.shields.io/badge/Website-Visit-blue)]([https://example.com](https://kylegontjes.github.io/phyloAMR/))
+
 
 **Description**
 
@@ -42,13 +44,3 @@ devtools::install_github("kylegontjes/phyloAMR", force = TRUE, build_vignettes =
 | What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations) | Ancestral state reconstruction of phenotype and genotypes | asr() + downstream_gain_loss()  + downstream_permutation_test()  **WIP** | Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree | Genotypes classified as downstream mutations from a traits gain event |  
 | What descriptive characteristics are associated with phenotypic emergence and spread? | Association testing for characteristics and phenotypic emergence (singletons) and clusters | phyloaware_regression() | Cluster calls from asr_cluster_detection() algorithm and a dataframe with characteristics of interest | Statistical association testing results for characteristics of interest | 
 | Who is my isolate's closest related strain (i.e., nearest neighbor)? | Evaluation of phylogenetic distance | nearest_neighbor_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | An isolate's nearest neighbor |  
-
-**Package Vignettes**
-
-Numerous [vignettes](https://github.com/kylegontjes/phyloaware/tree/master/vignettes) have been constructed to illustrate how to use this package:
-
-1. [Ancestral state reconstruction of a trait](https://github.com/kylegontjes/phyloAMR/blob/master/vignettes/ancestral_state_reconstruction_of_a_trait.Rmd)
-
-2. [Detection and characterization of phylogenetic emergence and spread of a trait](https://github.com/kylegontjes/phyloAMR/blob/master/vignettes/ancestral_state_reconstruction_cluster_detection.Rmd) 
-
-3. [Investigation of genotype and phenotype associations](https://github.com/kylegontjes/phyloAMR/blob/master/vignettes/ancestral_state_reconstruction_phenotype_genotype_investigations.Rmd)
