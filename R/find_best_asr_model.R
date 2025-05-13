@@ -26,7 +26,7 @@ find_best_asr_model <- function(df, tr, tip_name_var, pheno, node_states = "join
 
   model_options_tbl <- rbind(corHMM_ER, corHMM_ARD)
 
-  best_model  <- model_options_tbl[which.min(model_options_tbl$AIC), "model"]
+  best_model  <- model_options_tbl[which.min(model_options_tbl$AICc), "model"]
 
   results <- list(model_options = model_options_tbl,
                   best_model = best_model)
