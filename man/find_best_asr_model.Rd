@@ -7,21 +7,21 @@
 find_best_asr_model(
   df,
   tr,
-  tip_name_var,
-  pheno,
+  tip_name_variable,
+  trait,
   node_states = "joint",
   upper_bound = 1e+50,
   lower_bound = 1e-09
 )
 }
 \arguments{
-\item{df}{Dataframe with tip name variable and phenotype}
+\item{df}{Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables}
 
 \item{tr}{Phylogenetic tree}
 
-\item{tip_name_var}{Name of variable containing tip names in df}
+\item{tip_name_variable}{Name of variable containing tip names in df}
 
-\item{pheno}{Name of phenotype variable in df}
+\item{trait}{Name of phenotype/trait variable in df}
 
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction}
 
@@ -32,8 +32,10 @@ find_best_asr_model(
 \value{
 Description of return value
   \describe{
-    \item{model_options}{Summary of model options}
+    \item{model_statistics}{Summary of model options}
     \item{best_model}{Best model for ancestral state reconstruction}
+    \item{node_states}{Whether "joint" or "marginal" reconstruction was performed}
+    \item{corHMM_output_best_model}{corHMM output for best model}
   }
 }
 \description{
