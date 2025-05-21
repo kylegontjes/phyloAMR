@@ -15,7 +15,7 @@ phyloaware_dataset_curation <- function(trait,df,first_present=NULL,patient_id=N
 }
 
 get_dataset_with_first_present_isolate <- function(variable,patient_id,culture_date,df){
-  one_isolate <- df %>% dplyr::roup_by(across(patient_id)) %>% filter(n()==1) %>% .[[patient_id]]
+  one_isolate <- df %>% group_by(across(patient_id)) %>% filter(n()==1) %>% .[[patient_id]]
   # Only 1 isolate
   df_one_isolate <- df[df[[patient_id]] %in% one_isolate,]
   # Patient w/ more than one
