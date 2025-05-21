@@ -47,9 +47,9 @@ asr_cluster_detection <- function(df, tr, tip_name_variable, patient_id = NULL, 
   }
 
   # Get tip data and merge it with the clustering data
-  tip_data <- subset(parent_child_df, child <= ape::Nnode(tr) + 1)
-  tip_data[["tip_name"]] <- tip_data[["child_name"]]
-  tip_data_df <- suppressMessages(dplyr::left_join(tip_data, clustering_data))
+  tip_parent_child_data <- subset(parent_child_df, child <= ape::Nnode(tr) + 1)
+  tip_parent_child_data[["tip_name"]] <- tip_parent_child_data[["child_name"]]
+  tip_data_df <- suppressMessages(dplyr::left_join(tip_parent_child_data, clustering_data))
   rownames(tip_data_df) <- tip_data_df$tip_name
 
   return(tip_data_df)
@@ -102,15 +102,15 @@ classify_tips_with_trait <- function(node_data, parent_child_df, tr, root_node, 
 
 # Characterize tips with traits
 classify_tips_without_trait <- function(node_data, parent_child_df, tr, root_node, node_states, confidence) {
-  # Reclassify the revertants at the tip
+    # Reclassify the revertants at the tip
   if ((node_states == "joint" && node_data[["loss"]] == 1) || (node_states == "marginal" && node_data[[paste0("loss_", confidence)]] == 1)) {
     previous <- get_parent_node(node_data[["parent"]], parent_child_df)
-    if ((node_states == "joint" && previous[["gain"]] == 1 || node_states == "marginal" && previous[[paste0("gain_", confidence)]] == 1)) {
+    if ((node_states == "joint" && previous[["gain"]] == 1) || (node_states == "marginal" && previous[[paste0("gain_", confidence)]] == 1)) {
       classification <- get_transition_node(node_data, parent_child_df, tr, root_node = root_node, confidence)
     } else {
       classification <- "revertant_tip"
     }
-  } else {
+    } else {
     classification <- get_transition_node(node_data, parent_child_df, tr, root_node = root_node, node_states, confidence)
     # This is important, because our focus is on the emergence of a trait.
     # No reversion would be detected if there was a stretch of no trait all the way from tip to the root
@@ -240,12 +240,13 @@ get_transition_node <- function(child_data, parent_child_df, tr, root_node, node
 
   # Get stretches to the root
   if (node_states == "joint") {
-    startvalue <-  child_data[["child_val"]]
-    ancestor_vals <-  parent_child_df[["child_val"]]
-    node <- ancestors[last(which(ancestor_vals == startvalue))]
-
-    if (node == last(ancestors)) {
+    startvalue <-  child_data[["transition"]]
+    ancestor_vals <-  parent_child_df[["transition"]]
+    # Classify individuals without transitions as trait being present at root (i.e., root-to-tip walk indicates no transitions)
+    if (sum(ancestor_vals) == 0) {
       node <- "root"
+    } else {
+      node <- ancestors[first(which(ancestor_vals != startvalue))]
     }
   }
 
