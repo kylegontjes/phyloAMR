@@ -33,8 +33,7 @@ library(ggplot2)
 library(ape)
 library(ggtree)
 library(hues)
-library(ggnewscale)
-library(pbmcapply)
+library(ggnewscale) 
 ```
 
 # Load example data

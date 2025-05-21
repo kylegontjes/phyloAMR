@@ -14,6 +14,13 @@
 #' @param retention_criteria P-value for retaining candidate variables in model (used in pvalue and purposeful selection)
 #' @param confounding_criteria Impact on effect size for purposeful selection (used in purposeful selection)
 #' @return List with univariable and multivariable results (if requested)
+#' @importFrom stats as.formula
+#' @importFrom stats coef
+#' @importFrom stats confint
+#' @importFrom stats filter
+#' @importFrom stats glm
+#' @importFrom stats na.omit
+#' @importFrom stats setNames
 #' @export
 phyloaware_regression <- function(trait, variables, df, first_present = NULL, patient_id = NULL, culture_date = NULL, multivariable = NULL, stepwise_direction = NULL, entry_criteria = NULL, retention_criteria = NULL, confounding_criteria = NULL) {
   # Get dataset with first isolate

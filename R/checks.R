@@ -9,7 +9,7 @@ check_trait <- function(trait_var) {
 
 ## Check tree has relevant contents
 check_tree <- function(tree) {
-  if (is.rooted(tree) == FALSE) {
+  if (ape::is.rooted(tree) == FALSE) {
     stop("Tree is not rooted. Please root your tree using functions like ape::root() or phytools::midpoint.root()")
   }
 }

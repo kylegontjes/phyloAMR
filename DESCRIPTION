@@ -16,9 +16,7 @@ RoxygenNote: 7.3.2
 Imports: 
     dplyr,
     stringr,
-    ggplot2,
-    ape,
-    phytools,
+    ape, 
     corHMM,
     parallel,
     magrittr,
@@ -29,6 +27,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     hues,
+    ggplot2,
     ggnewscale
 Remotes:
     thej022214/corHMM

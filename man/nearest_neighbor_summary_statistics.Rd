@@ -15,6 +15,8 @@ nearest_neighbor_summary_statistics(
 \arguments{
 \item{nn_diff_df}{Dataframe with isolates and their nearest neighbors, generated from nearest_neighbor_analysis.}
 
+\item{categorical_vars}{Categorical variables. Must be in the comparison_df}
+
 \item{binary_vars}{Binary variables. Must be in the comparison_df AND coded 0 and 1.}
 
 \item{continuous_vars}{Continuous variables. Must be in the comparison_df}

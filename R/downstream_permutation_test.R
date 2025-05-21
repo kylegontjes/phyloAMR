@@ -3,9 +3,9 @@
 #' Permutation test for analysis of downstream gain and loss of a comparitor trait on stretches of a different trait of interest
 #'
 #' @param comparitor Comparitor trait, such as a genotype or a different trait/phenotype
-#' @param df Dataframe with trait and comparitor and tip_name_var
+#' @param df Dataframe with trait and comparitor and tip_name_variable
 #' @param tr Phylogenetic tree
-#' @param tip_name_var Tip name variable
+#' @param tip_name_variable Tip name variable
 #' @param trait Trait of interest. Their stretches of trait presence will be characterized and evaluated
 #' @param node_states Joint or marginal reconstruction
 #' @param confidence_threshold Set value for confidence threshold of MLE calls if marginal
@@ -14,14 +14,14 @@
 #' @param num_cores Number of cores. Default = 6
 #' @return Summary stats for downstream gain and loss of a trait
 #' @export
-downstream_permutation_test <- function(comparitor, df, tr, tip_name_var, trait, node_states = "joint", confidence_threshold = NULL, confidence = NULL, num_permutations = 1000, num_cores = 6) {
+downstream_permutation_test <- function(comparitor, df, tr, tip_name_variable, trait, node_states = "joint", confidence_threshold = NULL, confidence = NULL, num_permutations = 1000, num_cores = 6) {
   tr$node.label <- NULL
 
   # trait
-  trait_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, trait = trait, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold) %>% .$parent_child_df
+  trait_asr <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = trait, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold) %>% .$parent_child_df
 
   # Comparitor
-  comparitor_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, trait = comparitor, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold)
+  comparitor_asr <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = comparitor, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold)
   comparitor_asr_parent_child <- comparitor_asr$parent_child_df
 
   # Get observed
@@ -50,10 +50,10 @@ downstream_permutation_test <- function(comparitor, df, tr, tip_name_var, trait,
   trait_runs <- replicate(num_permutations,comparitor_vals[sample.int(num_isolates)],simplify = F)
 
   # Permutation test
-  asr_permutation <- mclapply(trait_runs, FUN = function(x) {
+  asr_permutation <- parallel::mclapply(trait_runs, FUN = function(x) {
     dataset <- cbind(tip_names,x)
     outcome_str <- setNames(x,tip_names)
-    asr_recon <- ancRECON(tr,dataset,p = comparitor_p, method = node_states, rate.cat = 1, rate.mat = comparitor_asr$corHMM_out$index.mat, root.p = comparitor_asr$corHMM_out$root.p, get.likelihood = F, get.tip.states = F)
+    asr_recon <- corHMM::ancRECON(tr,dataset,p = comparitor_p, method = node_states, rate.cat = 1, rate.mat = comparitor_asr$corHMM_out$index.mat, root.p = comparitor_asr$corHMM_out$root.p, get.likelihood = F, get.tip.states = F)
     asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,trait_data = outcome_str,confidence_threshold = confidence_threshold,node_states = node_states)
     asr_parent_child_df <- get_continuation_data(asr_result,node_states)
     downstream_perm <- get_gain_loss_on_stretches(comparitor_parent_child_df = asr_parent_child_df, stretches = stretches, node_states = node_states, confidence = confidence)

@@ -1,3 +1,5 @@
+
+
 AIC_stepwise_regression <- function(outcome, dataset, variables, stepwise_direction){
   model <- as.formula(paste0(outcome, " ~ 1 +", paste0(variables, collapse = " + ")))
   if (stepwise_direction == "forward") {

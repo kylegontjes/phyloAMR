@@ -8,7 +8,7 @@ downstream_permutation_test(
   comparitor,
   df,
   tr,
-  tip_name_var,
+  tip_name_variable,
   trait,
   node_states = "joint",
   confidence_threshold = NULL,
@@ -20,11 +20,11 @@ downstream_permutation_test(
 \arguments{
 \item{comparitor}{Comparitor trait, such as a genotype or a different trait/phenotype}
 
-\item{df}{Dataframe with trait and comparitor and tip_name_var}
+\item{df}{Dataframe with trait and comparitor and tip_name_variable}
 
 \item{tr}{Phylogenetic tree}
 
-\item{tip_name_var}{Tip name variable}
+\item{tip_name_variable}{Tip name variable}
 
 \item{trait}{Trait of interest. Their stretches of trait presence will be characterized and evaluated}
 

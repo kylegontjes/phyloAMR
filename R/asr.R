@@ -18,6 +18,7 @@
 #'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
 #'     \item{node_states}{Text string indicating the chosen reconstruction method}
 #'   }
+#' @importFrom dplyr mutate
 #' @export
 asr <- function(df, tr, tip_name_variable, trait, model = "ER", node_states = "joint", upper_bound = 1e50, lower_bound = 1e-9, confidence_threshold = NULL) {
   # Check if phenotype is 0,1

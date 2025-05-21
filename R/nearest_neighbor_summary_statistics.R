@@ -3,8 +3,9 @@
 #' This function will generate summary statistics for nearest neighbor comparisons
 #'
 #' @param nn_diff_df Dataframe with isolates and their nearest neighbors, generated from nearest_neighbor_analysis.
-#' @param continuous_vars Categorical variables. Must be in the comparison_df
+#' @param categorical_vars Categorical variables. Must be in the comparison_df
 #' @param binary_vars Binary variables. Must be in the comparison_df AND coded 0 and 1.
+#' @param continuous_vars Continuous variables. Must be in the comparison_df
 #' @param continuous_vars Continuous variables. Must be in the comparison_df
 #' @param log_2 Boolean (TRUE/FALSE) Whether to perform log-2 transformation on continuous variables
 #' @return Dataframe with differences in the categorical and continuous variables between an isolate and their nearest neighbor

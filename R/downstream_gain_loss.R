@@ -8,6 +8,7 @@
 #' @param node_states Joint or marginal reconstruction
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
 #' @return Summary stats for downstream gain and loss of a trait
+#' @importFrom utils head
 #' @export
 downstream_gain_loss <- function(comparitor_parent_child_df, trait_parent_child_df, tr, node_states = "joint", confidence = NULL) {
   stretches <- get_trait_traces_on_tree(parent_child_df = trait_parent_child_df, tr = tr, node_states = node_states)
@@ -15,7 +16,6 @@ downstream_gain_loss <- function(comparitor_parent_child_df, trait_parent_child_
   return(downstream_changes)
 }
 
-#' @export
 get_trait_traces_on_tree <- function(parent_child_df, tr, node_states) {
   all_possible_paths <- nodepath(tr)
 
@@ -65,7 +65,6 @@ get_trait_traces_on_tree <- function(parent_child_df, tr, node_states) {
   return(true_stretches)
 }
 
-#' @export
 get_gain_loss_on_stretches <- function(comparitor_parent_child_df, stretches, node_states, confidence) {
   if (node_states == "joint") {
     comparitor_gains <- comparitor_parent_child_df  %>% subset(gain == 1) %>% .$child
