@@ -50,7 +50,7 @@ downstream_permutation_test <- function(comparitor, df, tr, tip_name_var, trait,
   trait_runs <- replicate(num_permutations,comparitor_vals[sample.int(num_isolates)],simplify = F)
 
   # Permutation test
-  asr_permutation <- pbmclapply(trait_runs, FUN = function(x) {
+  asr_permutation <- mclapply(trait_runs, FUN = function(x) {
     dataset <- cbind(tip_names,x)
     outcome_str <- setNames(x,tip_names)
     asr_recon <- ancRECON(tr,dataset,p = comparitor_p, method = node_states, rate.cat = 1, rate.mat = comparitor_asr$corHMM_out$index.mat, root.p = comparitor_asr$corHMM_out$root.p, get.likelihood = F, get.tip.states = F)

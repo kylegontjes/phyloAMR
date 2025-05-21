@@ -20,7 +20,7 @@ Imports:
     ape,
     phytools,
     corHMM,
-    pbapply,
+    parallel,
     magrittr,
     ggtree,
     data.table
@@ -29,8 +29,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     hues,
-    ggnewscale, 
-    pbmcapply
+    ggnewscale
 Remotes:
     thej022214/corHMM
 Depends: 
