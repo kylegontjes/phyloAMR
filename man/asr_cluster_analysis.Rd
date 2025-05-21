@@ -4,16 +4,14 @@
 \alias{asr_cluster_analysis}
 \title{asr_cluster_analysis: Cluster analysis}
 \usage{
-asr_cluster_analysis(tip_data_df, remove_faux = TRUE)
+asr_cluster_analysis(tip_data_df)
 }
 \arguments{
 \item{tip_data_df}{Tip data frame object from asr_cluster_detection()}
-
-\item{remove_faux}{Boolean (i.e., TRUE/FALSE). Whether to remove faux isolates or not}
 }
 \value{
 A dataframe with data on the phylogenetics of a trait
 }
 \description{
-This function calculates the clustering statistics
+This function calculates the clustering statistics (e.g., number of singletons, clusters, and no features)
 }

@@ -44,7 +44,7 @@ We focus on the evolution and spread of non-susceptibility to colistin, a last-r
 
 ## Dataframe
 
-1.  **tip_name_var:** variable with tip names
+1.  **tip_name_variable:** variable with tip names
 2.  **Patient_ID:** Identifiers for patients in this study
 3.  **clades:** what clade of epidemic lineage sequence type 258 the isolate belongs to
 4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
@@ -101,7 +101,7 @@ paste0("Genotypes present in this matrix: ")
 colnames(genotype_mat)
 
 paste0("Visualization of the genotypes")
- gheatmap(ggtree(tr),genotype_mat %>% mutate_all(as.factor),width = 0.8,colnames = F) + feature_scale
+gheatmap(ggtree(tr),genotype_mat %>% mutate_all(as.factor),width = 0.8,colnames = F) + feature_scale
 ```
 
 # Step 1: Run ancestral state reconstruction
@@ -112,7 +112,7 @@ paste0("Visualization of the genotypes")
 
 -   The following parameters exist for this function
 
-    -   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+    -   **df:** Dataframe with tip name variable (e.g., tip_name_variable) and trait variable (e.g., colistin_ns)
 
     -   **tr:** Phylogenetic tree object of class phylo
 
@@ -127,7 +127,7 @@ paste0("Visualization of the genotypes")
         -   From our experience, we recommend using joint ancestral state reconstruction.
 
 ```{r}
-asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_variable = "tip_name_var",trait = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)
@@ -156,7 +156,7 @@ variables <- colnames(genotype_mat %>% select(-isolate_no)) %>% .[1:2]
 genotypes<- genotype_mat %>% .[match(tr$tip.label,.[['isolate_no']]),]
 
 asr_of_genotypes <- lapply(variables,FUN=function(x){
-  asr(genotype_mat,tr,"isolate_no",x,"ER","joint") %>% .$parent_child_df
+  asr(df = genotype_mat,tr = tr,tip_name_variable = "isolate_no",trait = x,model = "ER",node_states = "joint") %>% .$parent_child_df
 })
 ```
 

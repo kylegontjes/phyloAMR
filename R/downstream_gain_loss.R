@@ -2,8 +2,8 @@
 #'
 #' Downstream gain and loss of a comparitor trait on stretches of a different trait of interest
 #'
-#' @param comparitor_parent_child_df Parent child dataset for a comparitor trait, such as a genotype
-#' @param trait_parent_child_df Parent child dataset for a trait of interest, such as a phenotype
+#' @param comparitor_parent_child_df Parent child dataset for a comparitor trait, such as a genotype or a different trait/phenotype
+#' @param trait_parent_child_df Parent child dataset for a trait of interest, such as a trait/phenotype
 #' @param tr Phylogenetic tree
 #' @param node_states Joint or marginal reconstruction
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal

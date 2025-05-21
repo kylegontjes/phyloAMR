@@ -45,7 +45,7 @@ We focus on the evolution and spread of non-susceptibility to colistin, a last-r
 
 ## Dataframe
 
-1.  **tip_name_var:** variable with tip names
+1.  **tip_name_variable:** variable with tip names
 2.  **Patient_ID:** Identifiers for patients in this study
 3.  **clades:** what clade of epidemic lineage sequence type 258 the isolate belongs to
 4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
@@ -98,7 +98,7 @@ p0
 
 -   The following parameters exist for this function
 
-    -   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+    -   **df:** Dataframe with tip name variable (e.g., tip_name_variable) and trait variable (e.g., colistin_ns)
 
     -   **tr:** Phylogenetic tree object of class phylo
 
@@ -113,7 +113,7 @@ p0
         -   From our experience, we recommend using joint ancestral state reconstruction.
 
 ```{r}
-asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_variable = "tip_name_var",trait = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)
@@ -148,7 +148,7 @@ In this case, several important observations occur:
 4.  We also provide frequency statistics for the gain, loss, and continuation of these traits that can be useful to characterize the transition dynamics of this trait:
 
 ```{r}
-asr_transition_analysis(asr_obj$parent_child_df,node_states='joint')
+asr_transition_analysis(asr_obj$parent_child_df, node_states='joint')
 ```
 
 # Step 3: Cluster detection
@@ -161,11 +161,11 @@ Extending this to the study of Colistin non-susceptibility, non-susceptible isol
 
 **The following parameters exist for this function:**
 
--   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+-   **df:** Dataframe with tip name variable (e.g., tip_name_variable) and trait variable (e.g., colistin_ns)
 
 -   **tr:** Phylogenetic tree object of class phylo
 
--   **tip_name_var:** Tip name variable
+-   **tip_name_variable:** Tip name variable
 
 -   **patient_id:** Variable pertaining to a patient identifier
 
@@ -184,7 +184,7 @@ Extending this to the study of Colistin non-susceptibility, non-susceptible isol
 -   **collapse_cluster:** Whether to collapse (TRUE) the episodes as either cluster, singleton, or no feature
 
 ```{r,fig.width=7.5,fig.height=7.5}
-asr_cluster_obj <- asr_cluster_detection(df = df,tr=tr,tip_name_var = "tip_name_var",patient_id = 'PatientID',pheno = 'colistin_ns',parent_child_df = asr_obj$parent_child_df,node_states = 'joint',confidence = NULL,faux_clusters = 'remove',remove_revertant = TRUE,collapse_cluster = TRUE)
+asr_cluster_obj <- asr_cluster_detection(df = df,tr=tr,tip_name_variable = "tip_name_var",patient_id = 'PatientID',parent_child_df = asr_obj$parent_child_df,node_states = 'joint',confidence = NULL, simplify_faux_clusters = FALSE, simplify_revertant = TRUE, collapse_cluster = TRUE)
 
 paste0("Cluster detection dataframe")
 colnames(asr_cluster_obj)
@@ -214,7 +214,7 @@ We use two measures to characterize the phylogenetics of a trait: phylogenetic o
 2.  **Clustering frequency:** No. clustersNo. singleton events + No. clusters  
 
 ```{r,fig.width=7.5,fig.height=7.5}
-asr_cluster_analysis(asr_cluster_obj,remove_faux = TRUE)
+asr_cluster_analysis(asr_cluster_obj)
 ```
 
 # Step 5: Visualize clusters on phylogeny

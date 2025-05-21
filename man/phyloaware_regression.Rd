@@ -5,7 +5,7 @@
 \title{phyloaware_regression: Phylogenetically-aware regression}
 \usage{
 phyloaware_regression(
-  pheno,
+  trait,
   variables,
   df,
   first_present = NULL,
@@ -19,7 +19,7 @@ phyloaware_regression(
 )
 }
 \arguments{
-\item{pheno}{Trait of interest}
+\item{trait}{Trait of interest}
 
 \item{variables}{Exposure variables of interest}
 
@@ -29,9 +29,9 @@ phyloaware_regression(
 
 \item{patient_id}{Patient identifier variable stored in dataframe df}
 
-\item{culture_date}{Culture date variable}
+\item{culture_date}{Culture date variable stored in dataframe df}
 
-\item{multivariable}{Boolean whether to perform multivariable regression}
+\item{multivariable}{Boolean (i.e., TRUE, FALSE) whether to perform multivariable regression}
 
 \item{stepwise_direction}{Direction if stepwise multivariable regression is chosen}
 
@@ -39,7 +39,7 @@ phyloaware_regression(
 
 \item{retention_criteria}{P-value for retaining candidate variables in model (used in pvalue and purposeful selection)}
 
-\item{confounding_criteria}{Impact on effect size for purposeful selectoin}
+\item{confounding_criteria}{Impact on effect size for purposeful selection (used in purposeful selection)}
 }
 \value{
 List with univariable and multivariable results (if requested)

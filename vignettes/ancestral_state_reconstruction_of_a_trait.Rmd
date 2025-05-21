@@ -48,7 +48,7 @@ We focus on the evolution and spread of non-susceptibility to colistin, a last-r
 
 ## Dataframe
 
-1.  **tip_name_var:** variable with tip names
+1.  **tip_name_variable:** variable with tip names
 2.  **Patient_ID:** Identifiers for patients in this study
 3.  **clades:** what clade of epidemic lineage sequence type 258 the isolate belongs to
 4.  **colistin_ns:** colistin non-susceptibility. 1 = non-susceptible. 0 = susceptible
@@ -108,7 +108,7 @@ p0
 
 -   The following parameters exist for this function
 
-    -   **df:** Dataframe with tip name variable (e.g., tip_name_var) and trait variable (e.g., colistin_ns)
+    -   **df:** Dataframe with tip name variable (e.g., tip_name_variable) and trait variable (e.g., colistin_ns)
 
     -   **tr:** Phylogenetic tree object of class phylo
 
@@ -133,7 +133,7 @@ Next, the best model is chosen using the Akaike information criteria (AIC). Spec
 The asr() function has the option to run this model finding algorithm using the model = "MF" argument.
 
 ```{r}
-best_model_obj <- phyloAMR::find_best_asr_model(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = 'colistin_ns',node_states = 'joint')
+best_model_obj <- phyloAMR::find_best_asr_model(df = df,tr = tr,tip_name_variable = "tip_name_var",trait = 'colistin_ns',node_states = 'joint')
 
 paste0("Model fit statistics: ")
 best_model_obj$model_options
@@ -145,7 +145,7 @@ best_model_obj$best_model
 ## Running ancestral state reconstruction
 
 ```{r}
-asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_var = "tip_name_var",pheno = "colistin_ns",model = "ER",node_states = "joint")
+asr_obj <- phyloAMR::asr(df = df,tr = tr,tip_name_variable = "tip_name_var",trait = "colistin_ns",model = "ER",node_states = "joint")
 
 paste0("Output names: ")
 names(asr_obj)

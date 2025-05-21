@@ -7,9 +7,9 @@
 get_parent_child_data(
   tr,
   anc_data,
-  pheno_data,
-  conf_threshold = NULL,
-  node_states
+  trait_data,
+  node_states,
+  confidence_threshold = NULL
 )
 }
 \arguments{
@@ -17,11 +17,11 @@ get_parent_child_data(
 
 \item{anc_data}{Ancestral states inferred by corHMM}
 
-\item{pheno_data}{Named phenotype string}
-
-\item{conf_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
+\item{trait_data}{Named phenotype/trait string}
 
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
+
+\item{confidence_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
 }
 \value{
 Description of return value

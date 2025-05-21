@@ -3,17 +3,33 @@
 #' This function provides general model statistics for a binary ancestral state reconstruction model
 #'
 #' @param corHMM_obj Ancestral reconstruction model from corHMM::corHMM
-#' @return Dataframe containing model fit, rates, and model type
+#' @return Dataframe containing model fit (i.e., log-likelihood and AIC), rates, and model type (i.e., ER or ARD)
 #' @export
 characterize_asr_model <- function(corHMM_obj) {
-  model <- ifelse(c(corHMM_obj[["index.mat"]] %>% as.vector() %>% subset(is.na(.) == FALSE) %>% unique %>% length) == 1, "ER", "ARD")
-  rate1 <- corHMM_obj$solution[1, 2] %>% round(., 2)
-  rate2 <- ifelse(model == "ARD", corHMM_obj$solution[2, 1] %>% round(., 2), NA)
-  np <- max(unlist(corHMM_obj$index.mat), na.rm = TRUE)
-  nRateCat <- corHMM_obj$rate.cat
+  # Identify the model
+  ## Number of parameters in model
+  number_parameters <- max(unlist(corHMM_obj$index.mat), na.rm = TRUE)
+  ## Identify the model
+  model <- ifelse(number_parameters == 1, "ER", "ARD")
+
+  # Number of rate categories
+  number_rate_categories <- corHMM_obj$rate.cat
+
+  # Capture the rates
+  rate1 <- round(corHMM_obj$solution[1, 2], 2)
+  rate2 <- ifelse(model == "ARD", round(corHMM_obj$solution[2, 1], 2), NA)
+
+  # Log likelihood
   loglik <- corHMM_obj$loglik
+
+  # Akaike information criterium
+  ## Raw output
   AIC <- corHMM_obj$AIC
+  ## Sample-size corrected
   AICc <- corHMM_obj$AICc
-  data <- data.frame(model, np, nRateCat, rate1, rate2, loglik, AIC, AICc)
+
+  # Data output
+  data <- data.frame(model, number_parameters, number_rate_categories, rate1, rate2, loglik, AIC, AICc)
+
   return(data)
 }

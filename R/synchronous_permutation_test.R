@@ -2,27 +2,27 @@
 #'
 #' Permutation test for synchronous detection function
 #'
-#' @param comparitor Comparitor, such as a genotype
+#' @param comparitor Comparitor, such as a genotype or a different trait/phenotype
 #' @param df Dataframe with comparitor, trait, and tip_name_var
 #' @param tr Phylogenetic tree
 #' @param tip_name_var Tip name variable
-#' @param trait Trait of interest, such as a phenotype
+#' @param trait Trait of interest, such as a trait/phenotype
 #' @param node_states Joint or marginal reconstruction
-#' @param conf_threshold Confidence threshold if using marginal reconstruction
+#' @param confidence_threshold Confidence threshold if using marginal reconstruction
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
 #' @param num_permutations Number of permutations. Default: 1000
 #' @param num_cores Number of cores. Default: 1
 #' @return Synchronous gain and loss events of two traits with p-value permutation testing results
 #' @export
-synchronous_permutation_test <- function(comparitor, df, tr, tip_name_var, trait, node_states = "joint", conf_threshold = NULL, confidence = NULL, num_permutations = 1000, num_cores = 1) {
+synchronous_permutation_test <- function(comparitor, df, tr, tip_name_var, trait, node_states = "joint", confidence_threshold = NULL, confidence = NULL, num_permutations = 1000, num_cores = 1) {
   df <- df %>% .[match(tr$tip.label, .[[tip_name_var]]), ]
   tr$node.label <- NULL
 
   # Trait
-  trait_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, pheno = pheno, model = "ER", node_states = node_states, conf_threshold = conf_threshold) %>% .$parent_child_df
+  trait_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, trait = trait, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold) %>% .$parent_child_df
 
   # Comparitor
-  comparitor_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, pheno = comparitor, model = "ER", node_states = node_states, conf_threshold = conf_threshold)
+  comparitor_asr <- asr(df = df, tr = tr, tip_name_var = tip_name_var, trait = comparitor, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold)
   comparitor_asr_parent_child <- comparitor_asr$parent_child_df
 
   # Observed data
@@ -53,7 +53,7 @@ synchronous_permutation_test <- function(comparitor, df, tr, tip_name_var, trait
     dataset <- cbind(tip_names,x)
     outcome_str <- setNames(x,tip_names)
     asr_recon <- ancRECON(tr,dataset,p = comparitor_p, method = node_states, rate.cat = 1, rate.mat = comparitor_asr$corHMM_out$index.mat, root.p = comparitor_asr$corHMM_out$root.p, get.likelihood = F, get.tip.states = F)
-    asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,pheno_data = outcome_str,conf_threshold = NULL,node_states = 'joint') %>% get_continuation_data(.,'joint')
+    asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,trait_data = outcome_str,confidence_threshold = confidence_threshold,node_states = node_states) %>% get_continuation_data(.,'joint')
     comparitor_sychronous_perm <- synchronous_detection(asr_result, trait_asr)
     return(comparitor_sychronous_perm)
   }, mc.cores = num_cores) %>% do.call(rbind, .)

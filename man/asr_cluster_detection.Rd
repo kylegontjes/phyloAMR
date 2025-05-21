@@ -7,14 +7,13 @@
 asr_cluster_detection(
   df,
   tr,
-  tip_name_var,
+  tip_name_variable,
   patient_id = NULL,
-  pheno,
   parent_child_df,
   node_states = "joint",
   confidence = NULL,
-  faux_clusters = FALSE,
-  remove_revertant = TRUE,
+  simplify_faux_clusters = FALSE,
+  simplify_revertant = TRUE,
   collapse_cluster = TRUE
 )
 }
@@ -23,11 +22,9 @@ asr_cluster_detection(
 
 \item{tr}{Phylogenetic tree}
 
-\item{tip_name_var}{Name of variable containing tip names in df}
+\item{tip_name_variable}{Name of variable containing tip names in df}
 
 \item{patient_id}{Name of variable containing patient IDs, can be combined with faux_clusters option to factor into whether a cluster should have >1 patient. (Optional)}
-
-\item{pheno}{Name of phenotype variable in df}
 
 \item{parent_child_df}{Parent child dataframe from asr() object}
 
@@ -35,9 +32,9 @@ asr_cluster_detection(
 
 \item{confidence}{Whether to use 'high' (i.e., 0 -> 1) or 'low' (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS}
 
-\item{faux_clusters}{Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)}
+\item{simplify_faux_clusters}{Booleane (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)}
 
-\item{remove_revertant}{Boolean (i.e., TRUE/FALSE). Whether to remove revertant episodes from consideration in a cleaned}
+\item{simplify_revertant}{Boolean (i.e., TRUE/FALSE). Whether to collapse revertant episodes as isolates without the trait in the cleaned text string}
 
 \item{collapse_cluster}{Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category}
 }

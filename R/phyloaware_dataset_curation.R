@@ -1,14 +1,14 @@
-phyloaware_dataset_curation <- function(pheno,df,first_present=NULL,patient_id=NULL,culture_date=NULL){
+phyloaware_dataset_curation <- function(trait,df,first_present=NULL,patient_id=NULL,culture_date=NULL){
   # Get first isolate present
   if(first_present==T){
-    present_df <- get_dataset_with_first_present_isolate(variable=pheno,patient_id=patient_id,culture_date=culture_date,df=df)
+    present_df <- get_dataset_with_first_present_isolate(variable=trait, patient_id=patient_id, culture_date=culture_date,df=df)
   } else {
     present_df <- df %>% as.data.frame
   }
   # Emergence
-  singleton_df <- present_df %>% subset(get(pheno) ==0 | grepl("singleton",asr_cluster)) %>% as.data.frame()
+  singleton_df <- present_df %>% subset(get(trait) ==0 | grepl("singleton|1pt",asr_cluster)) %>% as.data.frame()
   # Spread
-  cluster_df <- present_df %>% subset(get(pheno) ==0 | grepl("cluster",asr_cluster)) %>% as.data.frame()
+  cluster_df <- present_df %>% subset(get(trait) ==0 | (grepl("cluster",asr_cluster) & !grepl("1pt",asr_cluster))) %>% as.data.frame()
   # Final DF list
   df_list <- list(present_df,singleton_df,cluster_df) %>% `names<-`(c("present","singleton","cluster"))
   return(df_list)

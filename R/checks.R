@@ -25,8 +25,24 @@ check_trait_tree_length <- function(trait_var, df_tips, tree) {
 }
 
 ## Joint and confidence
+### Check joint and confidence value for asr transition statistics
+check_joint_confidence_value <- function(node_states, confidence_threshold){
+  if(node_states == "joint" & is.null(confidence_threshold)== FALSE) {
+    stop("When using joint reconstruction states, you must specify confidence as NULL")
+  }
+  if(node_states == 'marginal'){
+    if(is.numeric(confidence_threshold) == FALSE){
+      stop("Confidence threshold must be numeric and between 1 and 0")
+    }
+    if(confidence_threshold >1 | confidence_threshold < 0) {
+      stop("Confidence threshold must be between 1 and 0")
+  }
+  }
+}
+
+### Check joint confidence for asr_cluster_detection calling
 check_joint_confidence <- function(node_states, confidence){
-  if(node_states == "joint" & is.null(confidence)== FALSE) {
+  if(node_states == "joint" & is.null(confidence) == FALSE) {
     stop("When using joint reconstruction states, you must specify confidence as NULL")
   }
 }
@@ -51,8 +67,8 @@ check_marginal_columns <- function(node_states, parent_child_df) {
 
 #### Cluster detection analyses ####
 ## Faux clusters requiring patient_id information
-check_faux_clusters <- function(patient_id, faux_clusters){
-  if(is.null(patient_id) == TRUE & faux_clusters != FALSE) {
+check_faux_clusters <- function(patient_id, simplify_faux_clusters){
+  if(is.null(patient_id) == TRUE & simplify_faux_clusters != FALSE) {
     stop("Must have patient id variable for when faux clusters is specified")
   }
 }

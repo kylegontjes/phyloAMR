@@ -2,86 +2,73 @@
 #'
 #' Function to perform ancestral state reconstruction using corHMM. Parse output into informative dataset with episodes of trait gain, loss, and continuation across the phylogenetic tree
 #'
-#' @param df Dataframe with tip name (e.g., tip_name_var) and phenotype (e.g., pheno) variables
+#' @param df Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables
 #' @param tr Phylogenetic tree object. Class must be phylo
-#' @param tip_name_var Name of variable containing tip names in df
-#' @param pheno Name of phenotype/trait variable in df
+#' @param tip_name_variable Name of variable containing tip names in df
+#' @param trait Name of phenotype/trait variable in df
 #' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
 #' @param upper_bound Upper bound for likelihood search. Default: 1e50
 #' @param lower_bound Lower bound for likelihood search. Default: 1e-9
-#' @param conf_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
+#' @param confidence_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
 #' @return Description of return value
 #'   \describe{
-#'     \item{corHMM_out}{corHMM output}
+#'     \item{corHMM_output}{corHMM output}
 #'     \item{corHMM_model_summary}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
 #'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
 #'     \item{node_states}{Text string indicating the chosen reconstruction method}
 #'   }
 #' @export
-asr <- function(df, tr, tip_name_var, pheno, model = "ER", node_states = "joint", upper_bound = 1e50, lower_bound = 1e-9, conf_threshold = NULL) {
+asr <- function(df, tr, tip_name_variable, trait, model = "ER", node_states = "joint", upper_bound = 1e50, lower_bound = 1e-9, confidence_threshold = NULL) {
   # Check if phenotype is 0,1
-  check_phenotype(df[[pheno]])
+  check_trait(df[[trait]])
   # Check if tree is rooted
   check_tree(tr)
   # Check if phenotype and tree length is the same
-  check_phenotype_tree_length(pheno_var = df[[pheno]], df_tips = df[[tip_name_var]], tree = tr)
+  check_trait_tree_length(trait_var = df[[trait]], df_tips = df[[tip_name_variable]], tree = tr)
+  # Check if states appropriately chosen
+  check_joint_confidence_value(node_states, confidence_threshold)
 
   # Order dataframe properly, if not the predictions will be wrong
-  df <- df %>% .[match(tr$tip.label, .[[tip_name_var]]), ]
-
-  # Check if you want to use the best model
-  if (model == "MF") {
-    print("Performing model finding to use best fitting model")
-    model <-  find_best_asr_model(df = df, tr = tr, tip_name_var = tip_name_var, pheno = pheno, node_states = node_states) %>% .$best_model
-    print(paste0("Best model is: ", model))
-  }
+  df <- df[match(tr$tip.label, df[[tip_name_variable]]), ]
 
   # Run corHMM to estimate hidden rates
-  corHMM_out <-  corHMM::corHMM(phy = tr, data = df[, c(tip_name_var, pheno)], rate.cat = 1, model = model, node.states = node_states, upper.bound = upper_bound, lower.bound = lower_bound)
+  ## Check if you want to use the best model
+  if (model == "MF") {
+    cat("Performing model finding to use best fitting model \n")
+    MF_results <- find_best_asr_model(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = trait, node_states = node_states, upper_bound = upper_bound, lower_bound = lower_bound)
+    corHMM_output <- MF_results[["corHMM_output_best_model"]]
+  } else {
+    corHMM_output <- corHMM::corHMM(phy = tr, data = df[, c(tip_name_variable, trait)], rate.cat = 1, model = model, node.states = node_states, upper.bound = upper_bound, lower.bound = lower_bound)
+  }
 
   # Check if rates are at min or max bound
-  check_rates_at_local_max(corHMM_out, upper_bound = upper_bound, lower_bound = lower_bound)
+  check_rates_at_local_max(corHMM_output, upper_bound = upper_bound, lower_bound = lower_bound)
 
   # Model stats
-  corHMM_model_summary <- characterize_asr_model(corHMM_out)
+  if (model == "MF") {
+    corHMM_model_statistics <- MF_results[["model_statistics"]]
+    # Remove model finder object
+    rm(MF_results)
+  } else {
+    corHMM_model_statistics <- characterize_asr_model(corHMM_output)
+  }
 
-  # Get Parent Child data
-  outcome_str <- df[, pheno] %>% `names<-`(df[[tip_name_var]])
-  parent_child_df <- get_parent_child_data(tr = tr, anc_data = corHMM_out$states, pheno_data = outcome_str, conf_threshold = conf_threshold, node_states = node_states)
+  # Get parent child data
+  outcome_str <- df[, trait]
+  names(outcome_str) <- df[[tip_name_variable]]
+  parent_child_df <- get_parent_child_data(tr = tr, anc_data = corHMM_output$states, trait_data = outcome_str, node_states = node_states, confidence_threshold = confidence_threshold)
 
-  # Annotate parent child data
-  parent_child_df <- get_continuation_data(parent_child_df, node_states = node_states)
+  # Annotate parent child data with transition data (i.e., gain, loss, and continuation)
+  parent_child_df <- get_continuation_data(parent_child_df = parent_child_df, node_states = node_states)
 
-  asr_output  <- list(corHMM_out = corHMM_out, corHMM_model_summary = corHMM_model_summary, parent_child_df = parent_child_df, node_states = node_states)
+  # Results object
+  asr_output  <- list(corHMM_output = corHMM_output,
+                      corHMM_model_statistics = corHMM_model_statistics,
+                      parent_child_df = parent_child_df,
+                      node_states = node_states)
+
   return(asr_output)
-}
-
-check_phenotype <- function(phenotype_var) {
-  if (sum(unique(as.numeric(phenotype_var)) %in% c(0, 1)) != 2) {
-    stop("Phenotype is not formatted as binary variable with event = 1 and no-event = 0")
-  }
-}
-
-check_tree <- function(tree) {
-  if (is.rooted(tree) == FALSE) {
-    stop("Tree is not rooted. Please root your tree using functions like ape::root() or phytools::midpoint.root()")
-  }
-}
-
-check_phenotype_tree_length <- function(pheno_var, df_tips, tree) {
-  if (length(pheno_var) != length(tree$tip.label)) {
-    stop("Tree length does not equal length of phenotype variable. Ensure the number of tips in the tree is the number of entries in your phenotype variable.")
-  }
-  if (sum(! tree$tip.label %in% df_tips) > 0) {
-    stop("At least one tree tip name is not found in the dataset")
-  }
-}
-
-check_rates_at_local_max <- function(corHMM_out, upper_bound, lower_bound) {
-  if (sum(corHMM_out$solution %in% as.character(c(upper_bound, lower_bound))) > 0) {
-    warning("Rates are at the upper or lower maximum, consider updating the maximums to get a more accurate solution")
-  }
 }
 
 #' get_parent_child_data: Get parent child data from ancestral state reconstruction
@@ -90,35 +77,36 @@ check_rates_at_local_max <- function(corHMM_out, upper_bound, lower_bound) {
 #'
 #' @param tr Phylogenetic tree object. Class must be phylo
 #' @param anc_data Ancestral states inferred by corHMM
-#' @param pheno_data Named phenotype string
-#' @param conf_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
+#' @param trait_data Named phenotype/trait string
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
+#' @param confidence_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
 #' @return Description of return value
 #'   \describe{
 #'     \item{edge}{Edge matrix with states}
 #'   }
 #' @export
-get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold = NULL, node_states) {
+get_parent_child_data <- function(tr, anc_data, trait_data, node_states, confidence_threshold = NULL) {
   # Tree edge info
   edge <- tr$edge %>% as.data.frame
   colnames(edge) <- c("parent", "child")
 
   # Prediction data
   if (node_states == "marginal") {
-    anc_data <- as.data.frame(anc_data) %>% `colnames<-`(levels(as.factor(pheno_data)))
-    anc_data[, "pred"] <- ifelse(anc_data[, 2] > conf_threshold, 1, ifelse(anc_data[, 1] > conf_threshold, 0, 0.5))
+    anc_data <- as.data.frame(anc_data) %>% `colnames<-`(levels(as.factor(trait_data)))
+    anc_data[, "pred"] <- ifelse(anc_data[, 2] > confidence_threshold, 1, ifelse(anc_data[, 1] > confidence_threshold, 0, 0.5))
   } else if (node_states == "joint") {
-    state_coding <- as.factor(pheno_data) %>% levels %>% `names<-`(seq_along((.)))
+    state_coding <- levels(as.factor(trait_data))
+    names(state_coding) <- seq_along(state_coding)
     anc_data <- data.frame(pred = anc_data)
     anc_data$pred <- dplyr::recode(anc_data$pred, !!!as.list(state_coding)) %>% as.numeric
   } else {
-    stop("Phylosuite is only optimized for marginal and joint corHMM")
+    stop("This tool is only optimized for marginal and joint corHMM")
   }
 
   # Add node data
   anc_data[, "node"] <-  seq_len(nrow(anc_data)) + (nrow(anc_data) + 1)
   num_edges <- nrow(edge)
-  internal_nodes <- c(length(pheno_data) + 1):(unlist(edge) %>% max)
+  internal_nodes <- c(length(trait_data) + 1):(unlist(edge) %>% max)
 
   # Dataframe construction
   edge$parent_val <- rep(NA, num_edges)
@@ -134,16 +122,16 @@ get_parent_child_data <- function(tr, anc_data, pheno_data, conf_threshold = NUL
   if (node_states == "marginal") {
     edge$child_mle <- rep(NA, num_edges)
     edge$parent_mle <- rep(NA, num_edges)
-    for(i in internal_nodes){
-      edge[edge$parent == i, "parent_mle"] <- anc_data[anc_data$node == i, levels(as.factor(pheno_data))[2]] * 100
-      edge[edge$child == i, "child_mle"] <- anc_data[anc_data$node == i, levels(as.factor(pheno_data))[2]] * 100
+    for (i in internal_nodes){
+      edge[edge$parent == i, "parent_mle"] <- anc_data[anc_data$node == i, levels(as.factor(trait_data))[2]] * 100
+      edge[edge$child == i, "child_mle"] <- anc_data[anc_data$node == i, levels(as.factor(trait_data))[2]] * 100
     }
   }
 
   # Values and name for the tip
-  for (i in 1:(min(internal_nodes)-1)) {
+  for (i in 1:(min(internal_nodes) - 1)) {
     edge[edge$child == i, "child_name"] <- tr$tip.label[[i]]
-    edge[edge$child == i, "child_val"] <- subset(pheno_data, names(pheno_data) == edge[edge$child == i, "child_name"])
+    edge[edge$child == i, "child_val"] <- subset(trait_data, names(trait_data) == edge[edge$child == i, "child_name"])
   }
 
   return(edge)

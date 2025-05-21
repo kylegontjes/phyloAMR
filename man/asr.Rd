@@ -7,23 +7,23 @@
 asr(
   df,
   tr,
-  tip_name_var,
-  pheno,
+  tip_name_variable,
+  trait,
   model = "ER",
   node_states = "joint",
   upper_bound = 1e+50,
   lower_bound = 1e-09,
-  conf_threshold = NULL
+  confidence_threshold = NULL
 )
 }
 \arguments{
-\item{df}{Dataframe with tip name (e.g., tip_name_var) and phenotype (e.g., pheno) variables}
+\item{df}{Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables}
 
 \item{tr}{Phylogenetic tree object. Class must be phylo}
 
-\item{tip_name_var}{Name of variable containing tip names in df}
+\item{tip_name_variable}{Name of variable containing tip names in df}
 
-\item{pheno}{Name of phenotype/trait variable in df}
+\item{trait}{Name of phenotype/trait variable in df}
 
 \item{model}{Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER}
 
@@ -33,12 +33,12 @@ asr(
 
 \item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
 
-\item{conf_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
+\item{confidence_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
 }
 \value{
 Description of return value
   \describe{
-    \item{corHMM_out}{corHMM output}
+    \item{corHMM_output}{corHMM output}
     \item{corHMM_model_summary}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
     \item{node_states}{Text string indicating the chosen reconstruction method}

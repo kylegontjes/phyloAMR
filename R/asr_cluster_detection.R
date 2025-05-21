@@ -4,255 +4,233 @@
 #'
 #' @param df Dataframe with tip name variable and phenotype
 #' @param tr Phylogenetic tree
-#' @param tip_name_var Name of variable containing tip names in df
+#' @param tip_name_variable Name of variable containing tip names in df
 #' @param patient_id Name of variable containing patient IDs, can be combined with faux_clusters option to factor into whether a cluster should have >1 patient. (Optional)
-#' @param pheno Name of phenotype variable in df
 #' @param parent_child_df Parent child dataframe from asr() object
 #' @param node_states Whether the reconstruction was "joint" or "marginal"
 #' @param confidence Whether to use 'high' (i.e., 0 -> 1) or 'low' (0 -> 0.5) confidence transitions when determining clustering. ONLY USAGE FOR MARGINAL STATE RECONSTRUCTIONS
-#' @param faux_clusters Two options exist: relabel (i.e., specify clusters as having 1pt) or remove (i.e., consider these singletons) (Optional)
-#' @param remove_revertant Boolean (i.e., TRUE/FALSE). Whether to remove revertant episodes from consideration in a cleaned
+#' @param simplify_faux_clusters Booleane (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)
+#' @param simplify_revertant Boolean (i.e., TRUE/FALSE). Whether to collapse revertant episodes as isolates without the trait in the cleaned text string
 #' @param collapse_cluster Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category
 #' @return A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired
 #' @export
-asr_cluster_detection <- function(df,tr,tip_name_var,patient_id=NULL,pheno,parent_child_df,node_states="joint",confidence=NULL,faux_clusters=FALSE,remove_revertant=TRUE,collapse_cluster=TRUE){
+asr_cluster_detection <- function(df, tr, tip_name_variable, patient_id = NULL, parent_child_df, node_states = "joint", confidence = NULL, simplify_faux_clusters = FALSE, simplify_revertant = TRUE, collapse_cluster = TRUE) {
   # Check if states are as desired
-  check_joint_confidence(node_states,confidence)
+  check_joint_confidence(node_states, confidence)
+
   # Check faux_cluster
-  check_faux_clusters(patient_id,faux_clusters)
+  check_faux_clusters(patient_id, simplify_faux_clusters)
 
   # Set up data frame
-  clustering_data <- data.frame(isolate_no = df[[tip_name_var]])
-  rownames(clustering_data) <- clustering_data$isolate_no
-  # If patient ID is not null
-  if(is.null(patient_id)==F){
-    clustering_data$patient_id = df[[patient_id]]
-  }
+  clustering_data <- data.frame(tip_name = df[[tip_name_variable]])
+  rownames(clustering_data) <- clustering_data$tip_name
 
   # Get clustering data
-  clustering_data$asr_cluster <- sapply(clustering_data$isolate_no,FUN=get_clustering_data,parent_child_df,node_states=node_states,confidence=confidence)
+  root_node <- length(tr$tip.label) + 1
+  clustering_data$asr_cluster <- sapply(clustering_data$tip_name, FUN = get_clustering_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
 
-  # Account for faux clusters (e.g., belong to >1)
-  if(faux_clusters != FALSE){
-    clustering_data$asr_cluster <- account_for_faux_clusters(clustering_data,faux_clusters)
+  # If patient ID is not null, account for faux clusters (e.g., relabel clusters with only one patient)
+  if (!is.null(patient_id)) {
+    clustering_data$patient_id <- df[[patient_id]]
+    clustering_data$asr_cluster <- account_for_faux_clusters(clustering_data)
   }
 
-  # Simplify strings
-  clustering_data$asr_cluster_renamed <- simplify_acr_clustering_string(string = "asr_cluster",df = clustering_data,tr = tr,faux_clusters =faux_clusters,remove_revertant = remove_revertant)
+  # Simplify clustering output
+  clustering_data$asr_cluster_renamed <- simplify_clustering_string(clustering_data = clustering_data, tr = tr, simplify_faux_clusters = simplify_faux_clusters, simplify_revertant = simplify_revertant)
 
-  # Simplify to cluster
-  if(collapse_cluster==TRUE){
-    clustering_data$asr_cluster_collapsed <- group_by_category(string=clustering_data$asr_cluster,remove_revertant=remove_revertant)
+  # Collapse cluster output through grouping by category
+  if (collapse_cluster == TRUE) {
+    clustering_data$asr_cluster_collapsed <- group_by_category(string = clustering_data$asr_cluster_renamed, simplify_faux_clusters = simplify_faux_clusters, simplify_revertant = simplify_revertant)
   }
 
   # Get tip data and merge it with the clustering data
-  tip_data <- parent_child_df %>% subset(child <= ape::Nnode(tr)+1) %>% dplyr::mutate(isolate_no=child_name)
-  tip_data_df <- suppressMessages(dplyr::left_join(tip_data,clustering_data) %>% `rownames<-`(.$isolate_no) %>% select(-isolate_no))
+  tip_data <- subset(parent_child_df, child <= ape::Nnode(tr) + 1)
+  tip_data[["tip_name"]] <- tip_data[["child_name"]]
+  tip_data_df <- suppressMessages(dplyr::left_join(tip_data, clustering_data))
+  rownames(tip_data_df) <- tip_data_df$tip_name
 
-  # We don't need the parent_child dataframe here, so we are only providing the tip based data
-  results <-tip_data_df
-
-  return(results)
+  return(tip_data_df)
 }
 
-check_joint_confidence <- function(node_states,confidence){
-  if(node_states == "joint" & is.null(confidence)== F
-     ){
-    stop("When using joint reconstruction states, you must specify confidence as NULL")
-  }
-}
+# Get clustering data
+get_clustering_data <- function(isolate, parent_child_df, tr, root_node, node_states, confidence) {
+  tip_row <- parent_child_df[!is.na(parent_child_df$child_name) & parent_child_df$child_name  == isolate, ]
 
-check_faux_clusters <- function(patient_id,faux_clusters){
-  if(is.null(patient_id) == T & faux_clusters != F){
-    stop("Must have patient id variable for when faux clusters is specified")
-  }
-  if(!faux_clusters %in% c(F,"relabel","remove")){
-    stop("Must specify faux cluster under options of F, relabel, or remove")
-  }
-}
-
-
-get_clustering_data <- function (isolate, edge_data,node_states, confidence){
-  tip_row <- edge_data %>% subset(child_name == isolate)
-  classification <- c()
-  if (tip_row$child_val == 0) {
-    if(node_states == "joint"){
-      classification <- ifelse(tip_row[,"loss"] == 1, "revertant_tip",
-                               "no feature")
-    } else {
-      classification <- ifelse(tip_row[,paste0("loss_",confidence)] == 1, "revertant_tip",
-                               "no feature")
+  # Classify tips with the trait
+  if (tip_row[['child_val']] == 1) {
+    classification <- classify_tips_with_trait(node_data = tip_row, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
+    if(classification != 'singleton'){
+      classification <-  paste0("cluster_",classification)
     }
   }
 
-  if (tip_row$child_val == 1) {
-    if(node_states == "joint"){
-      classification <- ifelse(tip_row[,"gain"] == 1, "singleton",
-                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data=edge_data,node_states=node_states,confidence=confidence) %>% {ifelse(.=="root","root",.)}))
-    } else {
-
-      classification <- ifelse(tip_row[,paste0("gain_",confidence)] == 1, "singleton",
-                               paste0("cluster_", get_largest_anc_cluster(tip_row, edge_data=edge_data,node_states=node_states,confidence=confidence) %>% {ifelse(.=="root","root",.)}))
-
+  # Classify tips without the trait
+  if(tip_row[['child_val']] == 0){
+    classification <- classify_tips_without_trait(node_data = tip_row, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
+    if (!classification %in% c("no feature", "revertant_tip")) {
+      classification <-  paste0("revertant_cluster_",classification)
     }
   }
-  if (classification == "singleton") {
-    classification <- reclassify_singletons(node_data = tip_row,
-                                                         edge_data = edge_data,node_states=node_states,confidence=confidence)  %>% {ifelse(.=="singleton",.,paste0("cluster_",.))}
-  }
-  if (classification == "no feature") {
-    classification <- get_largest_anc_reversion(node_data = tip_row,
-                                                                 edge_data = edge_data,node_states=node_states,confidence=confidence)
 
-    classification <- ifelse(classification == "no feature",classification,paste0("revertant_",classification))
+  return(classification)
+}
+
+# Characterize tips with traits
+classify_tips_with_trait <- function(node_data, parent_child_df, tr, root_node, node_states, confidence) {
+  # Reclassify the singletons
+  if ((node_states =="joint" && node_data[['gain']] == 1) || (node_states =="marginal" && node_data[[paste0('gain_',confidence)]] == 1)){
+    previous <- get_parent_node(node_data[['parent']], parent_child_df)
+    if ((node_states == "joint" && previous[['loss']] ==1) || (node_states == "marginal" && previous[[paste0('loss_',confidence)]] == 1)){
+      classification <- get_transition_node(previous, parent_child_df,tr, root_node = root_node, node_states, confidence)
+    } else {
+      classification <- "singleton"
+    }
+  } else{
+    classification <- get_transition_node( node_data, parent_child_df,tr, root_node = root_node, node_states, confidence)
   }
   return(classification)
 }
 
-get_largest_anc_cluster <- function(node_data,edge_data,node_states,confidence){
-  output <- node_data
-  repeat{
-    output <- get_parent_node(output, edge_data)
-    if(nrow(output)==0){
-      output <- c("root")
-      break
+# Characterize tips with traits
+classify_tips_without_trait <- function(node_data, parent_child_df, tr, root_node, node_states, confidence) {
+  # Reclassify the revertants at the tip
+  if ((node_states =="joint" && node_data[['loss']] == 1) || (node_states =="marginal" && node_data[[paste0('loss_',confidence)]] == 1)){
+    previous <- get_parent_node(node_data[['parent']], parent_child_df)
+    if ((node_states == "joint" && previous[['gain']] ==1 || node_states == "marginal" && previous[[paste0('gain_',confidence)]] == 1)){
+      classification <- get_transition_node(node_data, parent_child_df, tr, root_node = root_node, confidence)
+    } else {
+      classification <- "revertant_tip"
     }
-    else {
-      if(node_states =="joint"){
-        if(output[,"gain"]==1){
-          output <- output$child
-          break
-        }
-      }
-      if(node_states == "marginal"){
-          if(output[,paste0("gain_",confidence)]==1){
-            output <- output$child
-            break
-          }
-        }
-          }
-        }
-  return(output)
-}
-
-reclassify_singletons <- function (node_data, edge_data,node_states,confidence){
-  previous <- get_parent_node(node_data, edge_data)
-  if(node_states == "joint"){
-    classification <- ifelse(previous[,"loss"] == 0, "singleton",
-                             get_largest_anc_cluster(previous, edge_data,node_states,confidence))
-  } else {
-    classification <- ifelse(previous[,paste0("loss_",confidence)] == 0, "singleton",
-                             get_largest_anc_cluster(previous, edge_data,node_states,confidence))
+  } else{
+    classification <- get_transition_node(node_data, parent_child_df, tr,root_node = root_node, node_states, confidence)
+    # This is important, because our focus is on the emergence of a trait.
+    # No reversion would be detected if there was a stretch of no trait all the way from tip to the root
+    if(classification == 'root'){
+      classification <- 'no feature'
+    }
   }
   return(classification)
 }
 
-get_largest_anc_reversion <- function (node_data, edge_data,node_states,confidence){
-  output <- node_data
-  repeat {
-    output <- get_parent_node(output, edge_data)
-    if (nrow(output) == 0) {
-      output <- "no feature"
-      break
-    }
-    else if (output$parent_val == 1) {
-      output <- output$child
-      break
-    }
-    else
-      if(node_states =="joint"){
-        if(output[,"loss"]==1){
-          output <- output$child
-          break
-        }
-      }
-      if(node_states == "marginal"){
-        if (output[,paste0("loss_",confidence)] == 1) {
-          output <- output$child
-          break
-        }
-      }
-  }
-  return(output)
+## Utilitey function - get parent's node
+get_parent_node <- function(parental_node, parent_child_df) {
+  parent_child_df[parent_child_df$child == parental_node,]
 }
 
-get_parent_node <- function(node_data,edge_data){
-  parent_node <- node_data$parent
-  step_up <- subset(edge_data,child==parent_node)
-  return(step_up)
-}
-
-account_for_faux_clusters <- function(cluster_data,faux_clusters){
+# Account for faux clusters
+account_for_faux_clusters <- function(cluster_data) {
   # Determine cluster size
-  cluster_size <- table(cluster_data$asr_cluster) %>% subset(grepl("cluster_",names(.))) %>% subset(!grepl("singleton",names(.)))
+  cluster_calls <- subset(cluster_data$asr_cluster, grepl("cluster_", cluster_data$asr_cluster))
+  cluster_size <- table(cluster_calls)
   # Isolates where gain at internal node was called, but no other isolate was connected to it
-  true_clusters <- subset(cluster_size,cluster_size>1) %>% names
+  true_clusters <- names(subset(cluster_size, cluster_size>1))
   not_cluster <- names(cluster_size[!names(cluster_size) %in% true_clusters])
   # Clusters with only one patient
-  cluster_size_pts <- sapply(true_clusters,FUN=function(x){
-    cluster_data  %>% subset(asr_cluster == x) %>% .$patient_id %>% unique %>% length
+  cluster_size_pts <- sapply(true_clusters, FUN = function(x) {
+    length(unique(cluster_data[cluster_data$asr_cluster == x,'patient_id']))
   })
-  not_more_than_one_pt <- subset(cluster_size_pts,cluster_size_pts==1) %>% names(.)
-  if(faux_clusters == 'remove'){
-    cluster_fin <-  ifelse(cluster_data$asr_cluster  %in% c(not_more_than_one_pt,not_cluster),"singleton",cluster_data$asr_cluster)
-  }
-  if(faux_clusters == 'relabel'){
-    cluster_fin <- ifelse(cluster_data$asr_cluster %in% not_cluster,"singleton",
-                               ifelse(cluster_data$asr_cluster %in% not_more_than_one_pt,paste0(cluster_data$asr_cluster,"_1pt_only"),
-                                      cluster_data$asr_cluster))
-  }
-  return(cluster_fin)
+  not_more_than_one_pt <- names(subset(cluster_size_pts, cluster_size_pts == 1))
+  # Relabel these as either (1) singletons or (2) clusters of 1 patient only
+  cleaned_cluster_string <- case_when(
+    cluster_data$asr_cluster %in% not_cluster ~ "singleton",
+    cluster_data$asr_cluster %in% not_more_than_one_pt ~ paste0(cluster_data$asr_cluster, "_1pt_only"),
+    TRUE ~ cluster_data$asr_cluster)
+  return(cleaned_cluster_string)
 }
 
-simplify_acr_clustering_string <-  function(string,df,tr,faux_clusters,remove_revertant){
-  # add rownames
-  rownames(df) <- df$isolate_no
+# Simplify clustering string
+simplify_clustering_string <-  function(clustering_data, tr, simplify_faux_clusters, simplify_revertant) {
+  # Get initial order
+  initial_order <- clustering_data$tip_name
   #Reorder vector to tree plotting
-  df_ordered <- df %>% dplyr::select(isolate_no,paste0(string)) %>% .[match(ggtree::get_taxa_name(ggtree::ggtree(tr)),df$isolate_no),]
+  clustering_data <- clustering_data[match(ggtree::get_taxa_name(ggtree::ggtree(tr)), clustering_data$tip_name), c('tip_name','asr_cluster')]
 
   # Convert Names to Easy to Report String
-  df_ordered$string <- df_ordered %>% dplyr::select(paste0(string)) %>% unlist %>%  {ifelse(. == "singleton","Singleton",
-                                                                                            ifelse(. == "no feature","No Feature",
-                                                                                                   ifelse(.!="revertant_tip" & grepl("revertant",.),"No Feature",
-                                                                                                          ifelse(.=="revertant_tip","Revertant Tip",.))))}
-  # Name clusters
-  num_clusters <- length(df_ordered$string  %>% subset(.,!. %in% c("No Feature","Singleton","Revertant Tip")) %>% subset(.,grepl("1pt",.)==F) %>% unique)
-  if(num_clusters >0){
-    cluster_names <- df_ordered$string  %>% subset(.,!. %in% c("No Feature","Singleton","Revertant Tip")) %>% subset(.,grepl("1pt",.)==F) %>% unique %>% `names<-`(paste0("Cluster ",1:length(.))) %>% stats::setNames(names(.), .)
-    df_ordered$string <- dplyr::recode(df_ordered$string, !!! cluster_names)
+  clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(asr_cluster == 'no feature' ~ "No feature",
+                                                                                asr_cluster == 'singleton' ~ 'Singleton',
+                                                                                TRUE ~ asr_cluster))
+  # Name clusters by position on tree
+  cluster_isolates <- unique(subset(clustering_data$asr_cluster,grepl("cluster",clustering_data$asr_cluster) & !grepl("1pt|revertant",clustering_data$asr_cluster)))
+  num_clusters <- length(cluster_isolates)
 
-    if(faux_clusters=="rename"){
-      # Name faux clusters
-      faux_cluster_names <- df_ordered$string %>% subset(.,grepl("1pt",.)==T) %>% unique %>% `names<-`(paste0("Single Patient Cluster ",1:length(.))) %>% stats::setNames(names(.), .)
-      df_ordered$string <- dplyr::recode(df_ordered$string, !!! faux_cluster_names)
-      df_ordered$string <- factor(levels = c("No Feature","Revertant Tip","Singleton",paste0("Cluster ",1:length(cluster_names)),paste0("Single Patient Cluster ",1:length(faux_cluster_names))),x = df_ordered$string)
-    } else {
-      # Remove single patient calls
-      df_ordered$string <- ifelse(grepl("1pt",df_ordered$string)==T,"Singleton",df_ordered$string)
-      # Factor String
-      df_ordered$string <- factor(levels = c("No Feature","Revertant Tip","Singleton",paste0("Cluster ",1:length(cluster_names))),x = df_ordered$string)
+  # Name clusters
+  if (num_clusters >0){
+    clusters_renaming_vector <- create_renaming_vector(cluster_isolates,'Cluster')
+    clustering_data$asr_cluster_renamed <- dplyr::recode(clustering_data$asr_cluster_renamed, !!! clusters_renaming_vector)
+  }
+
+  # Deal with faux clusters
+  if (sum(grepl("1pt",clustering_data$asr_cluster)) > 0) {
+  if (simplify_faux_clusters == FALSE) {
+    faux_cluster_isolates <- unique(subset(clustering_data$asr_cluster,grepl("1pt",clustering_data$asr_cluster)))
+    faux_cluster_renaming_vector <- create_renaming_vector(faux_cluster_isolates,'Single patient cluster')
+    clustering_data$asr_cluster_renamed <- dplyr::recode(clustering_data$asr_cluster_renamed, !!! faux_cluster_renaming_vector)
+  } else {
+    clustering_data$asr_cluster_renamed <- ifelse(grepl("1pt", clustering_data$asr_cluster_renamed), "Singleton", clustering_data$asr_cluster_renamed)
+  }
+  }
+
+  # Deal with revertants
+  if (sum(grepl("revertant",clustering_data$asr_cluster)) > 0) {
+  if (simplify_revertant == TRUE) {
+    # Convert all revertant episodes to 'no feature'
+    clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(grepl("revertant_",asr_cluster) ~ "No feature", TRUE ~ asr_cluster_renamed))
+  } else {
+    # Rename revertant_tip
+    clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(asr_cluster == "revertant_tip" ~ "Revertant tip", TRUE ~ asr_cluster_renamed))
+    # Rename revertant clusters
+    if (sum(grepl("revertant_",clustering_data$asr_cluster) & !grepl("revertant_tip",clustering_data$asr_cluster)) > 0) {
+      revertant_cluster_isolates <-  unique(subset(clustering_data$asr_cluster,grepl("revertant_",clustering_data$asr_cluster) & !grepl("revertant_tip",clustering_data$asr_cluster)))
+      revertant_cluster_renaming_vector <- create_renaming_vector(revertant_cluster_isolates,'Revertant Cluster')
+      clustering_data$asr_cluster_renamed <- dplyr::recode(clustering_data$asr_cluster_renamed, !!! revertant_cluster_renaming_vector)
     }
   }
-  if(remove_revertant==TRUE){
-    df_ordered$string <- dplyr::recode(df_ordered$string,"Revertant Tip" = "No Feature")
   }
 
-  rownames(df_ordered) <- df_ordered$isolate_no
   # Match order back to original dataframe
-  df_reset_order <- df_ordered[match(rownames(df),rownames(df_ordered)),]
-  return(df_reset_order$string)
+  clustering_data <- clustering_data[match(initial_order, clustering_data$tip_name), ]
+  return(clustering_data$asr_cluster_renamed)
 }
 
-group_by_category <- function(string,remove_revertant){
-  if(remove_revertant==TRUE){
-    string <- ifelse(grepl("revertant",string),"no feature",string)
+## Utility function: create renaming vector for simplify_clustering_string
+create_renaming_vector <- function(string,naming_scheme){
+  renamed_string <- paste0(naming_scheme, " ", seq_len(length(string)))
+  names(renamed_string) <- string
+  return(renamed_string)
+}
+
+# Group by category
+group_by_category <- function(string, simplify_faux_clusters, simplify_revertant) {
+  collapsed_string <- case_when(grepl("Cluster",string) & !grepl("Revertant|Single patient", string) ~ "Cluster",
+                                TRUE ~ string)
+
+  if (simplify_revertant == FALSE){
+    collapsed_string <- case_when(grepl("Revertant", collapsed_string) ~ "Revertant",
+                                  TRUE ~ collapsed_string)
+  } else {
+    collapsed_string <- case_when(grepl("Revertant", collapsed_string) ~ "No feature",
+                                  TRUE ~ collapsed_string)
   }
 
-  collapsed_string <- ifelse(string =="no feature","No Feature",
-         ifelse(string == "singleton","Singleton",
-                ifelse(grepl("cluster_",string)==T,"Cluster",
-                       ifelse(grepl("revertant_tip",string)==T,"Revertant tip",
-                              ifelse(grepl("revertant_",string)==T,"Revertant lineage",NA)))))
-
+  if(simplify_faux_clusters == FALSE){
+    collapsed_string <- case_when(grepl("Single patient",  collapsed_string) ~ "Singleton",
+                                  TRUE ~ collapsed_string)
+  }
   return(collapsed_string)
+}
+get_transition_node <- function(child_data, parent_child_df, tr, root_node, node_states, confidence){
+  # Get ancestral data
+  ancestors <- nodepath(tr,from = child_data$child, to = root_node)
+  ancestors <- ancestors[ancestors != root_node]
+  ancestor_vals <-  parent_child_df[match(ancestors, parent_child_df$child,),'child_val']
+
+  # Get stretches to the root
+  startvalue = child_data$child_val
+  if(node_states == 'joint'){
+    end = ancestors[last(which(ancestor_vals == startvalue))]
+    if(end == last(ancestors)){
+      end = "root"
+    }
+  }
+  return(end)
 }

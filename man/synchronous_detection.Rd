@@ -12,9 +12,9 @@ synchronous_detection(
 )
 }
 \arguments{
-\item{comparitor_parent_child_df}{Parent child dataset for a comparitor trait, such as a genotype}
+\item{comparitor_parent_child_df}{Parent child dataset for a comparitor trait, such as a genotype or a different trait/phenotype}
 
-\item{trait_parent_child_df}{Parent child dataset for a trait of interest, such as a phenotype}
+\item{trait_parent_child_df}{Parent child dataset for a trait of interest, such as a trait/phenotype}
 
 \item{node_states}{Joint or marginal reconstruction}
 

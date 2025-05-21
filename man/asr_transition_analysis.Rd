@@ -7,7 +7,7 @@
 asr_transition_analysis(parent_child_df, node_states = "joint")
 }
 \arguments{
-\item{parent_child_df}{parent_child_df object from asr() object}
+\item{parent_child_df}{parent_child_df object returned sfrom asr() function}
 
 \item{node_states}{If 'joint' or 'marginal' reconstruction was used}
 }
@@ -15,5 +15,5 @@ asr_transition_analysis(parent_child_df, node_states = "joint")
 Dataframe with phylogenetic transition statistics for a trait
 }
 \description{
-Calculate transition statistics of an ancestral state reconstruction model
+Calculate transition statistics (e.g., gain, loss, and continuation) of an ancestral state reconstruction model.
 }

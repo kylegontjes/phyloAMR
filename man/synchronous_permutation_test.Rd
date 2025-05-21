@@ -11,14 +11,14 @@ synchronous_permutation_test(
   tip_name_var,
   trait,
   node_states = "joint",
-  conf_threshold = NULL,
+  confidence_threshold = NULL,
   confidence = NULL,
   num_permutations = 1000,
   num_cores = 1
 )
 }
 \arguments{
-\item{comparitor}{Comparitor, such as a genotype}
+\item{comparitor}{Comparitor, such as a genotype or a different trait/phenotype}
 
 \item{df}{Dataframe with comparitor, trait, and tip_name_var}
 
@@ -26,11 +26,11 @@ synchronous_permutation_test(
 
 \item{tip_name_var}{Tip name variable}
 
-\item{trait}{Trait of interest, such as a phenotype}
+\item{trait}{Trait of interest, such as a trait/phenotype}
 
 \item{node_states}{Joint or marginal reconstruction}
 
-\item{conf_threshold}{Confidence threshold if using marginal reconstruction}
+\item{confidence_threshold}{Confidence threshold if using marginal reconstruction}
 
 \item{confidence}{Whether to use high or low confidence transition nodes when node_states are marginal}
 

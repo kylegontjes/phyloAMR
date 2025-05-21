@@ -2,8 +2,8 @@
 #'
 #' Synchronous gain and loss of two traits at a spot on tree
 #'
-#' @param comparitor_parent_child_df Parent child dataset for a comparitor trait, such as a genotype
-#' @param trait_parent_child_df Parent child dataset for a trait of interest, such as a phenotype
+#' @param comparitor_parent_child_df Parent child dataset for a comparitor trait, such as a genotype or a different trait/phenotype
+#' @param trait_parent_child_df Parent child dataset for a trait of interest, such as a trait/phenotype
 #' @param node_states Joint or marginal reconstruction
 #' @param confidence Whether to use high or low confidence transition nodes when node_states are marginal
 #' @return Synchronous gain and loss events of two traits
