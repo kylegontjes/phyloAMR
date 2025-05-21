@@ -12,6 +12,8 @@
 #' @param comparison Boolean (TRUE/FALSE) indicating whether to focus on isolates with/without a trait
 #' @param comparison_feature Name of variable to compare.
 #' @return The nearest neighbor of interest.
+#' @importFrom stringr str_split
+#' @importFrom dplyr select
 #' @export
 nearest_neighbor_algorithm <- function(isolate, phylogenetic_distance, variant_distance, metadata, annotate = NULL, variables_of_interest = NULL, comparison = NULL, comparison_feature = NULL) {
   # Get nearest neighbor

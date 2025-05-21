@@ -17,7 +17,7 @@ downstream_gain_loss <- function(comparitor_parent_child_df, trait_parent_child_
 }
 
 get_trait_traces_on_tree <- function(parent_child_df, tr, node_states) {
-  all_possible_paths <- nodepath(tr)
+  all_possible_paths <- ape::nodepath(tr)
 
   # Get gain location
   if (node_states == "joint") {

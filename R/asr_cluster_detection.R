@@ -13,6 +13,7 @@
 #' @param simplify_revertant Boolean (i.e., TRUE/FALSE). Whether to collapse revertant episodes as isolates without the trait in the cleaned text string
 #' @param collapse_cluster Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category
 #' @return A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired
+#' @importFrom dplyr case_when
 #' @export
 asr_cluster_detection <- function(df, tr, tip_name_variable, patient_id = NULL, parent_child_df, node_states = "joint", confidence = NULL, simplify_faux_clusters = FALSE, simplify_revertant = TRUE, collapse_cluster = TRUE) {
   # Check if states are as desired
@@ -220,7 +221,7 @@ group_by_category <- function(string, simplify_faux_clusters, simplify_revertant
 }
 get_transition_node <- function(child_data, parent_child_df, tr, root_node, node_states, confidence){
   # Get ancestral data
-  ancestors <- nodepath(tr,from = child_data$child, to = root_node)
+  ancestors <- ape::nodepath(tr,from = child_data$child, to = root_node)
   ancestors <- ancestors[ancestors != root_node]
   ancestor_vals <-  parent_child_df[match(ancestors, parent_child_df$child,),'child_val']
 

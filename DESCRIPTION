@@ -7,7 +7,7 @@ Authors@R: c(
   )
 Maintainer: Kyle Gontjes <kgontjes@umich.edu>
 Description: Suite of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/kylegontjes/phyloAMR, https://kylegontjes.github.io/phyloAMR/
