@@ -459,10 +459,16 @@ episodes as either cluster, singleton, or no feature</p></li>
 <span><span class="co">#&gt; [1] "asr_cluster: raw clustering data. The numbers for cluster and revertant lineages correspond to the ancestral node where the shared gain (i.e., cluster_527) or loss (e.g., revertant_782) event occured."</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">asr_cluster_obj</span><span class="op">$</span><span class="va">asr_cluster</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   cluster_418   cluster_527   cluster_533   cluster_551   cluster_574 </span></span>
-<span><span class="co">#&gt;            72             2            12             2             8 </span></span>
-<span><span class="co">#&gt;   cluster_647   cluster_775    no feature revertant_tip     singleton </span></span>
-<span><span class="co">#&gt;             4             6           270             7            30</span></span>
+<span><span class="co">#&gt;           cluster_418           cluster_527           cluster_533 </span></span>
+<span><span class="co">#&gt;                    72                     2                    12 </span></span>
+<span><span class="co">#&gt;           cluster_551           cluster_574           cluster_647 </span></span>
+<span><span class="co">#&gt;                     2                     8                     4 </span></span>
+<span><span class="co">#&gt;           cluster_775            no feature revertant_cluster_464 </span></span>
+<span><span class="co">#&gt;                     6                   236                     2 </span></span>
+<span><span class="co">#&gt; revertant_cluster_476 revertant_cluster_583 revertant_cluster_782 </span></span>
+<span><span class="co">#&gt;                    15                    15                     2 </span></span>
+<span><span class="co">#&gt;         revertant_tip             singleton </span></span>
+<span><span class="co">#&gt;                     7                    30</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"asr_cluster_renamed: Renamed these categories as singleton, cluster X, and no feature"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "asr_cluster_renamed: Renamed these categories as singleton, cluster X, and no feature"</span></span>
@@ -511,11 +517,11 @@ events + No. clusters  </li>
 <span><span class="co">#&gt;   cluster_size_median cluster_size_mean cluster_size_range no_feature</span></span>
 <span><span class="co">#&gt; 1                   6             15.14               2-72        277</span></span>
 <span><span class="co">#&gt;   revertant_isolates revertant_clusters revertant_cluster_size_median</span></span>
-<span><span class="co">#&gt; 1                  7                  0                             0</span></span>
+<span><span class="co">#&gt; 1                 41                  4                           8.5</span></span>
 <span><span class="co">#&gt;   revertant_cluster_size_mean revertant_cluster_size_range phylogenetic_events</span></span>
-<span><span class="co">#&gt; 1                           0                           NA                  37</span></span>
+<span><span class="co">#&gt; 1                         8.5                         2-15                  37</span></span>
 <span><span class="co">#&gt;   feature_frequency phylogenetic_frequency clustering_frequency</span></span>
-<span><span class="co">#&gt; 1             32.93                  10.54                18.92</span></span></code></pre></div>
+<span><span class="co">#&gt; 1             32.93                   7.41                18.92</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="step-5-visualize-clusters-on-phylogeny">Step 5: Visualize clusters on phylogeny<a class="anchor" aria-label="anchor" href="#step-5-visualize-clusters-on-phylogeny"></a>
