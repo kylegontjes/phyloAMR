@@ -84,16 +84,16 @@ classify_tips_with_trait <- function(node_data, parent_child_df, tr, root_node, 
   if ((node_states == "joint" && node_data[["gain"]] == 1) || (node_states == "marginal" && node_data[[paste0("gain_", confidence)]] == 1)) {
     previous <- get_parent_node(node_data[["parent"]], parent_child_df)
     if ((node_states == "joint" && previous[["loss"]] == 1) || (node_states == "marginal" && previous[[paste0("loss_", confidence)]] == 1)) {
-      classification <- get_transition_node(previous, parent_child_df, tr, root_node = root_node, node_states, confidence)
+      classification <- get_transition_node(previous, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
     } else {
       classification <- "singleton"
     }
   } else {
-    classification <- get_transition_node(node_data, parent_child_df, tr, root_node = root_node, node_states, confidence)
+    classification <- get_transition_node(node_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
   }
 
   # Under marginal, consider episodes of ambiguity as singletons
-  if(node_states == "marginal" & classification == "unsure"){
+  if (node_states == "marginal" && classification == "unsure") {
     classification <- "singleton"
   }
 
@@ -102,16 +102,16 @@ classify_tips_with_trait <- function(node_data, parent_child_df, tr, root_node, 
 
 # Characterize tips with traits
 classify_tips_without_trait <- function(node_data, parent_child_df, tr, root_node, node_states, confidence) {
-    # Reclassify the revertants at the tip
+  # Reclassify the revertants at the tip
   if ((node_states == "joint" && node_data[["loss"]] == 1) || (node_states == "marginal" && node_data[[paste0("loss_", confidence)]] == 1)) {
     previous <- get_parent_node(node_data[["parent"]], parent_child_df)
     if ((node_states == "joint" && previous[["gain"]] == 1) || (node_states == "marginal" && previous[[paste0("gain_", confidence)]] == 1)) {
-      classification <- get_transition_node(node_data, parent_child_df, tr, root_node = root_node, confidence)
+      classification <- get_transition_node(node_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence =  confidence)
     } else {
       classification <- "revertant_tip"
     }
-    } else {
-    classification <- get_transition_node(node_data, parent_child_df, tr, root_node = root_node, node_states, confidence)
+  } else {
+    classification <- get_transition_node(node_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence =  confidence)
     # This is important, because our focus is on the emergence of a trait.
     # No reversion would be detected if there was a stretch of no trait all the way from tip to the root
     if (classification == "root") {
@@ -119,7 +119,7 @@ classify_tips_without_trait <- function(node_data, parent_child_df, tr, root_nod
     }
   }
   # Under marginal, consider episodes of ambiguity as having feature, but not revertant
-  if(node_states == "marginal" & classification == "unsure"){
+  if (node_states == "marginal" && classification == "unsure") {
     classification <- "no feature"
   }
 
@@ -129,6 +129,41 @@ classify_tips_without_trait <- function(node_data, parent_child_df, tr, root_nod
 ## Utilitey function - get parent's node
 get_parent_node <- function(parental_node, parent_child_df) {
   parent_child_df[parent_child_df$child == parental_node, ]
+}
+
+
+get_transition_node <- function(child_data, parent_child_df, tr, root_node, node_states, confidence) {
+  # Get ancestral data
+  ancestors <- ape::nodepath(tr, from = child_data$child, to = root_node)
+  ancestors <- ancestors[ancestors != root_node]
+  parent_child_df <-  parent_child_df[match(ancestors, parent_child_df$child), ]
+
+  # Get stretches to the root
+  if (node_states == "joint") {
+    startvalue <-  child_data[["transition"]]
+    ancestor_vals <-  parent_child_df[["transition"]]
+    # Classify individuals without transitions as trait being present at root (i.e., root-to-tip walk indicates no transitions)
+    if (sum(ancestor_vals) == 0) {
+      node <- "root"
+    } else {
+      node <- ancestors[first(which(ancestor_vals != startvalue))]
+    }
+  } else if (node_states == "marginal") {
+    if (confidence == "high") {
+      ancestor_vals <-  parent_child_df[["transition_high"]]
+      startvalue <-  child_data[["transition_high"]]
+    } else {
+      ancestor_vals <-  parent_child_df[["transition"]]
+      startvalue <-  child_data[["transition"]]
+    }
+
+    node <- ancestors[first(which(ancestor_vals != startvalue))]
+
+    if (is.na(node)) {
+      node <- "unsure"
+    }
+  }
+  return(node)
 }
 
 # Account for faux clusters
@@ -178,8 +213,8 @@ simplify_clustering_string <-  function(clustering_data, tr, simplify_faux_clust
       faux_cluster_isolates <- unique(subset(clustering_data$asr_cluster, grepl("1pt", clustering_data$asr_cluster)))
       faux_cluster_renaming_vector <- create_renaming_vector(faux_cluster_isolates, "Single patient cluster")
       clustering_data$asr_cluster_renamed <- dplyr::recode(clustering_data$asr_cluster_renamed, !!! faux_cluster_renaming_vector)
-  } else {
-    clustering_data$asr_cluster_renamed <- ifelse(grepl("1pt", clustering_data$asr_cluster_renamed), "Singleton", clustering_data$asr_cluster_renamed)
+    } else {
+      clustering_data$asr_cluster_renamed <- ifelse(grepl("1pt", clustering_data$asr_cluster_renamed), "Singleton", clustering_data$asr_cluster_renamed)
   }
   }
 
@@ -189,8 +224,8 @@ simplify_clustering_string <-  function(clustering_data, tr, simplify_faux_clust
       # Convert all revertant episodes to 'no feature'
       clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(grepl("revertant_", asr_cluster) ~ "No feature", TRUE ~ asr_cluster_renamed))
     } else {
-    # Rename revertant_tip
-    clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(asr_cluster == "revertant_tip" ~ "Revertant tip", TRUE ~ asr_cluster_renamed))
+      # Rename revertant_tip
+      clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(asr_cluster == "revertant_tip" ~ "Revertant tip", TRUE ~ asr_cluster_renamed))
     # Rename revertant clusters
     if (sum(grepl("revertant_", clustering_data$asr_cluster) & !grepl("revertant_tip", clustering_data$asr_cluster)) > 0) {
       revertant_cluster_isolates <-  unique(subset(clustering_data$asr_cluster, grepl("revertant_", clustering_data$asr_cluster) & !grepl("revertant_tip", clustering_data$asr_cluster)))
@@ -230,41 +265,4 @@ group_by_category <- function(string, simplify_faux_clusters, simplify_revertant
                                   TRUE ~ collapsed_string)
   }
   return(collapsed_string)
-}
-
-get_transition_node <- function(child_data, parent_child_df, tr, root_node, node_states, confidence) {
-  # Get ancestral data
-  ancestors <- ape::nodepath(tr, from = child_data$child, to = root_node)
-  ancestors <- ancestors[ancestors != root_node]
-  parent_child_df <-  parent_child_df[match(ancestors, parent_child_df$child), ]
-
-  # Get stretches to the root
-  if (node_states == "joint") {
-    startvalue <-  child_data[["transition"]]
-    ancestor_vals <-  parent_child_df[["transition"]]
-    # Classify individuals without transitions as trait being present at root (i.e., root-to-tip walk indicates no transitions)
-    if (sum(ancestor_vals) == 0) {
-      node <- "root"
-    } else {
-      node <- ancestors[first(which(ancestor_vals != startvalue))]
-    }
-  }
-
-  if (node_states == "marginal"){
-    if (confidence == "high"){
-      ancestor_vals <-  parent_child_df[["transition_high"]]
-      startvalue <-  child_data[["transition_high"]]
-    } else {
-      ancestor_vals <-  parent_child_df[["transition"]]
-      startvalue <-  child_data[["transition"]]
-    }
-
-    node <- ancestors[first(which(ancestor_vals != startvalue))]
-
-    if (is.na(node)){
-      node = 'unsure'
-    }
-  }
-
-  return(node)
 }

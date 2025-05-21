@@ -235,7 +235,7 @@ This visualization permits the inspection of cluster calls and characterize the 
 ```{r,fig.width=7.5,fig.height=7.5}
 # Cluster color pallete
 ## Number of clusters
-ncluster <- table(asr_cluster_obj$asr_cluster)  %>% subset(names(.) != "singleton" & grepl("cluster",names(.))) %>% as.numeric %>%length 
+ncluster <- table(asr_cluster_obj$asr_cluster)  %>% subset(names(.) != "singleton" & !grepl("1pt",names(.)) & grepl("cluster",names(.))) %>% as.numeric %>%length 
 ## Cluster pallete
 color_palette <- grDevices::colors() %>% subset(grepl("red",.)==F)
 clusters_col <- hues::iwanthue(ncluster,hmin=15,hmax=360,lmin = 5,lmax = 95,cmin=5,cmax=90,random = F,plot = F)
@@ -243,7 +243,7 @@ clusters_col <- hues::iwanthue(ncluster,hmin=15,hmax=360,lmin = 5,lmax = 95,cmin
 clusters_name <- paste0("Cluster ",1:ncluster)
 names(clusters_col) <- clusters_name
 ## Scale
-cluster_scale <- scale_fill_manual(breaks =c("No Feature","Singleton",names(clusters_col)),values=c("No Feature" = "white","Singleton" = "red",clusters_col),labels=c("No Feature","NS Singleton",clusters_name),name="Phylogenetics of Non-susceptibility", guide = guide_legend(ncol=4, title.position = "top", label.position = "right"))
+cluster_scale <- scale_fill_manual(breaks =c("No feature","Singleton","Single atient Cluter",names(clusters_col)),values=c("No feature" = "white","Singleton" = "red","Single patient cluster" = 'gray',clusters_col),labels=c("No Feature","NS Singleton","NS Single Patient Cluster",clusters_name),name="Phylogenetics of Non-susceptibility", guide = guide_legend(ncol=4, title.position = "top", label.position = "right"))
 
 # Phylogenetic visualization
 p0.1 <- p0+ggnewscale::new_scale_fill()
