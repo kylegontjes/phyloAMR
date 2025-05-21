@@ -142,7 +142,7 @@ bacteria.</p>
 </h3>
 <ol style="list-style-type: decimal">
 <li>
-<strong>tip_name_var:</strong> variable with tip names</li>
+<strong>tip_name_variable:</strong> variable with tip names</li>
 <li>
 <strong>Patient_ID:</strong> Identifiers for patients in this
 study</li>
@@ -238,7 +238,7 @@ phenotype-genotype associations.</p></li>
 <p>The following parameters exist for this function</p>
 <ul>
 <li><p><strong>df:</strong> Dataframe with tip name variable (e.g.,
-tip_name_var) and trait variable (e.g., colistin_ns)</p></li>
+tip_name_variable) and trait variable (e.g., colistin_ns)</p></li>
 <li><p><strong>tr:</strong> Phylogenetic tree object of class
 phylo</p></li>
 <li>
@@ -265,7 +265,7 @@ reconstruction.</li>
 </li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">asr_obj</span> <span class="op">&lt;-</span> <span class="fu">phyloAMR</span><span class="fu">::</span><span class="fu"><a href="../reference/asr.html">asr</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr <span class="op">=</span> <span class="va">tr</span>,tip_name_var <span class="op">=</span> <span class="st">"tip_name_var"</span>,pheno <span class="op">=</span> <span class="st">"colistin_ns"</span>,model <span class="op">=</span> <span class="st">"ER"</span>,node_states <span class="op">=</span> <span class="st">"joint"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">asr_obj</span> <span class="op">&lt;-</span> <span class="fu">phyloAMR</span><span class="fu">::</span><span class="fu"><a href="../reference/asr.html">asr</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr <span class="op">=</span> <span class="va">tr</span>,tip_name_variable <span class="op">=</span> <span class="st">"tip_name_var"</span>,trait <span class="op">=</span> <span class="st">"colistin_ns"</span>,model <span class="op">=</span> <span class="st">"ER"</span>,node_states <span class="op">=</span> <span class="st">"joint"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; You specified 'fixed.nodes=FALSE' but included a phy object with node labels. These node labels have been removed.</span></span>
 <span><span class="co">#&gt; State distribution in data:</span></span>
 <span><span class="co">#&gt; States:  0   1   </span></span>
@@ -276,8 +276,8 @@ reconstruction.</li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Output names: "</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Output names: "</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">asr_obj</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "corHMM_out"           "corHMM_model_summary" "parent_child_df"     </span></span>
-<span><span class="co">#&gt; [4] "node_states"</span></span>
+<span><span class="co">#&gt; [1] "corHMM_output"           "corHMM_model_statistics"</span></span>
+<span><span class="co">#&gt; [3] "parent_child_df"         "node_states"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM"</span></span>
@@ -305,8 +305,7 @@ reconstruction.</li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)"</span></span>
 <span><span class="va">asr_obj</span><span class="op">$</span><span class="va">corHMM_model_summary</span></span>
-<span><span class="co">#&gt;   model np nRateCat   rate1 rate2    loglik      AIC    AICc</span></span>
-<span><span class="co">#&gt; 1    ER  1        1 89515.8    NA -177.9706 357.9413 357.951</span></span>
+<span><span class="co">#&gt; NULL</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"node_states: Chosen node state that was modeled."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "node_states: Chosen node state that was modeled."</span></span>
@@ -362,7 +361,7 @@ continuation of these traits that can be useful to characterize the
 transition dynamics of this trait:</li>
 </ol>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/asr_transition_analysis.html">asr_transition_analysis</a></span><span class="op">(</span><span class="va">asr_obj</span><span class="op">$</span><span class="va">parent_child_df</span>,node_states<span class="op">=</span><span class="st">'joint'</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/asr_transition_analysis.html">asr_transition_analysis</a></span><span class="op">(</span><span class="va">asr_obj</span><span class="op">$</span><span class="va">parent_child_df</span>, node_states<span class="op">=</span><span class="st">'joint'</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   total_edges transitions gains gains_tip losses losses_tip continuations</span></span>
 <span><span class="co">#&gt; 1         824          48    37        30     11          7           776</span></span>
 <span><span class="co">#&gt;   continuations_present continuations_absent gain_frequency loss_frequency</span></span>
@@ -401,10 +400,10 @@ singletons. </p>
 function:</strong></p>
 <ul>
 <li><p><strong>df:</strong> Dataframe with tip name variable (e.g.,
-tip_name_var) and trait variable (e.g., colistin_ns)</p></li>
+tip_name_variable) and trait variable (e.g., colistin_ns)</p></li>
 <li><p><strong>tr:</strong> Phylogenetic tree object of class
 phylo</p></li>
-<li><p><strong>tip_name_var:</strong> Tip name variable</p></li>
+<li><p><strong>tip_name_variable:</strong> Tip name variable</p></li>
 <li><p><strong>patient_id:</strong> Variable pertaining to a patient
 identifier</p></li>
 <li><p><strong>pheno:</strong> Phenotype of interest (e.g., colistin
@@ -428,7 +427,7 @@ to be labeled</p></li>
 episodes as either cluster, singleton, or no feature</p></li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">asr_cluster_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/asr_cluster_detection.html">asr_cluster_detection</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr<span class="op">=</span><span class="va">tr</span>,tip_name_var <span class="op">=</span> <span class="st">"tip_name_var"</span>,patient_id <span class="op">=</span> <span class="st">'PatientID'</span>,pheno <span class="op">=</span> <span class="st">'colistin_ns'</span>,parent_child_df <span class="op">=</span> <span class="va">asr_obj</span><span class="op">$</span><span class="va">parent_child_df</span>,node_states <span class="op">=</span> <span class="st">'joint'</span>,confidence <span class="op">=</span> <span class="cn">NULL</span>,faux_clusters <span class="op">=</span> <span class="st">'remove'</span>,remove_revertant <span class="op">=</span> <span class="cn">TRUE</span>,collapse_cluster <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">asr_cluster_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/asr_cluster_detection.html">asr_cluster_detection</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr<span class="op">=</span><span class="va">tr</span>,tip_name_variable <span class="op">=</span> <span class="st">"tip_name_var"</span>,patient_id <span class="op">=</span> <span class="st">'PatientID'</span>,parent_child_df <span class="op">=</span> <span class="va">asr_obj</span><span class="op">$</span><span class="va">parent_child_df</span>,node_states <span class="op">=</span> <span class="st">'joint'</span>,confidence <span class="op">=</span> <span class="cn">NULL</span>, simplify_faux_clusters <span class="op">=</span> <span class="cn">FALSE</span>, simplify_revertant <span class="op">=</span> <span class="cn">TRUE</span>, collapse_cluster <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Cluster detection dataframe"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Cluster detection dataframe"</span></span>
@@ -436,8 +435,8 @@ episodes as either cluster, singleton, or no feature</p></li>
 <span><span class="co">#&gt;  [1] "parent"                "child"                 "parent_val"           </span></span>
 <span><span class="co">#&gt;  [4] "child_val"             "child_name"            "transition"           </span></span>
 <span><span class="co">#&gt;  [7] "gain"                  "loss"                  "continuation"         </span></span>
-<span><span class="co">#&gt; [10] "continuation_present"  "continuation_absent"   "asr_cluster"          </span></span>
-<span><span class="co">#&gt; [13] "asr_cluster_renamed"   "asr_cluster_collapsed"</span></span>
+<span><span class="co">#&gt; [10] "continuation_present"  "continuation_absent"   "tip_name"             </span></span>
+<span><span class="co">#&gt; [13] "asr_cluster"           "asr_cluster_renamed"   "asr_cluster_collapsed"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">asr_cluster_obj</span>,n<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           parent child parent_val child_val child_name transition gain loss</span></span>
 <span><span class="co">#&gt; PCMP_H325    432     1          1         1  PCMP_H325          0    0    0</span></span>
@@ -445,18 +444,18 @@ episodes as either cluster, singleton, or no feature</p></li>
 <span><span class="co">#&gt; PCMP_H213    434     3          1         1  PCMP_H213          0    0    0</span></span>
 <span><span class="co">#&gt; PCMP_H286    435     4          1         1  PCMP_H286          0    0    0</span></span>
 <span><span class="co">#&gt; PCMP_H387    435     5          1         1  PCMP_H387          0    0    0</span></span>
-<span><span class="co">#&gt;           continuation continuation_present continuation_absent asr_cluster</span></span>
-<span><span class="co">#&gt; PCMP_H325            1                    1                   0 cluster_418</span></span>
-<span><span class="co">#&gt; PCMP_H411            1                    1                   0 cluster_418</span></span>
-<span><span class="co">#&gt; PCMP_H213            1                    1                   0 cluster_418</span></span>
-<span><span class="co">#&gt; PCMP_H286            1                    1                   0 cluster_418</span></span>
-<span><span class="co">#&gt; PCMP_H387            1                    1                   0 cluster_418</span></span>
-<span><span class="co">#&gt;           asr_cluster_renamed asr_cluster_collapsed</span></span>
-<span><span class="co">#&gt; PCMP_H325           Cluster 1               Cluster</span></span>
-<span><span class="co">#&gt; PCMP_H411           Cluster 1               Cluster</span></span>
-<span><span class="co">#&gt; PCMP_H213           Cluster 1               Cluster</span></span>
-<span><span class="co">#&gt; PCMP_H286           Cluster 1               Cluster</span></span>
-<span><span class="co">#&gt; PCMP_H387           Cluster 1               Cluster</span></span>
+<span><span class="co">#&gt;           continuation continuation_present continuation_absent  tip_name</span></span>
+<span><span class="co">#&gt; PCMP_H325            1                    1                   0 PCMP_H325</span></span>
+<span><span class="co">#&gt; PCMP_H411            1                    1                   0 PCMP_H411</span></span>
+<span><span class="co">#&gt; PCMP_H213            1                    1                   0 PCMP_H213</span></span>
+<span><span class="co">#&gt; PCMP_H286            1                    1                   0 PCMP_H286</span></span>
+<span><span class="co">#&gt; PCMP_H387            1                    1                   0 PCMP_H387</span></span>
+<span><span class="co">#&gt;           asr_cluster asr_cluster_renamed asr_cluster_collapsed</span></span>
+<span><span class="co">#&gt; PCMP_H325 cluster_418           Cluster 1               Cluster</span></span>
+<span><span class="co">#&gt; PCMP_H411 cluster_418           Cluster 1               Cluster</span></span>
+<span><span class="co">#&gt; PCMP_H213 cluster_418           Cluster 1               Cluster</span></span>
+<span><span class="co">#&gt; PCMP_H286 cluster_418           Cluster 1               Cluster</span></span>
+<span><span class="co">#&gt; PCMP_H387 cluster_418           Cluster 1               Cluster</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"asr_cluster: raw clustering data. The numbers for cluster and revertant lineages correspond to the ancestral node where the shared gain (i.e., cluster_527) or loss (e.g., revertant_782) event occured."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "asr_cluster: raw clustering data. The numbers for cluster and revertant lineages correspond to the ancestral node where the shared gain (i.e., cluster_527) or loss (e.g., revertant_782) event occured."</span></span>
@@ -464,25 +463,23 @@ episodes as either cluster, singleton, or no feature</p></li>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   cluster_418   cluster_527   cluster_533   cluster_551   cluster_574 </span></span>
 <span><span class="co">#&gt;            72             2            12             2             8 </span></span>
-<span><span class="co">#&gt;   cluster_647   cluster_775    no feature revertant_464 revertant_476 </span></span>
-<span><span class="co">#&gt;             4             6           236             2            15 </span></span>
-<span><span class="co">#&gt; revertant_583 revertant_782 revertant_tip     singleton </span></span>
-<span><span class="co">#&gt;            15             2             7            30</span></span>
+<span><span class="co">#&gt;   cluster_647   cluster_775    no feature revertant_tip     singleton </span></span>
+<span><span class="co">#&gt;             4             6           270             7            30</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"asr_cluster_renamed: Renamed these categories as singleton, cluster X, and no feature"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "asr_cluster_renamed: Renamed these categories as singleton, cluster X, and no feature"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">asr_cluster_obj</span><span class="op">$</span><span class="va">asr_cluster_renamed</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; No Feature  Singleton  Cluster 1  Cluster 2  Cluster 3  Cluster 4  Cluster 5 </span></span>
-<span><span class="co">#&gt;        277         30         72          2         12          2          4 </span></span>
-<span><span class="co">#&gt;  Cluster 6  Cluster 7 </span></span>
-<span><span class="co">#&gt;          8          6</span></span>
+<span><span class="co">#&gt;  Cluster 1  Cluster 2  Cluster 3  Cluster 4  Cluster 5  Cluster 6  Cluster 7 </span></span>
+<span><span class="co">#&gt;         72          2         12          2          4          8          6 </span></span>
+<span><span class="co">#&gt; No feature  Singleton </span></span>
+<span><span class="co">#&gt;        277         30</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"asr_cluster_collapsed: Collapsed as singleton, cluster, or no feature"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "asr_cluster_collapsed: Collapsed as singleton, cluster, or no feature"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">asr_cluster_obj</span><span class="op">$</span><span class="va">asr_cluster_collapsed</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;    Cluster No Feature  Singleton </span></span>
+<span><span class="co">#&gt;    Cluster No feature  Singleton </span></span>
 <span><span class="co">#&gt;        106        277         30</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -510,17 +507,17 @@ feature</li>
 events + No. clusters  </li>
 </ol>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/asr_cluster_analysis.html">asr_cluster_analysis</a></span><span class="op">(</span><span class="va">asr_cluster_obj</span>,remove_faux <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   present singletons clusters cluster_isolates cluster_size_median</span></span>
-<span><span class="co">#&gt; 1     136         30        7              106                   6</span></span>
-<span><span class="co">#&gt;   cluster_size_mean cluster_size_range no_feature revertant_isolates</span></span>
-<span><span class="co">#&gt; 1             15.14               2-72        277                 41</span></span>
-<span><span class="co">#&gt;   revertant_lineages revertant_lineage_size_median revertant_lineage_size_mean</span></span>
-<span><span class="co">#&gt; 1                  4                           8.5                         8.5</span></span>
-<span><span class="co">#&gt;   revertant_lineage_size_range phylogenetic_events feature_frequency</span></span>
-<span><span class="co">#&gt; 1                         2-15                  37             32.93</span></span>
-<span><span class="co">#&gt;   phylogenetic_frequency clustering_frequency</span></span>
-<span><span class="co">#&gt; 1                   7.41                18.92</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/asr_cluster_analysis.html">asr_cluster_analysis</a></span><span class="op">(</span><span class="va">asr_cluster_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   present singletons singleton_isolates clusters cluster_isolates</span></span>
+<span><span class="co">#&gt; 1     136         30                 30        7              106</span></span>
+<span><span class="co">#&gt;   cluster_size_median cluster_size_mean cluster_size_range no_feature</span></span>
+<span><span class="co">#&gt; 1                   6             15.14               2-72        277</span></span>
+<span><span class="co">#&gt;   revertant_isolates revertant_clusters revertant_cluster_size_median</span></span>
+<span><span class="co">#&gt; 1                  7                  0                             0</span></span>
+<span><span class="co">#&gt;   revertant_cluster_size_mean revertant_cluster_size_range phylogenetic_events</span></span>
+<span><span class="co">#&gt; 1                           0                           NA                  37</span></span>
+<span><span class="co">#&gt;   feature_frequency phylogenetic_frequency clustering_frequency</span></span>
+<span><span class="co">#&gt; 1             32.93                  10.54                18.92</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="step-5-visualize-clusters-on-phylogeny">Step 5: Visualize clusters on phylogeny<a class="anchor" aria-label="anchor" href="#step-5-visualize-clusters-on-phylogeny"></a>

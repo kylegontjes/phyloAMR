@@ -47,8 +47,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_best_asr_model</span><span class="op">(</span></span>
 <span>  <span class="va">df</span>,</span>
 <span>  <span class="va">tr</span>,</span>
-<span>  <span class="va">tip_name_var</span>,</span>
-<span>  <span class="va">pheno</span>,</span>
+<span>  <span class="va">tip_name_variable</span>,</span>
+<span>  <span class="va">trait</span>,</span>
 <span>  node_states <span class="op">=</span> <span class="st">"joint"</span>,</span>
 <span>  upper_bound <span class="op">=</span> <span class="fl">1e+50</span>,</span>
 <span>  lower_bound <span class="op">=</span> <span class="fl">1e-09</span></span>
@@ -60,19 +60,19 @@
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>Dataframe with tip name variable and phenotype</p></dd>
+<dd><p>Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables</p></dd>
 
 
 <dt id="arg-tr">tr<a class="anchor" aria-label="anchor" href="#arg-tr"></a></dt>
 <dd><p>Phylogenetic tree</p></dd>
 
 
-<dt id="arg-tip-name-var">tip_name_var<a class="anchor" aria-label="anchor" href="#arg-tip-name-var"></a></dt>
+<dt id="arg-tip-name-variable">tip_name_variable<a class="anchor" aria-label="anchor" href="#arg-tip-name-variable"></a></dt>
 <dd><p>Name of variable containing tip names in df</p></dd>
 
 
-<dt id="arg-pheno">pheno<a class="anchor" aria-label="anchor" href="#arg-pheno"></a></dt>
-<dd><p>Name of phenotype variable in df</p></dd>
+<dt id="arg-trait">trait<a class="anchor" aria-label="anchor" href="#arg-trait"></a></dt>
+<dd><p>Name of phenotype/trait variable in df</p></dd>
 
 
 <dt id="arg-node-states">node_states<a class="anchor" aria-label="anchor" href="#arg-node-states"></a></dt>
@@ -89,11 +89,17 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Description of return value</p><dl><dt>model_options</dt>
+    <p>Description of return value</p><dl><dt>model_statistics</dt>
 <dd><p>Summary of model options</p></dd>
 
     <dt>best_model</dt>
 <dd><p>Best model for ancestral state reconstruction</p></dd>
+
+    <dt>node_states</dt>
+<dd><p>Whether "joint" or "marginal" reconstruction was performed</p></dd>
+
+    <dt>corHMM_output_best_model</dt>
+<dd><p>corHMM output for best model</p></dd>
 
 
 </dl></div>

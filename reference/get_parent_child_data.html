@@ -47,9 +47,9 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_parent_child_data</span><span class="op">(</span></span>
 <span>  <span class="va">tr</span>,</span>
 <span>  <span class="va">anc_data</span>,</span>
-<span>  <span class="va">pheno_data</span>,</span>
-<span>  conf_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">node_states</span></span>
+<span>  <span class="va">trait_data</span>,</span>
+<span>  <span class="va">node_states</span>,</span>
+<span>  confidence_threshold <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -65,16 +65,16 @@
 <dd><p>Ancestral states inferred by corHMM</p></dd>
 
 
-<dt id="arg-pheno-data">pheno_data<a class="anchor" aria-label="anchor" href="#arg-pheno-data"></a></dt>
-<dd><p>Named phenotype string</p></dd>
-
-
-<dt id="arg-conf-threshold">conf_threshold<a class="anchor" aria-label="anchor" href="#arg-conf-threshold"></a></dt>
-<dd><p>The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.</p></dd>
+<dt id="arg-trait-data">trait_data<a class="anchor" aria-label="anchor" href="#arg-trait-data"></a></dt>
+<dd><p>Named phenotype/trait string</p></dd>
 
 
 <dt id="arg-node-states">node_states<a class="anchor" aria-label="anchor" href="#arg-node-states"></a></dt>
 <dd><p>Whether to perform "joint" or "marginal" reconstruction. Default: joint</p></dd>
+
+
+<dt id="arg-confidence-threshold">confidence_threshold<a class="anchor" aria-label="anchor" href="#arg-confidence-threshold"></a></dt>
+<dd><p>The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.</p></dd>
 
 </dl></div>
     <div class="section level2">

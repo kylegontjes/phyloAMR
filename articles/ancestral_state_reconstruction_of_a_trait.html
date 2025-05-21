@@ -144,7 +144,7 @@ bacteria.</p>
 </h3>
 <ol style="list-style-type: decimal">
 <li>
-<strong>tip_name_var:</strong> variable with tip names</li>
+<strong>tip_name_variable:</strong> variable with tip names</li>
 <li>
 <strong>Patient_ID:</strong> Identifiers for patients in this
 study</li>
@@ -248,7 +248,7 @@ phenotype-genotype associations.</p></li>
 <p>The following parameters exist for this function</p>
 <ul>
 <li><p><strong>df:</strong> Dataframe with tip name variable (e.g.,
-tip_name_var) and trait variable (e.g., colistin_ns)</p></li>
+tip_name_variable) and trait variable (e.g., colistin_ns)</p></li>
 <li><p><strong>tr:</strong> Phylogenetic tree object of class
 phylo</p></li>
 <li>
@@ -288,26 +288,29 @@ model.</p>
 <p>The asr() function has the option to run this model finding algorithm
 using the model = “MF” argument.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">best_model_obj</span> <span class="op">&lt;-</span> <span class="fu">phyloAMR</span><span class="fu">::</span><span class="fu"><a href="../reference/find_best_asr_model.html">find_best_asr_model</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr <span class="op">=</span> <span class="va">tr</span>,tip_name_var <span class="op">=</span> <span class="st">"tip_name_var"</span>,pheno <span class="op">=</span> <span class="st">'colistin_ns'</span>,node_states <span class="op">=</span> <span class="st">'joint'</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">best_model_obj</span> <span class="op">&lt;-</span> <span class="fu">phyloAMR</span><span class="fu">::</span><span class="fu"><a href="../reference/find_best_asr_model.html">find_best_asr_model</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr <span class="op">=</span> <span class="va">tr</span>,tip_name_variable <span class="op">=</span> <span class="st">"tip_name_var"</span>,trait <span class="op">=</span> <span class="st">'colistin_ns'</span>,node_states <span class="op">=</span> <span class="st">'joint'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Testing equal rates (ER) model </span></span>
 <span><span class="co">#&gt; You specified 'fixed.nodes=FALSE' but included a phy object with node labels. These node labels have been removed.</span></span>
 <span><span class="co">#&gt; State distribution in data:</span></span>
 <span><span class="co">#&gt; States:  0   1   </span></span>
 <span><span class="co">#&gt; Counts:  277 136 </span></span>
 <span><span class="co">#&gt; Beginning thorough optimization search -- performing 0 random restarts </span></span>
 <span><span class="co">#&gt; Finished. Inferring ancestral states using joint reconstruction. </span></span>
+<span><span class="co">#&gt; AICc of ER model is: 357.950996595162 </span></span>
+<span><span class="co">#&gt; Testing all rates differ (ARD) model </span></span>
 <span><span class="co">#&gt; You specified 'fixed.nodes=FALSE' but included a phy object with node labels. These node labels have been removed.</span></span>
 <span><span class="co">#&gt; State distribution in data:</span></span>
 <span><span class="co">#&gt; States:  0   1   </span></span>
 <span><span class="co">#&gt; Counts:  277 136 </span></span>
 <span><span class="co">#&gt; Beginning thorough optimization search -- performing 0 random restarts </span></span>
-<span><span class="co">#&gt; Finished. Inferring ancestral states using joint reconstruction.</span></span>
+<span><span class="co">#&gt; Finished. Inferring ancestral states using joint reconstruction. </span></span>
+<span><span class="co">#&gt; AICc of ARD model is: 355.966418109559 </span></span>
+<span><span class="co">#&gt; Best model: ARD</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Model fit statistics: "</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Model fit statistics: "</span></span>
 <span><span class="va">best_model_obj</span><span class="op">$</span><span class="va">model_options</span></span>
-<span><span class="co">#&gt;   model np nRateCat   rate1    rate2    loglik      AIC     AICc</span></span>
-<span><span class="co">#&gt; 1    ER  1        1 89515.8       NA -177.9706 357.9413 357.9510</span></span>
-<span><span class="co">#&gt; 2   ARD  2        1 81840.1 136877.5 -175.9686 355.9371 355.9664</span></span>
+<span><span class="co">#&gt; NULL</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Best model: "</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Best model: "</span></span>
@@ -318,7 +321,7 @@ using the model = “MF” argument.</p>
 <h3 id="running-ancestral-state-reconstruction">Running ancestral state reconstruction<a class="anchor" aria-label="anchor" href="#running-ancestral-state-reconstruction"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">asr_obj</span> <span class="op">&lt;-</span> <span class="fu">phyloAMR</span><span class="fu">::</span><span class="fu"><a href="../reference/asr.html">asr</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr <span class="op">=</span> <span class="va">tr</span>,tip_name_var <span class="op">=</span> <span class="st">"tip_name_var"</span>,pheno <span class="op">=</span> <span class="st">"colistin_ns"</span>,model <span class="op">=</span> <span class="st">"ER"</span>,node_states <span class="op">=</span> <span class="st">"joint"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">asr_obj</span> <span class="op">&lt;-</span> <span class="fu">phyloAMR</span><span class="fu">::</span><span class="fu"><a href="../reference/asr.html">asr</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>,tr <span class="op">=</span> <span class="va">tr</span>,tip_name_variable <span class="op">=</span> <span class="st">"tip_name_var"</span>,trait <span class="op">=</span> <span class="st">"colistin_ns"</span>,model <span class="op">=</span> <span class="st">"ER"</span>,node_states <span class="op">=</span> <span class="st">"joint"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; You specified 'fixed.nodes=FALSE' but included a phy object with node labels. These node labels have been removed.</span></span>
 <span><span class="co">#&gt; State distribution in data:</span></span>
 <span><span class="co">#&gt; States:  0   1   </span></span>
@@ -329,8 +332,8 @@ using the model = “MF” argument.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Output names: "</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Output names: "</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">asr_obj</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "corHMM_out"           "corHMM_model_summary" "parent_child_df"     </span></span>
-<span><span class="co">#&gt; [4] "node_states"</span></span>
+<span><span class="co">#&gt; [1] "corHMM_output"           "corHMM_model_statistics"</span></span>
+<span><span class="co">#&gt; [3] "parent_child_df"         "node_states"</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "corHMM_out: output from ancestral state reconstruction algorithm hosted in the R package corHMM"</span></span>
@@ -358,8 +361,7 @@ using the model = “MF” argument.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Rate 2 = transitions from level 2 (i.e., non-susceptible) to level 1 (i.e., susceptible)"</span></span>
 <span><span class="va">asr_obj</span><span class="op">$</span><span class="va">corHMM_model_summary</span></span>
-<span><span class="co">#&gt;   model np nRateCat    rate1 rate2    loglik      AIC    AICc</span></span>
-<span><span class="co">#&gt; 1    ER  1        1 89553.08    NA -177.9706 357.9413 357.951</span></span>
+<span><span class="co">#&gt; NULL</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"node_states: Chosen node state that was modeled."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "node_states: Chosen node state that was modeled."</span></span>
@@ -393,8 +395,10 @@ output to identify the inferred rates and model fit statistics (i.e.,
 log likelihood and AIC values)</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">phyloAMR</span><span class="fu">::</span><span class="fu"><a href="../reference/characterize_asr_model.html">characterize_asr_model</a></span><span class="op">(</span><span class="va">asr_obj</span><span class="op">$</span><span class="va">corHMM_out</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   model np nRateCat    rate1 rate2    loglik      AIC    AICc</span></span>
-<span><span class="co">#&gt; 1    ER  1        1 89553.08    NA -177.9706 357.9413 357.951</span></span></code></pre></div>
+<span><span class="co">#&gt;   model number_parameters number_rate_categories    rate1 rate2    loglik</span></span>
+<span><span class="co">#&gt; 1    ER                 1                      1 89553.08    NA -177.9706</span></span>
+<span><span class="co">#&gt;        AIC    AICc</span></span>
+<span><span class="co">#&gt; 1 357.9413 357.951</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="step-3-characterize-the-transition-statistics-for-the-trait-across-the-phylogeny">Step 3: Characterize the transition statistics for the trait across
