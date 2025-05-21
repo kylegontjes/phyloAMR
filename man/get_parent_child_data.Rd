@@ -2,33 +2,32 @@
 % Please edit documentation in R/asr.R
 \name{get_parent_child_data}
 \alias{get_parent_child_data}
-\title{get_parent_child_data: Get parent child data from ancestral state reconstruction}
+\title{Get parent child data from ancestral state reconstruction}
 \usage{
 get_parent_child_data(
   tr,
-  anc_data,
+  ancestral_states,
   trait_data,
   node_states,
   confidence_threshold = NULL
 )
 }
 \arguments{
-\item{tr}{Phylogenetic tree object. Class must be phylo}
+\item{tr}{Phylogenetic tree of class "phylo"}
 
-\item{anc_data}{Ancestral states inferred by corHMM}
+\item{ancestral_states}{Ancestral states inferred by corHMM}
 
 \item{trait_data}{Named phenotype/trait string}
 
-\item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
+\item{node_states}{Perform "joint" or "marginal" reconstruction. Default: joint}
 
 \item{confidence_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
 }
 \value{
-Description of return value
-  \describe{
-    \item{edge}{Edge matrix with states}
+\describe{
+    \item{edge}{Edge matrix with ancestral and tip states}
   }
 }
 \description{
-Function to generate an annotated edge matrix
+Function to generate an annotated edge matrix with ancestral and tip states
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/asr.R
 \name{asr}
 \alias{asr}
-\title{asr: ancestral state reconstruction wrapper function}
+\title{Ancestral state reconstruction wrapper function}
 \usage{
 asr(
   df,
@@ -19,31 +19,30 @@ asr(
 \arguments{
 \item{df}{Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables}
 
-\item{tr}{Phylogenetic tree object. Class must be phylo}
+\item{tr}{Phylogeny of class "phylo"}
 
-\item{tip_name_variable}{Name of variable containing tip names in df}
+\item{tip_name_variable}{Name of variable containing tip names in df. Tip name variable must correspond to tip names in the tree.}
 
 \item{trait}{Name of phenotype/trait variable in df}
 
-\item{model}{Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER}
+\item{model}{Type of rate transition matrix. Options: equal rates model ("ER") or all rates different ("ARD"). An additional option, "MF", selects the best performing model using sample-size corrected Akaike information criterium (AICc). Default: ER}
 
-\item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
+\item{node_states}{Perform "joint" or "marginal" reconstruction. Default: joint}
 
 \item{upper_bound}{Upper bound for likelihood search. Default: 1e50}
 
 \item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
 
-\item{confidence_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
+\item{confidence_threshold}{The confidence threshold to use when categorizing ancestral state inferences from marginal reconstruction. We highly suggest using a default of 0.5 (i.e., winner-takes-all), but permit modification to elevated values.}
 }
 \value{
-Description of return value
-  \describe{
+\describe{
     \item{corHMM_output}{corHMM output}
-    \item{corHMM_model_summary}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
+    \item{corHMM_model_statistics}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
     \item{node_states}{Text string indicating the chosen reconstruction method}
   }
 }
 \description{
-Function to perform ancestral state reconstruction using corHMM. Parse output into informative dataset with episodes of trait gain, loss, and continuation across the phylogenetic tree
+Function to perform ancestral state reconstruction using corHMM. Output is parsed into a dataset with episodes of trait gain, loss, and continuation across the phylogeny
 }

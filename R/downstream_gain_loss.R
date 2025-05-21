@@ -11,7 +11,9 @@
 #' @importFrom utils head
 #' @export
 downstream_gain_loss <- function(comparitor_parent_child_df, trait_parent_child_df, tr, node_states = "joint", confidence = NULL) {
+  # Get trait traces on the tree
   stretches <- get_trait_traces_on_tree(parent_child_df = trait_parent_child_df, tr = tr, node_states = node_states)
+  # Get gain/losses on traces on the tree with the trait
   downstream_changes <- get_gain_loss_on_stretches(comparitor_parent_child_df = comparitor_parent_child_df, stretches = stretches, node_states = node_states, confidence = confidence)
   return(downstream_changes)
 }

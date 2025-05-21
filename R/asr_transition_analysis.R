@@ -1,4 +1,4 @@
-#' asr_transition_analysis: Transition analysis
+#' Enumeration of trait transitions using ancestral state reconstruction
 #'
 #' Calculate transition statistics (e.g., gain, loss, and continuation) of an ancestral state reconstruction model.
 #'

@@ -1,20 +1,20 @@
-#' asr: ancestral state reconstruction wrapper function
+#' Ancestral state reconstruction wrapper function
 #'
-#' Function to perform ancestral state reconstruction using corHMM. Parse output into informative dataset with episodes of trait gain, loss, and continuation across the phylogenetic tree
+#' Function to perform ancestral state reconstruction using corHMM. Output is parsed into a dataset with episodes of trait gain, loss, and continuation across the phylogeny
 #'
 #' @param df Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables
-#' @param tr Phylogenetic tree object. Class must be phylo
-#' @param tip_name_variable Name of variable containing tip names in df
+#' @param tr Phylogeny of class "phylo"
+#' @param tip_name_variable Name of variable containing tip names in df. Tip name variable must correspond to tip names in the tree.
 #' @param trait Name of phenotype/trait variable in df
-#' @param model Whether to use equal rates "ER" or all-rates differ "ARD" rate matrices. Default: ER
-#' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
+#' @param model Type of rate transition matrix. Options: equal rates model ("ER") or all rates different ("ARD"). An additional option, "MF", selects the best performing model using sample-size corrected Akaike information criterium (AICc). Default: ER
+#' @param node_states Perform "joint" or "marginal" reconstruction. Default: joint
 #' @param upper_bound Upper bound for likelihood search. Default: 1e50
 #' @param lower_bound Lower bound for likelihood search. Default: 1e-9
-#' @param confidence_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
-#' @return Description of return value
+#' @param confidence_threshold The confidence threshold to use when categorizing ancestral state inferences from marginal reconstruction. We highly suggest using a default of 0.5 (i.e., winner-takes-all), but permit modification to elevated values.
+#' @return
 #'   \describe{
 #'     \item{corHMM_output}{corHMM output}
-#'     \item{corHMM_model_summary}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
+#'     \item{corHMM_model_statistics}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
 #'     \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
 #'     \item{node_states}{Text string indicating the chosen reconstruction method}
 #'   }
@@ -55,10 +55,10 @@ asr <- function(df, tr, tip_name_variable, trait, model = "ER", node_states = "j
     corHMM_model_statistics <- characterize_asr_model(corHMM_output)
   }
 
-  # Get parent child data
+  # Get parent child data using the edge matrix, ancestral state predictions, and trait data
   outcome_str <- df[, trait]
   names(outcome_str) <- df[[tip_name_variable]]
-  parent_child_df <- get_parent_child_data(tr = tr, anc_data = corHMM_output$states, trait_data = outcome_str, node_states = node_states, confidence_threshold = confidence_threshold)
+  parent_child_df <- get_parent_child_data(tr = tr, ancestral_states = corHMM_output$states, trait_data = outcome_str, node_states = node_states, confidence_threshold = confidence_threshold)
 
   # Annotate parent child data with transition data (i.e., gain, loss, and continuation)
   parent_child_df <- get_continuation_data(parent_child_df = parent_child_df, node_states = node_states)
@@ -72,40 +72,40 @@ asr <- function(df, tr, tip_name_variable, trait, model = "ER", node_states = "j
   return(asr_output)
 }
 
-#' get_parent_child_data: Get parent child data from ancestral state reconstruction
+#' Get parent child data from ancestral state reconstruction
 #'
-#' Function to generate an annotated edge matrix
+#' Function to generate an annotated edge matrix with ancestral and tip states
 #'
-#' @param tr Phylogenetic tree object. Class must be phylo
-#' @param anc_data Ancestral states inferred by corHMM
+#' @param tr Phylogenetic tree of class "phylo"
+#' @param ancestral_states Ancestral states inferred by corHMM
 #' @param trait_data Named phenotype/trait string
-#' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
+#' @param node_states Perform "joint" or "marginal" reconstruction. Default: joint
 #' @param confidence_threshold The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.
-#' @return Description of return value
+#' @return
 #'   \describe{
-#'     \item{edge}{Edge matrix with states}
+#'     \item{edge}{Edge matrix with ancestral and tip states}
 #'   }
 #' @export
-get_parent_child_data <- function(tr, anc_data, trait_data, node_states, confidence_threshold = NULL) {
+get_parent_child_data <- function(tr, ancestral_states, trait_data, node_states, confidence_threshold = NULL) {
   # Tree edge info
   edge <- tr$edge %>% as.data.frame
   colnames(edge) <- c("parent", "child")
 
   # Prediction data
   if (node_states == "marginal") {
-    anc_data <- as.data.frame(anc_data) %>% `colnames<-`(levels(as.factor(trait_data)))
-    anc_data[, "pred"] <- ifelse(anc_data[, 2] > confidence_threshold, 1, ifelse(anc_data[, 1] > confidence_threshold, 0, 0.5))
+    ancestral_states <- as.data.frame(ancestral_states) %>% `colnames<-`(levels(as.factor(trait_data)))
+    ancestral_states[, "pred"] <- ifelse(ancestral_states[, 2] > confidence_threshold, 1, ifelse(ancestral_states[, 1] > confidence_threshold, 0, 0.5))
   } else if (node_states == "joint") {
     state_coding <- levels(as.factor(trait_data))
     names(state_coding) <- seq_along(state_coding)
-    anc_data <- data.frame(pred = anc_data)
-    anc_data$pred <- dplyr::recode(anc_data$pred, !!!as.list(state_coding)) %>% as.numeric
+    ancestral_states <- data.frame(pred = ancestral_states)
+    ancestral_states$pred <- dplyr::recode(ancestral_states$pred, !!!as.list(state_coding)) %>% as.numeric
   } else {
     stop("This tool is only optimized for marginal and joint corHMM")
   }
 
   # Add node data
-  anc_data[, "node"] <-  seq_len(nrow(anc_data)) + (nrow(anc_data) + 1)
+  ancestral_states[, "node"] <-  seq_len(nrow(ancestral_states)) + (nrow(ancestral_states) + 1)
   num_edges <- nrow(edge)
   internal_nodes <- c(length(trait_data) + 1):(unlist(edge) %>% max)
 
@@ -115,8 +115,8 @@ get_parent_child_data <- function(tr, anc_data, trait_data, node_states, confide
 
   # Prediction values for the parent & child
   for (i in internal_nodes) {
-    edge[edge$parent == i, "parent_val"] <- anc_data[anc_data$node == i, "pred"]
-    edge[edge$child == i, "child_val"] <- anc_data[anc_data$node == i, "pred"]
+    edge[edge$parent == i, "parent_val"] <- ancestral_states[ancestral_states$node == i, "pred"]
+    edge[edge$child == i, "child_val"] <- ancestral_states[ancestral_states$node == i, "pred"]
   }
 
   # Internal nodes
@@ -124,8 +124,8 @@ get_parent_child_data <- function(tr, anc_data, trait_data, node_states, confide
     edge$child_mle <- rep(NA, num_edges)
     edge$parent_mle <- rep(NA, num_edges)
     for (i in internal_nodes){
-      edge[edge$parent == i, "parent_mle"] <- anc_data[anc_data$node == i, levels(as.factor(trait_data))[2]] * 100
-      edge[edge$child == i, "child_mle"] <- anc_data[anc_data$node == i, levels(as.factor(trait_data))[2]] * 100
+      edge[edge$parent == i, "parent_mle"] <- ancestral_states[ancestral_states$node == i, levels(as.factor(trait_data))[2]] * 100
+      edge[edge$child == i, "child_mle"] <- ancestral_states[ancestral_states$node == i, levels(as.factor(trait_data))[2]] * 100
     }
   }
 
@@ -138,13 +138,13 @@ get_parent_child_data <- function(tr, anc_data, trait_data, node_states, confide
   return(edge)
 }
 
-#' get_continuation_data: Annotate parent child data from ancestral state reconstructionwith transition data
+#' Annotate parent child data from ancestral state reconstructionwith transition data
 #'
 #' Function to generate an annotated edge matrix with transition data
 #'
 #' @param parent_child_df Edge matrix with ancestral states
 #' @param node_states Whether to perform "joint" or "marginal" reconstruction. Default: joint
-#' @return Description of return value
+#' @return
 #'   \describe{
 #'     \item{parent_child_df}{Final parent child dataset with transition data}
 #'   }
@@ -157,8 +157,7 @@ get_continuation_data <- function(parent_child_df, node_states) {
                                                          continuation  =  ifelse(parent_val == child_val, 1, 0),
                                                          continuation_present = ifelse(continuation == 1 & child_val == 1, 1, 0),
                                                          continuation_absent = ifelse(continuation == 1 & child_val == 0, 1, 0))
-  }
-  if (node_states == "marginal") {
+  } else if (node_states == "marginal") {
     parent_child_df <- parent_child_df %>% dplyr::mutate(transition = ifelse(parent_val != child_val, 1, 0),
                                                          transition_high = ifelse(parent_val == 0 & child_val == 1 | parent_val == 1 & child_val == 0, 1, 0),
                                                          transition_low = ifelse(parent_val == 0.5 & child_val == 1 | parent_val == 0.5 & child_val == 0, 1, 0),

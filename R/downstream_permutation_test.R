@@ -54,7 +54,7 @@ downstream_permutation_test <- function(comparitor, df, tr, tip_name_variable, t
     dataset <- cbind(tip_names,x)
     outcome_str <- setNames(x,tip_names)
     asr_recon <- corHMM::ancRECON(tr,dataset,p = comparitor_p, method = node_states, rate.cat = 1, rate.mat = comparitor_asr$corHMM_out$index.mat, root.p = comparitor_asr$corHMM_out$root.p, get.likelihood = F, get.tip.states = F)
-    asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,trait_data = outcome_str,confidence_threshold = confidence_threshold,node_states = node_states)
+    asr_result <- get_parent_child_data(tr = tr, ancestral_states = asr_recon$lik.anc.states,trait_data = outcome_str,confidence_threshold = confidence_threshold,node_states = node_states)
     asr_parent_child_df <- get_continuation_data(asr_result,node_states)
     downstream_perm <- get_gain_loss_on_stretches(comparitor_parent_child_df = asr_parent_child_df, stretches = stretches, node_states = node_states, confidence = confidence)
     return(downstream_perm)

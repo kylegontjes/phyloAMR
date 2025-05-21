@@ -53,7 +53,7 @@ synchronous_permutation_test <- function(comparitor, df, tr, tip_name_variable, 
     dataset <- cbind(tip_names,x)
     outcome_str <- setNames(x,tip_names)
     asr_recon <- ancRECON(tr,dataset,p = comparitor_p, method = node_states, rate.cat = 1, rate.mat = comparitor_asr$corHMM_out$index.mat, root.p = comparitor_asr$corHMM_out$root.p, get.likelihood = F, get.tip.states = F)
-    asr_result <- get_parent_child_data(tr = tr,anc_data = asr_recon$lik.anc.states,trait_data = outcome_str,confidence_threshold = confidence_threshold,node_states = node_states) %>% get_continuation_data(.,'joint')
+    asr_result <- get_parent_child_data(tr = tr,ancestral_states = asr_recon$lik.anc.states,trait_data = outcome_str,confidence_threshold = confidence_threshold,node_states = node_states) %>% get_continuation_data(.,'joint')
     comparitor_sychronous_perm <- synchronous_detection(asr_result, trait_asr)
     return(comparitor_sychronous_perm)
   }, mc.cores = num_cores) %>% do.call(rbind, .)

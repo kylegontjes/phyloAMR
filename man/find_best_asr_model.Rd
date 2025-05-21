@@ -2,7 +2,7 @@
 % Please edit documentation in R/find_best_asr_model.R
 \name{find_best_asr_model}
 \alias{find_best_asr_model}
-\title{find_best_asr_model: Determine best model for ancestral state reconstruction}
+\title{Determine best model for ancestral state reconstruction}
 \usage{
 find_best_asr_model(
   df,
@@ -17,21 +17,20 @@ find_best_asr_model(
 \arguments{
 \item{df}{Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables}
 
-\item{tr}{Phylogenetic tree}
+\item{tr}{Phylogeny of class "phylo"}
 
-\item{tip_name_variable}{Name of variable containing tip names in df}
+\item{tip_name_variable}{Name of variable containing tip names in df. Tip name variable must correspond to tip names in the tree.}
 
 \item{trait}{Name of phenotype/trait variable in df}
 
-\item{node_states}{Whether to perform "joint" or "marginal" reconstruction}
+\item{node_states}{Perform "joint" or "marginal" reconstruction. Default: joint}
 
 \item{upper_bound}{Upper bound for likelihood search. Default: 1e50}
 
 \item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
 }
 \value{
-Description of return value
-  \describe{
+\describe{
     \item{model_statistics}{Summary of model options}
     \item{best_model}{Best model for ancestral state reconstruction}
     \item{node_states}{Whether "joint" or "marginal" reconstruction was performed}

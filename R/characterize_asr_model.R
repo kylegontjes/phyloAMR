@@ -1,4 +1,4 @@
-#' characterize_asr_model: Characterize ancestral state reconstruction model
+#' Characterize ancestral state reconstruction model
 #'
 #' This function provides general model statistics for a binary ancestral state reconstruction model
 #'

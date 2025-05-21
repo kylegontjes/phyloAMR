@@ -2,7 +2,7 @@
 % Please edit documentation in R/asr_cluster_analysis.R
 \name{asr_cluster_analysis}
 \alias{asr_cluster_analysis}
-\title{asr_cluster_analysis: Cluster analysis}
+\title{Analysis of trait clustering on a phylogeny}
 \usage{
 asr_cluster_analysis(tip_data_df)
 }

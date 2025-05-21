@@ -1,15 +1,15 @@
-#' find_best_asr_model: Determine best model for ancestral state reconstruction
+#' Determine best model for ancestral state reconstruction
 #'
 #' Function to find best model for ancestral state reconstruction using corHMM.
 #'
 #' @param df Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables
-#' @param tr Phylogenetic tree
-#' @param tip_name_variable Name of variable containing tip names in df
+#' @param tr Phylogeny of class "phylo"
+#' @param tip_name_variable Name of variable containing tip names in df. Tip name variable must correspond to tip names in the tree.
 #' @param trait Name of phenotype/trait variable in df
-#' @param node_states Whether to perform "joint" or "marginal" reconstruction
+#' @param node_states Perform "joint" or "marginal" reconstruction. Default: joint
 #' @param upper_bound Upper bound for likelihood search. Default: 1e50
 #' @param lower_bound Lower bound for likelihood search. Default: 1e-9
-#' @return Description of return value
+#' @return
 #'   \describe{
 #'     \item{model_statistics}{Summary of model options}
 #'     \item{best_model}{Best model for ancestral state reconstruction}
@@ -58,8 +58,8 @@ find_best_asr_model <- function(df, tr, tip_name_variable, trait, node_states = 
   # Results object
   results <- list(model_statistics = model_statistics,
                   best_model = best_model,
-                  node_states = node_states,
-                  corHMM_output_best_model = corHMM_output_best_model)
+                  corHMM_output_best_model = corHMM_output_best_model,
+                  node_states = node_states)
 
   return(results)
 }

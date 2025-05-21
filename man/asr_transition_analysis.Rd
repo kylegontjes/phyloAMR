@@ -2,7 +2,7 @@
 % Please edit documentation in R/asr_transition_analysis.R
 \name{asr_transition_analysis}
 \alias{asr_transition_analysis}
-\title{asr_transition_analysis: Transition analysis}
+\title{Enumeration of trait transitions using ancestral state reconstruction}
 \usage{
 asr_transition_analysis(parent_child_df, node_states = "joint")
 }

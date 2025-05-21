@@ -2,7 +2,7 @@
 % Please edit documentation in R/asr.R
 \name{get_continuation_data}
 \alias{get_continuation_data}
-\title{get_continuation_data: Annotate parent child data from ancestral state reconstructionwith transition data}
+\title{Annotate parent child data from ancestral state reconstructionwith transition data}
 \usage{
 get_continuation_data(parent_child_df, node_states)
 }
@@ -12,8 +12,7 @@ get_continuation_data(parent_child_df, node_states)
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
 }
 \value{
-Description of return value
-  \describe{
+\describe{
     \item{parent_child_df}{Final parent child dataset with transition data}
   }
 }

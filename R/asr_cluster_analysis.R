@@ -1,4 +1,4 @@
-#' asr_cluster_analysis: Cluster analysis
+#' Analysis of trait clustering on a phylogeny
 #'
 #' This function calculates the clustering statistics (e.g., number of singletons, clusters, and no features)
 #'
@@ -12,10 +12,10 @@ asr_cluster_analysis <- function(tip_data_df) {
   num_isolates  <-  length(clustering)
 
   # Characterize present
-  present_isolates <- sum_clustering[grepl("cluster|singleton", names(sum_clustering))]
+  present_isolates <- sum_clustering[grepl("cluster|singleton", names(sum_clustering)) & !grepl("revertant", names(sum_clustering))]
   present <- sum(present_isolates)
-  singletons <- sum(present_isolates[grepl("singleton",names(present_isolates))], sum(grepl("1pt",names(present_isolates))))
-  singleton_isolates <- sum(present_isolates[grepl("singleton|1pt",names(present_isolates))])
+  singletons <- sum(present_isolates[grepl("singleton", names(present_isolates))], sum(grepl("1pt", names(present_isolates))))
+  singleton_isolates <- sum(present_isolates[grepl("singleton|1pt", names(present_isolates))])
   if (singleton_isolates == present) {
     clusters <- 0
     cluster_isolates <-  0
@@ -26,27 +26,29 @@ asr_cluster_analysis <- function(tip_data_df) {
     clusters_summary <- present_isolates[!grepl("singleton|1pt", names(present_isolates))]
     clusters <- length(clusters_summary)
     cluster_isolates <- sum(clusters_summary)
-    cluster_size_median <- stats::median(clusters_summary %>% unlist) %>% round(., 2)
-    cluster_size_range <- range(clusters_summary) %>% paste0(collapse = "-")
-    cluster_size_mean <- mean(clusters_summary) %>% round(., 2)
+    cluster_size_median <- round(stats::median(unlist(clusters_summary)), 2)
+    cluster_size_range <- paste0(range(clusters_summary), collapse = "-")
+    cluster_size_mean <- round(mean(clusters_summary), 2)
   }
 
   # Characerize absent
   absent <- subset(sum_clustering, grepl("revertant|no feature", names(sum_clustering)))
   no_feature <- sum(absent)
-  if (sum(grepl("revertant", names(absent))) >0) {
-    revertant_summary <- subset(absent, grepl("revertant", names(absent))) %>% unlist %>% subset(is.na(.) == FALSE)
+  if (sum(grepl("revertant", names(absent))) > 0) {
+    revertant_summary <- subset(absent, grepl("revertant", names(absent)))
     revertant_isolates <- sum(revertant_summary)
     revertant_clusters_summary <- subset(revertant_summary, names(revertant_summary) != "revertant_tip")
-    revertant_clusters <- length(revertant_clusters_summary)
-    if (revertant_clusters == 0) {
+    if (sum(grepl("revertant_cluster", names(revertant_summary))) == 0) {
+      revertant_clusters <- 0
       revertant_cluster_size_median <- 0
       revertant_cluster_size_mean <- 0
       revertant_cluster_size_range <- NA
     } else {
-      revertant_cluster_size_median <- stats::median(revertant_clusters_summary %>% unlist) %>% round(., 2)
-      revertant_cluster_size_mean <- mean(revertant_clusters_summary) %>% round(., 2)
-      revertant_cluster_size_range <- range(revertant_clusters_summary) %>% paste0(collapse = "-")
+      revertant_clusters <- length(revertant_clusters_summary)
+      revertant_clusters_summary <- subset(revertant_summary, names(revertant_summary) != "revertant_tip")
+      revertant_cluster_size_median <- round(stats::median(unlist(revertant_clusters_summary)), 2)
+      revertant_cluster_size_mean <- round(mean(revertant_clusters_summary), 2)
+      revertant_cluster_size_range <- paste0(range(revertant_clusters_summary), collapse = "-")
     }
   } else {
     revertant_isolates <- 0
@@ -58,9 +60,9 @@ asr_cluster_analysis <- function(tip_data_df) {
 
   # Phylo frequency
   phylogenetic_events <- sum(singletons + clusters)
-  feature_frequency <- (present / num_isolates * 100) %>%  round(., 2)
-  phylogenetic_frequency <- (phylogenetic_events / sum(phylogenetic_events + absent) * 100)  %>% round(., 2)
-  clustering_frequency <- (clusters / phylogenetic_events * 100) %>% round(., 2)
+  feature_frequency <- round(present / num_isolates * 100, 2)
+  phylogenetic_frequency <- round(phylogenetic_events / sum(phylogenetic_events + absent) * 100, 2)
+  clustering_frequency <- round(clusters / phylogenetic_events * 100, 2)
 
   results <- cbind.data.frame(present,
                               singletons, singleton_isolates,
