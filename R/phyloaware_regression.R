@@ -31,38 +31,36 @@ phyloaware_regression <- function(trait, variables, df, first_present = NULL, pa
   })  %>% `names<-`(names(datasets))
   results <- list(datasets = datasets, univariable = univariable)
   # Multivariable
-  if (is.null(multivariable) == TRUE) {
+  if (is.null(multivariable) == TRUE | multivariable == FALSE) {
     return(results)
-  }
-  if (multivariable == "purposeful") {
+  } else {
+    if (multivariable == "purposeful") {
     multivariable <- lapply(datasets, FUN = function(x) {
       purposeful_selection_algorithm(outcome = trait, variables = variables, dataset = x, entry_criteria = entry_criteria, retention_criteria = retention_criteria, confounding_criteria = confounding_criteria)
-    })  %>% `names<-`(names(datasets))
-    results[["multivariable"]] <- multivariable
+    })
   } else if (multivariable == "AIC") {
-    multivariable <- lapply(datasets, FUN = function (x) {
+    multivariable <- lapply(datasets, FUN = function(x) {
       AIC_stepwise_regression(outcome = trait, dataset = x, variables = variables, stepwise_direction = stepwise_direction)
-    }) %>% `names<-`(names(datasets))
-    results[["multivariable"]] <- multivariable
+    })
   } else if (multivariable == "pvalue") {
     multivariable <- lapply(datasets, FUN = function(x) {
-      pvalue_informed_regression(outcome = trait, dataset = x, variables = variables, entry_criteria = entry_criteria, retention_criteria=retention_criteria) %>% .["final_model"]
-  }) %>% `names<-`(names(datasets))
-    results[["multivariable"]] <- multivariable
-  } else if (multivariable == "multivariable"){
-    multivariable <- lapply(datasets,FUN=function(x){
+      pvalue_informed_regression(outcome = trait, dataset = x, variables = variables, entry_criteria = entry_criteria, retention_criteria = retention_criteria)
+  })
+  } else if (multivariable == "multivariable") {
+    multivariable <- lapply(datasets, FUN = function(x) {
       model <- as.formula(paste0(trait, " ~ 1 +", paste0(variables, collapse = " + ")))
       glm_model <- glm(model, data = x, family = "binomial")
       ci <- suppressMessages(confint(glm_model))
-      final <- cbind(exp(cbind(OR = coef(glm_model), ci)) %>% round(., 2) %>% formatC(.,format='f',digits=2),
+      final <- cbind(exp(cbind(OR = coef(glm_model), ci)) %>% round(., 2) %>% formatC(., format = "f", digits = 2),
                      abs(summary(glm_model)$coefficients[, "Pr(>|z|)"]) %>%
-                       round(., 4) %>% formatC(.,format='f',digits=4)) %>% subset(rownames(.) != "(Intercept)") %>%
+                       round(., 4) %>% formatC(., format = "f", digits = 4)) %>% subset(rownames(.) != "(Intercept)") %>%
         `colnames<-`(c("OR", "2.5%", "97.5%", "p_value")) %>%
         as.data.frame %>% mutate(`OR (95% CI)` = paste0(OR, " (", `2.5%`, "-", `97.5%`, ")")) %>% select(`OR (95% CI)`, p_value)
       return(final)
     })
+  }
+    names(multivariable) <- names(datasets)
     results[["multivariable"]] <- multivariable
-
   }
   return(results)
 }
