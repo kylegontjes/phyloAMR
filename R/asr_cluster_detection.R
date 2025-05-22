@@ -82,14 +82,14 @@ get_clustering_data <- function(isolate, parent_child_df, tr, root_node, node_st
 classify_tips_with_trait <- function(node_data, parent_child_df, tr, root_node, node_states, confidence) {
   # Reclassify the singletons
   if ((node_states == "joint" && node_data[["gain"]] == 1) || (node_states == "marginal" && node_data[[paste0("gain_", confidence)]] == 1)) {
-    previous <- get_parent_node(node_data[["parent"]], parent_child_df)
+    previous <- get_parent_node(parental_node = node_data[["parent"]],parent_child_df =  parent_child_df)
     if ((node_states == "joint" && previous[["loss"]] == 1) || (node_states == "marginal" && previous[[paste0("loss_", confidence)]] == 1)) {
-      classification <- get_transition_node(previous, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
+      classification <- get_transition_node(node = previous[['parent']], parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
     } else {
       classification <- "singleton"
     }
   } else {
-    classification <- get_transition_node(node_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
+    classification <- get_transition_node(node = node_data[['child']], parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
   }
 
   # Under marginal, consider episodes of ambiguity as singletons
@@ -104,14 +104,14 @@ classify_tips_with_trait <- function(node_data, parent_child_df, tr, root_node, 
 classify_tips_without_trait <- function(node_data, parent_child_df, tr, root_node, node_states, confidence) {
   # Reclassify the revertants at the tip
   if ((node_states == "joint" && node_data[["loss"]] == 1) || (node_states == "marginal" && node_data[[paste0("loss_", confidence)]] == 1)) {
-    previous <- get_parent_node(node_data[["parent"]], parent_child_df)
+    previous <- get_parent_node(parental_node =  node_data[["parent"]], parent_child_df = parent_child_df)
     if ((node_states == "joint" && previous[["gain"]] == 1) || (node_states == "marginal" && previous[[paste0("gain_", confidence)]] == 1)) {
-      classification <- get_transition_node(node_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence =  confidence)
+      classification <- get_transition_node(node = previous[['parent']], parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence =  confidence)
     } else {
       classification <- "revertant_tip"
     }
   } else {
-    classification <- get_transition_node(node_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence =  confidence)
+    classification <- get_transition_node(node = node_data[['child']], parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence =  confidence)
     # This is important, because our focus is on the emergence of a trait.
     # No reversion would be detected if there was a stretch of no trait all the way from tip to the root
     if (classification == "root") {
@@ -132,16 +132,16 @@ get_parent_node <- function(parental_node, parent_child_df) {
 }
 
 
-get_transition_node <- function(child_data, parent_child_df, tr, root_node, node_states, confidence) {
+get_transition_node <- function(node, parent_child_df, tr, root_node, node_states, confidence) {
   # Get ancestral data
-  ancestors <- ape::nodepath(tr, from = child_data$child, to = root_node)
-  ancestors <- ancestors[ancestors != root_node]
-  parent_child_df <-  parent_child_df[match(ancestors, parent_child_df$child), ]
+  path_to_root <- ape::nodepath(tr, from = node, to = root_node)
+  ancestors <- path_to_root[!path_to_root %in% c(node,root_node)]
+  ancestor_parent_child_df <-  parent_child_df[match(ancestors, parent_child_df$child), ]
 
   # Get stretches to the root
   if (node_states == "joint") {
-    startvalue <-  child_data[["transition"]]
-    ancestor_vals <-  parent_child_df[["transition"]]
+    startvalue <-  parent_child_df[parent_child_df$child == node, "transition"]
+    ancestor_vals <-  ancestor_parent_child_df[["transition"]]
     # Classify individuals without transitions as trait being present at root (i.e., root-to-tip walk indicates no transitions)
     if (sum(ancestor_vals) == 0) {
       node <- "root"
@@ -150,11 +150,11 @@ get_transition_node <- function(child_data, parent_child_df, tr, root_node, node
     }
   } else if (node_states == "marginal") {
     if (confidence == "high") {
-      ancestor_vals <-  parent_child_df[["transition_high"]]
-      startvalue <-  child_data[["transition_high"]]
+      ancestor_vals <-  ancestor_parent_child_df[["transition_high"]]
+      startvalue <-   parent_child_df[parent_child_df$child == node, "transition_high"]
     } else {
-      ancestor_vals <-  parent_child_df[["transition"]]
-      startvalue <-  child_data[["transition"]]
+      ancestor_vals <-  ancestor_parent_child_df[["transition"]]
+      startvalue <-  parent_child_df[parent_child_df$child == node, "transition"]
     }
 
     node <- ancestors[first(which(ancestor_vals != startvalue))]
