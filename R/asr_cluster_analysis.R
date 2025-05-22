@@ -47,6 +47,7 @@ asr_cluster_analysis <- function(tip_data_df) {
     revertant_cluster_size_mean <- round(mean(revertant_clusters_summary), 2)
     revertant_cluster_size_range <- paste0(range(revertant_clusters_summary), collapse = "-")
   } else {
+      revertant_isolates <- 0
       revertant_clusters <- 0
       revertant_cluster_size_median <- 0
       revertant_cluster_size_mean <- 0

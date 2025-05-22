@@ -15,7 +15,7 @@ tip_name_variable <- "tip_name_var"
 
 asr_pheno_obj <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable ,trait = trait, model="ER", node_states = "joint", confidence_threshold = NULL)
 asr_geno_obj <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = trait, model="ER", node_states = "joint", confidence_threshold= NULL)
-asr_sync <- synchronous_detection(comparitor_parent_child_df = asr_geno_obj$parent_child_df, trait_parent_child_df = asr_pheno_obj$parent_child_df)
+asr_sync <- synchronous_transitions(comparitor_parent_child_df = asr_geno_obj$parent_child_df, trait_parent_child_df = asr_pheno_obj$parent_child_df)
 
 expect_s3_class(asr_sync, "data.frame")
 

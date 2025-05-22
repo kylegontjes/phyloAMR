@@ -21,8 +21,8 @@ This tool's main workhorse is the **asr()**, which leverages corHMM's ancestral 
 After performing joint or ancestral state reconstruction, the resultant state predictions of ancestral nodes are parsed to generate a parent-child dataframe. By traversing the phylogenetic tree from the tips to the root, the episodes of trait gain, loss, and continuation are added to the phylogenetic tree's edge matrix.
 
 This information can be leveraged to infer whether a genotype is associated with a phenotype. We wrote two functions to assess this:
-1. synchronous_detection(): Detection of synchronous genotype-phenotype transitions
-2. downstream_gain_loss(): Detection of downstream genotype gain/loss events on phenotypic stretches
+1. synchronous_transitions(): Detection of synchronous genotype-phenotype transitions
+2. downstream_transitions(): Detection of downstream genotype gain/loss events on phenotypic stretches
 
 # Environment
 
@@ -161,7 +161,7 @@ asr_of_genotypes <- lapply(variables,FUN=function(x){
 
 ```{r,fig.height=9}
 # Synchronous impact
-synchronous_df <- lapply(asr_of_genotypes,synchronous_detection,asr_obj$parent_child_df) %>% do.call(rbind,.) %>% mutate(genotype = variables)   
+synchronous_df <- lapply(asr_of_genotypes,synchronous_transitions,asr_obj$parent_child_df) %>% do.call(rbind,.) %>% mutate(genotype = variables)   
 
 paste0("Synchronous data frame")
 head(synchronous_df)
@@ -181,7 +181,7 @@ table(synchronous_df$synchronous_loss_gain_num)
 
 # Step 3: Downstream gain/loss events
 ```{r} 
-downstream_df <- lapply(asr_of_genotypes,downstream_gain_loss,asr_obj$parent_child_df,tr=tr,node_states='joint') %>% do.call(rbind,.) %>% mutate(genotype = variables)
+downstream_df <- lapply(asr_of_genotypes,downstream_transitions,asr_obj$parent_child_df,tr=tr,node_states='joint') %>% do.call(rbind,.) %>% mutate(genotype = variables)
 
 paste0("Downstream data frame")
 head(downstream_df)

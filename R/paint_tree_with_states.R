@@ -12,7 +12,7 @@
 #' @export
 paint_tree_with_states <- function(parent_child_df, tr, scale_breaks = c(1, 0), scale_labels = c("Present", "Absent"), scale_colors = c("red", "black"), legend_name = "Trait") {
   # Create scale
-  edge_color <-  scale_color_manual(breaks = scale_breaks, values = scale_colors, labels = scale_labels, name = legend_name)
+  edge_color <-  ggtree::scale_color_manual(breaks = scale_breaks, values = scale_colors, labels = scale_labels, name = legend_name)
 
   # Get number of nodes
   num_nodes <- nrow(tr$edge) + 1
