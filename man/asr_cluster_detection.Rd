@@ -30,7 +30,7 @@ asr_cluster_detection(
 
 \item{node_states}{Whether the reconstruction was "joint" or "marginal"}
 
-\item{confidence}{Whether to use 'high' (i.e., 0 -> 1) or 'low' (0 -> 0.5) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold in asr() was set > 0.5, consider setting confidence as 'low'. Otherwise, set confidence as 'high'.}
+\item{confidence}{Whether to use 'high' (i.e., 0 -> 1) or 'low' (i.e., any transition) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold in asr() was set > 0.5, consider setting confidence as 'low'. Otherwise, set confidence as 'high'.}
 
 \item{simplify_faux_clusters}{Booleane (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)}
 
@@ -39,7 +39,7 @@ asr_cluster_detection(
 \item{collapse_cluster}{Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category}
 }
 \value{
-A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired
+A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired
 }
 \description{
 This function identifies episodes of trait emergence and loss across a phylogenetic tree.

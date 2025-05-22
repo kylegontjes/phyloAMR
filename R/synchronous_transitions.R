@@ -33,28 +33,28 @@ synchronous_transitions <- function(comparitor_parent_child_df, trait_parent_chi
   # Synchronous gains
   synchronous_gains  <- trait_gains[which(trait_gains %in% comparitor_gains)]
   synchronous_gains <- sort(as.numeric(synchronous_gains))
-  synchronous_gains_str <-  if (length(synchronous_gains) == 0) "" else paste0(synchronous_gains, collapse = ",")
+  synchronous_gains_str <-  ifelse(length(synchronous_gains == 0), character(0), paste0(synchronous_gains, collapse = ","))
   synchronous_gains_num <- length(synchronous_gains)
   synchronous_gains_prop <- round(synchronous_gains_num / num_trait_gains, 2)
 
   # Synchronous gains and losses
   synchronous_gain_loss <- trait_gains[which(trait_gains %in%  comparitor_losses)]
   synchronous_gain_loss <- sort(as.numeric(synchronous_gain_loss))
-  synchronous_gain_loss_str <- if (length(synchronous_gain_loss) == 0) "" else paste0(synchronous_gain_loss, collapse = ",")
+  synchronous_gain_loss_str <- ifelse(length(synchronous_gain_loss == 0), character(0), paste0(synchronous_gain_loss, collapse = ","))
   synchronous_gain_loss_num <- length(synchronous_gain_loss)
   synchronous_gain_loss_prop <- round(synchronous_gain_loss_num / num_trait_gains, 2)
 
   # Synchronous losses
   synchronous_losses <- trait_losses[which(trait_losses %in%  comparitor_losses)]
   synchronous_losses <- sort(as.numeric(synchronous_losses))
-  synchronous_losses_str <- if (length(synchronous_losses) == 0) "" else paste0(synchronous_losses, collapse = ",")
+  synchronous_losses_str <- ifelse(length(synchronous_losses == 0), character(0), paste0(synchronous_losses, collapse = ","))
   synchronous_losses_num <- length(synchronous_losses)
   synchronous_losses_prop <- round(synchronous_losses_num / num_trait_losses, 2)
 
   # Synchronous loss gain
   synchronous_loss_gain <- trait_losses[which(trait_losses %in%  comparitor_gains)]
   synchronous_loss_gain <- sort(as.numeric(synchronous_loss_gain))
-  synchronous_loss_gain_str <- if (length(synchronous_loss_gain) == 0) "" else paste0(synchronous_loss_gain, collapse = ",")
+  synchronous_loss_gain_str <- ifelse(length(synchronous_loss_gain == 0), character(0), paste0(synchronous_loss_gain, collapse = ","))
   synchronous_loss_gain_num <- length(synchronous_loss_gain)
   synchronous_loss_gain_prop <- round(synchronous_loss_gain_num / num_trait_losses, 2)
 

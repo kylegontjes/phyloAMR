@@ -2,7 +2,7 @@
 % Please edit documentation in R/paint_tree_with_states.R
 \name{paint_tree_with_states}
 \alias{paint_tree_with_states}
-\title{paint_tree_with_states}
+\title{Paint phylogenetic tree with ancestral and tip states}
 \usage{
 paint_tree_with_states(
   parent_child_df,
@@ -30,5 +30,5 @@ paint_tree_with_states(
 Tree with painted states
 }
 \description{
-Function to paint a tree with anestral states
+Function to paint a tree with ancestral and tip statess
 }
