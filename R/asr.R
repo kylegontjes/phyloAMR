@@ -88,18 +88,20 @@ asr <- function(df, tr, tip_name_variable, trait, model = "ER", node_states = "j
 #' @export
 get_parent_child_data <- function(tr, ancestral_states, trait_data, node_states, confidence_threshold = NULL) {
   # Tree edge info
-  edge <- tr$edge %>% as.data.frame
+  edge <- as.data.frame(tr$edge)
   colnames(edge) <- c("parent", "child")
 
   # Prediction data
   if (node_states == "marginal") {
-    ancestral_states <- as.data.frame(ancestral_states) %>% `colnames<-`(levels(as.factor(trait_data)))
+    ancestral_states <- as.data.frame(ancestral_states)
+    colnames(ancestral_states) <- levels(as.factor(trait_data))
     ancestral_states[, "pred"] <- ifelse(ancestral_states[, 2] > confidence_threshold, 1, ifelse(ancestral_states[, 1] > confidence_threshold, 0, 0.5))
   } else if (node_states == "joint") {
     state_coding <- levels(as.factor(trait_data))
     names(state_coding) <- seq_along(state_coding)
     ancestral_states <- data.frame(pred = ancestral_states)
-    ancestral_states$pred <- dplyr::recode(ancestral_states$pred, !!!as.list(state_coding)) %>% as.numeric
+    ancestral_states$pred <- dplyr::recode(ancestral_states$pred, !!!as.list(state_coding))
+    ancestral_states$pred <- as.numeric(ancestral_states$pred)
   } else {
     stop("This tool is only optimized for marginal and joint corHMM")
   }

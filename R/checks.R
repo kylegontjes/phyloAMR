@@ -1,5 +1,5 @@
-### Checks ###
-#### Ancestral state reconstruction checks ####
+##### Checks #####
+#### Ancestral state reconstruction ####
 ## Check phenotype is formatted
 check_trait <- function(trait_var) {
   if (sum(unique(as.numeric(trait_var)) %in% c(0, 1)) != 2) {
@@ -40,7 +40,8 @@ check_joint_confidence_value <- function(node_states, confidence_threshold){
   }
 }
 
-### Check joint confidence for asr_cluster_detection calling
+#### asr_cluster_detection ####
+## Check joint confidence for asr_cluster_detection calling
 check_joint_confidence <- function(node_states, confidence){
   if(node_states == "joint" & is.null(confidence) == FALSE) {
     stop("When using joint reconstruction states, you must specify confidence as NULL")
@@ -58,10 +59,10 @@ check_rates_at_local_max <- function(corHMM_output, upper_bound, lower_bound) {
 ## Check if appropriate columns exist when requesting statistics for marginal reconstruction
 check_marginal_columns <- function(node_states, parent_child_df) {
   if (node_states == "marginal" && c(!"transition_high" %in% colnames(parent_child_df))) {
-    stop("Does not have marginal columns, ensure your parent_child_df is constructed using marginal reconstruction")
+    stop("Does not have marginal columns, ensure that your parent_child_df is constructed using marginal reconstruction")
   }
   if (node_states == "joint" && "transition_high" %in% colnames(parent_child_df)) {
-    stop("This is a marginal reconstruction, specify node_state as 'marginal'")
+    stop("This is a marginal reconstruction, specify node_states as 'marginal'")
   }
 }
 
@@ -69,6 +70,6 @@ check_marginal_columns <- function(node_states, parent_child_df) {
 ## Faux clusters requiring patient_id information
 check_faux_clusters <- function(patient_id, simplify_faux_clusters){
   if(is.null(patient_id) == TRUE & simplify_faux_clusters != FALSE) {
-    stop("Must have patient id variable for when faux clusters is specified")
+    stop("Must have patient_id variable when simplify_faux_clusters is requested")
   }
 }

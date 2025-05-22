@@ -1,6 +1,6 @@
-#' paint_tree_with_states
+#' Paint phylogenetic tree with ancestral and tip states
 #'
-#' Function to paint a tree with anestral states
+#' Function to paint a tree with ancestral and tip statess
 #'
 #' @param parent_child_df Parent child dataframe from asr()
 #' @param tr Phylogenetic tree
