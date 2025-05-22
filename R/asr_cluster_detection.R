@@ -179,10 +179,12 @@ account_for_faux_clusters <- function(cluster_data) {
     length(unique(cluster_data[cluster_data$asr_cluster == x, "patient_id"]))
   })
   not_more_than_one_pt <- names(subset(cluster_size_pts, cluster_size_pts == 1))
-  # Relabel these as either (1) singletons or (2) clusters of 1 patient only
-  cleaned_cluster_string <- case_when(cluster_data$asr_cluster %in% not_cluster ~ "singleton",
-    cluster_data$asr_cluster %in% not_more_than_one_pt ~ paste0(cluster_data$asr_cluster, "_1pt_only"),
-    TRUE ~ cluster_data$asr_cluster)
+  # Relabel these as either (1) singletons/no feature or (2) clusters of 1 patient only
+  ## Not clusters
+  cleaned_cluster_string <- ifelse(cluster_data$asr_cluster %in% not_cluster, ifelse(grepl("revertant",cluster_data$asr_cluster), "no feature", "singleton"), cluster_data$asr_cluster)
+  ## 1pt only clusters
+  cleaned_cluster_string <- ifelse(cleaned_cluster_string %in% not_more_than_one_pt, paste0(cleaned_cluster_string, "_1pt_only"), cleaned_cluster_string)
+
   return(cleaned_cluster_string)
 }
 
