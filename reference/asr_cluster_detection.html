@@ -87,7 +87,7 @@
 
 
 <dt id="arg-confidence">confidence<a class="anchor" aria-label="anchor" href="#arg-confidence"></a></dt>
-<dd><p>Whether to use 'high' (i.e., 0 -&gt; 1) or 'low' (0 -&gt; 0.5) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold in asr() was set &gt; 0.5, consider setting confidence as 'low'. Otherwise, set confidence as 'high'.</p></dd>
+<dd><p>Whether to use 'high' (i.e., 0 -&gt; 1) or 'low' (i.e., any transition) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold in asr() was set &gt; 0.5, consider setting confidence as 'low'. Otherwise, set confidence as 'high'.</p></dd>
 
 
 <dt id="arg-simplify-faux-clusters">simplify_faux_clusters<a class="anchor" aria-label="anchor" href="#arg-simplify-faux-clusters"></a></dt>
@@ -104,7 +104,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tip-only dataframe with inferences on the history of these strains. Can be merged with parent_child_df from asr() if desired</p>
+    <p>A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

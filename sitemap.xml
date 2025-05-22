@@ -14,8 +14,8 @@
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/asr_transition_analysis.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/characterize_asr_model.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/df.html</loc></url>
-<url><loc>https://kylegontjes.github.io/phyloAMR/reference/downstream_gain_loss.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/downstream_permutation_test.html</loc></url>
+<url><loc>https://kylegontjes.github.io/phyloAMR/reference/downstream_transitions.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/find_best_asr_model.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/genotype_mat.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/get_continuation_data.html</loc></url>
@@ -27,8 +27,8 @@
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/paint_tree_with_states.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/phyloaware_regression.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/pipe.html</loc></url>
-<url><loc>https://kylegontjes.github.io/phyloAMR/reference/synchronous_detection.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/synchronous_permutation_test.html</loc></url>
+<url><loc>https://kylegontjes.github.io/phyloAMR/reference/synchronous_transitions.html</loc></url>
 <url><loc>https://kylegontjes.github.io/phyloAMR/reference/tr.html</loc></url>
 </urlset>
 
