@@ -42,10 +42,15 @@ asr_cluster_analysis <- function(tip_data_df) {
     revertant_isolates <- sum(revertant_summary)
     revertant_clusters_summary <- subset(revertant_summary, names(revertant_summary) != "revertant_tip")
     revertant_clusters <- length(revertant_clusters_summary)
-    revertant_clusters_summary <- subset(revertant_summary, names(revertant_summary) != "revertant_tip")
-    revertant_cluster_size_median <- round(stats::median(unlist(revertant_clusters_summary)), 2)
-    revertant_cluster_size_mean <- round(mean(revertant_clusters_summary), 2)
-    revertant_cluster_size_range <- paste0(range(revertant_clusters_summary), collapse = "-")
+    if (revertant_clusters == 0) {
+      revertant_cluster_size_median <- 0
+      revertant_cluster_size_mean <- 0
+      revertant_cluster_size_range <- 0
+    } else {
+      revertant_cluster_size_median <- round(stats::median(unlist(revertant_clusters_summary)), 2)
+      revertant_cluster_size_mean <- round(mean(revertant_clusters_summary), 2)
+      revertant_cluster_size_range <- paste0(range(revertant_clusters_summary), collapse = "-")
+    }
   } else {
       revertant_isolates <- 0
       revertant_clusters <- 0
