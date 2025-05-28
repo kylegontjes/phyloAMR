@@ -10,8 +10,17 @@ characterize_asr_model(corHMM_obj)
 \item{corHMM_obj}{Ancestral reconstruction model from corHMM::corHMM}
 }
 \value{
-Dataframe containing model fit (i.e., log-likelihood and AIC), rates, and model type (i.e., ER or ARD)
+Dataframe containing model fit (i.e., log-likelihood and AIC), rates, and model type (i.e., ER or ARD)#'   \describe{
+    \item{model}{Model}
+    \item{number_parameters}{Number of parameters in model}
+    \item{number_rate_categories}{Number of rate categories}
+    \item{rate1}{Rate 1}
+    \item{rate2}{Rate 2}
+    \item{loglik}{Log-likelihood of model}
+    \item{AIC}{Akaike information criteria}
+    \item{AICc}{Sample size corected Akaike information criteria}
+  }
 }
 \description{
-This function provides general model statistics for a binary ancestral state reconstruction model
+Function to report model statistics for a binary ancestral state reconstruction model
 }

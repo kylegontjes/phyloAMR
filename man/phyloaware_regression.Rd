@@ -25,17 +25,17 @@ phyloaware_regression(
 
 \item{df}{Dataframe}
 
-\item{first_present}{Whether to identify first present isolate from a patient}
+\item{first_present}{Boolean (i.e., TRUE, FALSE) whether to select a participant's first isolate with the trait.}
 
-\item{patient_id}{Patient identifier variable stored in dataframe df}
+\item{patient_id}{Patient identifier variable stored in dataframe df. Required if first_present == TRUE.}
 
-\item{culture_date}{Culture date variable stored in dataframe df}
+\item{culture_date}{Culture date used to select the participant's first isolate. Must be stored as a variable in the dataframe df. Required if first_present == TRUE.}
 
-\item{multivariable}{Boolean (i.e., TRUE, FALSE) whether to perform multivariable regression}
+\item{multivariable}{Defines the multivariable selection strategy. Options include: 'purposeful', 'AIC', 'pvalue', and 'multivariable.'}
 
-\item{stepwise_direction}{Direction if stepwise multivariable regression is chosen}
+\item{stepwise_direction}{Direction of stepwise selection. Options include: 'both', 'backward', or 'forward'.}
 
-\item{entry_criteria}{P-value for defining candidate variables for multivariable regression (used in pvalue and purposeful selection)}
+\item{entry_criteria}{P-value for defining candidate variables for multivariable regression. Used in pvalue and purposeful selection)}
 
 \item{retention_criteria}{P-value for retaining candidate variables in model (used in pvalue and purposeful selection)}
 

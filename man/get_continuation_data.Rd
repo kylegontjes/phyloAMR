@@ -2,18 +2,36 @@
 % Please edit documentation in R/asr.R
 \name{get_continuation_data}
 \alias{get_continuation_data}
-\title{Annotate parent child data from ancestral state reconstructionwith transition data}
+\title{Annotate parent child data from ancestral state reconstruction with transition data}
 \usage{
 get_continuation_data(parent_child_df, node_states)
 }
 \arguments{
-\item{parent_child_df}{Edge matrix with ancestral states}
+\item{parent_child_df}{Dataframe with ancestral and tip states}
 
 \item{node_states}{Whether to perform "joint" or "marginal" reconstruction. Default: joint}
 }
 \value{
-\describe{
-    \item{parent_child_df}{Final parent child dataset with transition data}
+Annotated parent child dataframe with transition data. In this coding, 1 == yes and 0 == no. If marginal states were requested, 0.5 = unsure.
+  \describe{
+    \item{transition}{Whether the parent and child nodes do not have the same value}
+    \item{gain}{Whether a gain event occured (i.e., child had value, but parent did not)}
+    \item{loss}{Whether a loss event occured (i.e., parent had value, but child did not)}
+    \item{continuation}{Whether a continuation event occurrent (i.e., parent and child have same value)}
+    \item{continuation_present}{Continuation event where parent and child had the trait}
+    \item{continuation_absent}{Continuation event where parent and child did not have the trait}
+  }
+
+  If node_states == 'marginal', the following additional values will be returned
+  \describe{
+    \item{transition_high}{Transition event where both states were confident (i.e., 0 -> 1) per the MLE confidence threshold}
+    \item{transition_low}{Transition event where one state was confident and other was unsure (i.e., 0 -> 0.5))}
+    \item{gain_high}{Gain event where both states were confident (i.e., 0 -> 1)}
+    \item{gain_low}{Gain event where parental value was unsure )i.e., 0.5 -> 1}
+    \item{loss_high}{Loss event where both sattes were confident (i.e., 1 -> 0)}
+    \item{loss_low}{Loss event where parental value was unsure (i.e., 0.5 -> 0)}
+    \item{continuation_high}{Continuation event where parent and child had confident state inferences (i.e., 1 -> 1)}
+    \item{continuation_low}{Continuation event where parent and child had unsure state inferences (e.g., 0.5 -> 0.5)}
   }
 }
 \description{

@@ -1,40 +1,40 @@
-pvalue_informed_regression <- function(outcome,dataset,variables,entry_criteria,retention_criteria){
-  datatable <- lapply(variables,FUN=function(x){
-    datatable <- univariable_regression(x,outcome,dataset) %>% as.data.frame
-    return(datatable)
-  })%>% do.call(rbind,.)
+pvalue_informed_regression <- function(outcome, dataset, variables, entry_criteria = 0.2, retention_criteria = 0.1) {
+  # Univariable regression
+  univariable <- univariable_regression(outcome = outcome, variables = variables, dataset = dataset)
+  # Variables under entry threshold
+  univariable <- arrange(univariable, p_value)
+  pval_less_threshold <- datatable[univariable$p_value < as.numeric(entry_criteria), ]
+  eligible_variables <- pval_less_threshold$variable
 
-  pval_less_threshold <- datatable %>% subset(p_value < as.numeric(entry_criteria))  %>% arrange(p_value)
-  variables <- rownames(pval_less_threshold)
   # Loop through variables to create final model
-  if(min(pval_less_threshold$p_value)>retention_criteria){
-    return(paste0("No model - no variables < ",retention_criteria))
-  }
-  if(min(pval_less_threshold$p_value)<retention_criteria){
+  ## Check if at least one variable is under criteria
+  if(min(pval_less_threshold$p_value) > retention_criteria) {
+    return(paste0("No model - no variables < ", retention_criteria))
+  } else {
+  # If at least one variable is under criteria generate model with
     # Now loop through variables
-    null_model <- paste(outcome,"1", sep = "~")
-    null_model_out <- glm(null_model, data = dataset, family = "binomial")
+    model <- paste(outcome, "1", sep = "~")
+    glm_model <- glm(model, data = dataset, family = "binomial")
     # Retain if pvalue is
-    best_variable <- variables[1]
-    null_model <- paste0(null_model_out$formula,"+",best_variable)
-    null_model_out <- glm(null_model, data = dataset, family = "binomial")
-    for(i in variables[2:length(variables)]){
-      null_model_new <- paste0(null_model_out$formula,"+",i)
-      null_model_out_new <- glm(null_model_new, data = dataset, family = "binomial")
-      pvals <- abs(summary(null_model_out_new)$coefficients[,'Pr(>|z|)']) %>% round(.,4)
-      if(pvals[length(pvals)] >retention_criteria){
-        null_model_out <- null_model_out
-      }
-      if(pvals[length(pvals)] <retention_criteria){
-        null_model_out <- null_model_out_new
+    best_variable <- pval_less_threshold[which.min(pval_less_threshold$p_value),"variable"]
+    model <- paste0(glm_model$formula, "+", best_variable)
+    glm_model <- glm(model, data = dataset, family = "binomial")
+    for(i in eligible_variables[2:length(eligible_variables)]){
+      model_new <- paste0(glm_model$formula, "+", i)
+      glm_model_new <- glm(model_new, data = dataset, family = "binomial")
+      pvals <- round(abs(summary(glm_model_new)$coefficients[, "Pr(>|z|)"]), 4)
+      if(pvals[length(pvals)] > retention_criteria) {
+        glm_model <- glm_model
+      } else {
+        glm_model <- glm_model_new
       }
     }
-    output <- null_model_out
-    ci <- suppressMessages(confint(output))
-    final <- cbind(exp(cbind(OR = coef(output), ci)) %>% round(.,2) %>% formatC(.,format='f',digits=2),
-                   abs(summary(output)$coefficients[,'Pr(>|z|)']) %>% round(.,4) %>% formatC(.,format='f',digits=4)) %>% subset(rownames(.) != "(Intercept)")  %>% `colnames<-`(c("OR","2.5%","97.5%","p_value")) %>%  as.data.frame %>%
-      mutate(`OR (95% CI)` = paste0(OR," (",`2.5%`,"-",`97.5%`,")")) %>% select(`OR (95% CI)`,p_value)
-    results <- list(final_model=final,univariable=datatable)
+
+    # Format regression model
+    final_model <- format_logistic_regression_table(glm_model)
+
+    # Results
+    results <- list(final_model = final_model, univariable = univariable)
     return(results)
   }
 }

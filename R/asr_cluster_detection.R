@@ -13,9 +13,15 @@
 #' @param simplify_revertant Boolean (i.e., TRUE/FALSE). Whether to collapse revertant episodes as isolates without the trait in the cleaned text string
 #' @param collapse_cluster Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category
 #' @return A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired
+#' {
+#'     \item{asr_cluster}{Character string indicating cluster calls (cluster_[node]), singleton calls, traits without the feature (no feature), and revertant cases at the tip (revertant_tip) or clusters of revertants (revertant_cluster_[node]). If patient_id != NULL, additional calls may be provided where a cluster contains only one patient (cluster_[node]_1pt_only)}
+#'     \item{patient_id}{Character string with the patient ID, if provided}
+#'     \item{asr_cluster_renamed}{Character string where asr_cluster string was renamed as cluster [no. X], singletons, no feature. Clusters are ordered by presentation via ggtree. If simplify_revertant == TRUE, revertants are collapsed as 'No feature' }
+#'     \item{asr_cluster_collapsed}{Character string where asr_cluster string was collapsed into cluster, singleton, no feature, and revertant. If simplify_revertant == TRUE, revertants are collapsed as 'No feature' }
+#'   }
 #' @importFrom dplyr case_when
 #' @importFrom dplyr mutate
-#' @importFrom dplyr last
+#' @importFrom dplyr first
 #' @export
 asr_cluster_detection <- function(df, tr, tip_name_variable, patient_id = NULL, parent_child_df, node_states = "joint", confidence = NULL, simplify_faux_clusters = FALSE, simplify_revertant = TRUE, collapse_cluster = TRUE) {
   # Check if states are as desired
@@ -60,7 +66,7 @@ get_clustering_data <- function(isolate, parent_child_df, tr, root_node, node_st
   tip_data <- parent_child_df[!is.na(parent_child_df$child_name) & parent_child_df$child_name  == isolate, ]
 
   # Classify tips with the trait
-  if (tip_data[["child_val"]] == 1) {
+  if (tip_data[["child_value"]] == 1) {
     classification <- classify_tips_with_trait(node_data = tip_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
     if (classification != "singleton") {
       classification <-  paste0("cluster_", classification)
@@ -68,7 +74,7 @@ get_clustering_data <- function(isolate, parent_child_df, tr, root_node, node_st
   }
 
   # Classify tips without the trait
-  if (tip_data[["child_val"]] == 0) {
+  if (tip_data[["child_value"]] == 0) {
     classification <- classify_tips_without_trait(node_data = tip_data, parent_child_df = parent_child_df, tr = tr, root_node = root_node, node_states = node_states, confidence = confidence)
     if (!classification %in% c("no feature", "revertant_tip")) {
       classification <-  paste0("revertant_cluster_", classification)
@@ -141,23 +147,23 @@ get_transition_node <- function(node, parent_child_df, tr, root_node, node_state
   # Get stretches to the root
   if (node_states == "joint") {
     startvalue <-  parent_child_df[parent_child_df$child == node, "transition"]
-    ancestor_vals <-  ancestor_parent_child_df[["transition"]]
+    ancestor_values <-  ancestor_parent_child_df[["transition"]]
     # Classify individuals without transitions as trait being present at root (i.e., root-to-tip walk indicates no transitions)
-    if (sum(ancestor_vals) == 0) {
+    if (sum(ancestor_values) == 0) {
       node <- "root"
     } else {
-      node <- ancestors[first(which(ancestor_vals != startvalue))]
+      node <- ancestors[first(which(ancestor_values != startvalue))]
     }
   } else if (node_states == "marginal") {
     if (confidence == "high") {
-      ancestor_vals <-  ancestor_parent_child_df[["transition_high"]]
+      ancestor_values <-  ancestor_parent_child_df[["transition_high"]]
       startvalue <-   parent_child_df[parent_child_df$child == node, "transition_high"]
     } else {
-      ancestor_vals <-  ancestor_parent_child_df[["transition"]]
+      ancestor_values <-  ancestor_parent_child_df[["transition"]]
       startvalue <-  parent_child_df[parent_child_df$child == node, "transition"]
     }
 
-    node <- ancestors[first(which(ancestor_vals != startvalue))]
+    node <- ancestors[first(which(ancestor_values != startvalue))]
 
     if (is.na(node)) {
       node <- "unsure"

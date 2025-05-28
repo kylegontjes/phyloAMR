@@ -40,6 +40,12 @@ asr_cluster_detection(
 }
 \value{
 A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired
+{
+    \item{asr_cluster}{Character string indicating cluster calls (cluster_[node]), singleton calls, traits without the feature (no feature), and revertant cases at the tip (revertant_tip) or clusters of revertants (revertant_cluster_[node]). If patient_id != NULL, additional calls may be provided where a cluster contains only one patient (cluster_[node]_1pt_only)}
+    \item{patient_id}{Character string with the patient ID, if provided}
+    \item{asr_cluster_renamed}{Character string where asr_cluster string was renamed as cluster [no. X], singletons, no feature. Clusters are ordered by presentation via ggtree. If simplify_revertant == TRUE, revertants are collapsed as 'No feature' }
+    \item{asr_cluster_collapsed}{Character string where asr_cluster string was collapsed into cluster, singleton, no feature, and revertant. If simplify_revertant == TRUE, revertants are collapsed as 'No feature' }
+  }
 }
 \description{
 This function identifies episodes of trait emergence and loss across a phylogenetic tree.

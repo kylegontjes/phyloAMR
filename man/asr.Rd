@@ -19,13 +19,13 @@ asr(
 \arguments{
 \item{df}{Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables}
 
-\item{tr}{Phylogeny of class "phylo"}
+\item{tr}{Phylogeny object of class "phylo"}
 
-\item{tip_name_variable}{Name of variable containing tip names in df. Tip name variable must correspond to tip names in the tree.}
+\item{tip_name_variable}{Name of variable containing tip names in the dataframe (df). Tip name variable must correspond to tip names in the tree.}
 
-\item{trait}{Name of phenotype/trait variable in df}
+\item{trait}{Name of phenotype/trait variable in the dataframe (df).}
 
-\item{model}{Type of rate transition matrix. Options: equal rates model ("ER") or all rates different ("ARD"). An additional option, "MF", selects the best performing model using sample-size corrected Akaike information criterium (AICc). Default: ER}
+\item{model}{Type of rate transition matrix. Options: equal rates model ("ER") or all rates different ("ARD"). The option, "MF", selects the best performing model using sample-size corrected Akaike information criterium (AICc). Default: ER}
 
 \item{node_states}{Perform "joint" or "marginal" reconstruction. Default: joint}
 
@@ -33,14 +33,14 @@ asr(
 
 \item{lower_bound}{Lower bound for likelihood search. Default: 1e-9}
 
-\item{confidence_threshold}{The confidence threshold to use when categorizing ancestral state inferences from marginal reconstruction. We highly suggest using a default of 0.5 (i.e., winner-takes-all), but permit modification to elevated values.}
+\item{confidence_threshold}{The confidence threshold to categorize ancestral state inferences from a marginal reconstruction.We suggest using a value of 0.5 (i.e., winner takes all), but permit modification to elevated values. Required when node_states == "marginal".}
 }
 \value{
 \describe{
     \item{corHMM_output}{corHMM output}
-    \item{corHMM_model_statistics}{A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model}
-    \item{parent_child_df}{A dataframe of parent-child relationships with additional descriptive information}
-    \item{node_states}{Text string indicating the chosen reconstruction method}
+    \item{corHMM_model_statistics}{Dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model. See documentation of characterize_asr_model for more information.}
+    \item{parent_child_df}{Dataframe of parent-child relationships with additional descriptive information}
+    \item{node_states}{Characetr string whether "joint" or "marginal" reconstruction was performed}
   }
 }
 \description{

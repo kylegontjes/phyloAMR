@@ -30,7 +30,7 @@ asr_transition_analysis <- function(parent_child_df, node_states = "joint") {
   continuations_absent <-  sum(parent_child_df[["continuation_absent"]])
 
   # Parent data for summary stats
-  parents_w_trait <- sum(parent_child_df[["parent_val"]])
+  parents_w_trait <- sum(parent_child_df[["parent_value"]])
   parents_wo_trait <- total_edges - parents_w_trait
 
   # Summary Statistics
@@ -54,7 +54,7 @@ asr_transition_analysis <- function(parent_child_df, node_states = "joint") {
     gains_tip_high <- sum(tip_data_df[["gain_high"]])
 
     # Continuation data
-    continuations_unsure <- sum(parent_child_df[["continuation"]] == 1 & parent_child_df[["child_val"]] == 0.5)
+    continuations_unsure <- sum(parent_child_df[["continuation"]] == 1 & parent_child_df[["child_value"]] == 0.5)
 
     # Compile all information in a results dataframe
     results <- cbind.data.frame(results, transitions_high, transitions_low, gains_high, gains_tip_high, losses_high, losses_tip_high, continuations_unsure)

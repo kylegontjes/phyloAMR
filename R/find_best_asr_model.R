@@ -3,17 +3,17 @@
 #' Function to find best model for ancestral state reconstruction using corHMM.
 #'
 #' @param df Dataframe with tip name (e.g., tip_name_variable) and phenotype/trait (e.g., trait) variables
-#' @param tr Phylogeny of class "phylo"
-#' @param tip_name_variable Name of variable containing tip names in df. Tip name variable must correspond to tip names in the tree.
-#' @param trait Name of phenotype/trait variable in df
+#' @param tr Phylogeny object of class "phylo"
+#' @param tip_name_variable Name of variable containing tip names in the dataframe (df). Tip name variable must correspond to tip names in the tree.
+#' @param trait Name of phenotype/trait variable in the dataframe (df).
 #' @param node_states Perform "joint" or "marginal" reconstruction. Default: joint
 #' @param upper_bound Upper bound for likelihood search. Default: 1e50
 #' @param lower_bound Lower bound for likelihood search. Default: 1e-9
 #' @return
 #'   \describe{
-#'     \item{model_statistics}{Summary of model options}
-#'     \item{best_model}{Best model for ancestral state reconstruction}
-#'     \item{node_states}{Whether "joint" or "marginal" reconstruction was performed}
+#'     \item{model_statistics}{Dataframe with summary of model options}
+#'     \item{best_model}{Character string indicating best model (i.e., "ER" or "ARD)}
+#'     \item{node_states}{Characetr string whether "joint" or "marginal" reconstruction was performed}
 #'     \item{corHMM_output_best_model}{corHMM output for best model}
 #'   }
 #' @export

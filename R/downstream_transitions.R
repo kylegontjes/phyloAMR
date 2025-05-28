@@ -33,7 +33,7 @@ get_trait_traces_on_tree <- function(parent_child_df, tr, node_states) {
   ancestral_gains <- subset(gains, gains >= min(parent_child_df$parent))
 
   # Trait positions
-  trait_found <- unique(c(parent_child_df[parent_child_df$child_val ==1, "child"], parent_child_df[parent_child_df$parent_val ==1, "parent"]))
+  trait_found <- unique(c(parent_child_df[parent_child_df$child_value ==1, "child"], parent_child_df[parent_child_df$parent_value ==1, "parent"]))
 
   # Decipher node paths with gain events
   downstream_nodes <- sapply(ancestral_gains, FUN = function(gain, all_possible_paths){

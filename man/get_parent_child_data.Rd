@@ -13,19 +13,24 @@ get_parent_child_data(
 )
 }
 \arguments{
-\item{tr}{Phylogenetic tree of class "phylo"}
+\item{tr}{Phylogeny object of class "phylo"}
 
-\item{ancestral_states}{Ancestral states inferred by corHMM}
+\item{ancestral_states}{Ancestral states inferred by corHMM. Stored in corHMM_obj$states}
 
-\item{trait_data}{Named phenotype/trait string}
+\item{trait_data}{Named phenotype/trait string. Strings' values correspond to the tip states. Strings' names correspond to the tip names.}
 
 \item{node_states}{Perform "joint" or "marginal" reconstruction. Default: joint}
 
-\item{confidence_threshold}{The confidence threshold to use for marginal state reconstruction. Suggested value: 0.875.}
+\item{confidence_threshold}{The confidence threshold to categorize ancestral state inferences from a marginal reconstruction.We suggest using a value of 0.5 (i.e., winner takes all), but permit modification to elevated values. Required when node_states == "marginal". If the MLE estimate does not fit under or above the threshold, the node's prediction is 'unsure' and labeled as 0.5.}
 }
 \value{
-\describe{
-    \item{edge}{Edge matrix with ancestral and tip states}
+Dataframe with ancestral and tip states
+  \describe{
+    \item{parent}{The upstream node of the child}
+    \item{child}{The downstream node of the parent}
+    \item{parent_value}{Trait value at the parental node}
+    \item{child_value}{Trait value at the child node}
+    \item{child_name}{Character string specifying the name of the child, if it is at the tip.}
   }
 }
 \description{
