@@ -1,11 +1,11 @@
 pandoc: 3.1.11
-pkgdown: 2.1.2
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   ancestral_state_reconstruction_cluster_detection: ancestral_state_reconstruction_cluster_detection.html
   ancestral_state_reconstruction_of_a_trait: ancestral_state_reconstruction_of_a_trait.html
   ancestral_state_reconstruction_phenotype_genotype_investigations: ancestral_state_reconstruction_phenotype_genotype_investigations.html
-last_built: 2025-05-22T20:07Z
+last_built: 2025-05-28T23:50Z
 urls:
   reference: https://kylegontjes.github.io/phyloAMR/reference
   article: https://kylegontjes.github.io/phyloAMR/articles

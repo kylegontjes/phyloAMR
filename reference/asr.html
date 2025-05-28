@@ -66,19 +66,19 @@
 
 
 <dt id="arg-tr">tr<a class="anchor" aria-label="anchor" href="#arg-tr"></a></dt>
-<dd><p>Phylogeny of class "phylo"</p></dd>
+<dd><p>Phylogeny object of class "phylo"</p></dd>
 
 
 <dt id="arg-tip-name-variable">tip_name_variable<a class="anchor" aria-label="anchor" href="#arg-tip-name-variable"></a></dt>
-<dd><p>Name of variable containing tip names in df. Tip name variable must correspond to tip names in the tree.</p></dd>
+<dd><p>Name of variable containing tip names in the dataframe (df). Tip name variable must correspond to tip names in the tree.</p></dd>
 
 
 <dt id="arg-trait">trait<a class="anchor" aria-label="anchor" href="#arg-trait"></a></dt>
-<dd><p>Name of phenotype/trait variable in df</p></dd>
+<dd><p>Name of phenotype/trait variable in the dataframe (df).</p></dd>
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>Type of rate transition matrix. Options: equal rates model ("ER") or all rates different ("ARD"). An additional option, "MF", selects the best performing model using sample-size corrected Akaike information criterium (AICc). Default: ER</p></dd>
+<dd><p>Type of rate transition matrix. Options: equal rates model ("ER") or all rates different ("ARD"). The option, "MF", selects the best performing model using sample-size corrected Akaike information criterium (AICc). Default: ER</p></dd>
 
 
 <dt id="arg-node-states">node_states<a class="anchor" aria-label="anchor" href="#arg-node-states"></a></dt>
@@ -94,7 +94,7 @@
 
 
 <dt id="arg-confidence-threshold">confidence_threshold<a class="anchor" aria-label="anchor" href="#arg-confidence-threshold"></a></dt>
-<dd><p>The confidence threshold to use when categorizing ancestral state inferences from marginal reconstruction. We highly suggest using a default of 0.5 (i.e., winner-takes-all), but permit modification to elevated values.</p></dd>
+<dd><p>The confidence threshold to categorize ancestral state inferences from a marginal reconstruction.We suggest using a value of 0.5 (i.e., winner takes all), but permit modification to elevated values. Required when node_states == "marginal".</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -104,13 +104,13 @@
 <dd><p>corHMM output</p></dd>
 
     <dt>corHMM_model_statistics</dt>
-<dd><p>A dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model</p></dd>
+<dd><p>Dataframe containing the inferred rates, log-likelihood, AIC, and chosen transition model. See documentation of characterize_asr_model for more information.</p></dd>
 
     <dt>parent_child_df</dt>
-<dd><p>A dataframe of parent-child relationships with additional descriptive information</p></dd>
+<dd><p>Dataframe of parent-child relationships with additional descriptive information</p></dd>
 
     <dt>node_states</dt>
-<dd><p>Text string indicating the chosen reconstruction method</p></dd>
+<dd><p>Characetr string whether "joint" or "marginal" reconstruction was performed</p></dd>
 
 
 </dl></div>
@@ -124,7 +124,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
