@@ -8,7 +8,7 @@
 #' @param patient_id Name of variable containing patient IDs, can be combined with faux_clusters option to factor into whether a cluster should have >1 patient. (Optional)
 #' @param parent_child_df Parent child dataframe from asr() object
 #' @param node_states Whether the reconstruction was "joint" or "marginal"
-#' @param confidence Whether to use 'high' (i.e., 0 -> 1) or 'low' (i.e., any transition) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold in asr() was set > 0.5, consider setting confidence as 'low'. Otherwise, set confidence as 'high'.
+#' @param confidence Whether to use 'high' (i.e., 0 -> 1) or 'low' (i.e., any transition) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold value in asr() was > 0.5, set confidence as 'low'. Otherwise, set confidence as 'high'.
 #' @param simplify_faux_clusters Boolean (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)
 #' @param simplify_revertant Boolean (i.e., TRUE/FALSE). Whether to collapse revertant episodes as isolates without the trait in the cleaned text string
 #' @param collapse_cluster Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category
@@ -138,15 +138,18 @@ get_parent_node <- function(parental_node, parent_child_df) {
 
 get_transition_node <- function(node, parent_child_df, tr, root_node, node_states, confidence) {
   # Get ancestral data
+  ## Ancestors
   path_to_root <- ape::nodepath(tr, from = node, to = root_node)
   ancestors <- path_to_root[!path_to_root %in% c(node,root_node)]
+  ## Ancestor parent child dataset
   ancestor_parent_child_df <-  parent_child_df[match(ancestors, parent_child_df$child), ]
 
-  # Get stretches to the root
+  # Get node where a transition occurred
   if (node_states == "joint") {
+    # Focusing on transitions, permitting analysis of gains and losses
     startvalue <-  parent_child_df[parent_child_df$child == node, "transition"]
     ancestor_values <-  ancestor_parent_child_df[["transition"]]
-    # Classify individuals without transitions as trait being present at root (i.e., root-to-tip walk indicates no transitions)
+    # Classify individuals without transitions as trait being present at root (i.e., tip-to-root walk indicates no transitions)
     if (sum(ancestor_values) == 0) {
       node <- "root"
     } else {
@@ -258,6 +261,7 @@ group_by_category <- function(string, simplify_faux_clusters, simplify_revertant
   collapsed_string <- case_when(grepl("Cluster", string) & !grepl("Revertant|Single patient", string) ~ "Cluster",
                                 TRUE ~ string)
 
+  # Simplify revertants will collapse values as 'No feature'
   if (simplify_revertant == FALSE) {
     collapsed_string <- case_when(grepl("Revertant", collapsed_string) ~ "Revertant",
                                   TRUE ~ collapsed_string)
@@ -266,6 +270,7 @@ group_by_category <- function(string, simplify_faux_clusters, simplify_revertant
                                   TRUE ~ collapsed_string)
   }
 
+  # If simplify_faux_clusters was false, these will still need to be grouped as singletons
   if (simplify_faux_clusters == FALSE) {
     collapsed_string <- case_when(grepl("Single patient",  collapsed_string) ~ "Singleton",
                                   TRUE ~ collapsed_string)

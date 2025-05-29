@@ -7,11 +7,16 @@
 #' 2. Clustering frequency:  No. clusters / total phylogenetic events (i.e., singleton events + clusters)
 #'
 #' @param tip_data_df Tip data frame object from asr_cluster_detection()
-#' @return A dataframe with data on the phylogenetics of a trait.
+#' @return Dataframe row with data on the phylogenetic clustering of the trait.
 #' @export
 asr_cluster_analysis <- function(tip_data_df) {
+  # Check if it has the expected contents
+  check_asr_content(tip_data_df)
+
+  # Clustering string
   clustering <- tip_data_df[["asr_cluster"]]
 
+  # Summary data on number of isolates and membership in clusters
   sum_clustering <-  table(clustering)
   num_isolates  <-  length(clustering)
 

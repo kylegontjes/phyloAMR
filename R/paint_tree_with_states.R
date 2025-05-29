@@ -37,6 +37,6 @@ paint_tree_with_states <- function(parent_child_df, tr, scale_breaks = c(1, 0), 
   tr <- full_join(tr,state_df)
 
   # Tree
-  painted_tree <- ggtree(tr, aes(color = as.factor(state))) + edge_color
+  painted_tree <- ggtree(tr, mapping = aes(color = as.factor(state))) + edge_color
   return(painted_tree)
 }

@@ -73,3 +73,10 @@ check_faux_clusters <- function(patient_id, simplify_faux_clusters){
     stop("Must have patient_id variable when simplify_faux_clusters is requested")
   }
 }
+
+#### asr cluster analysis ####
+check_asr_content <- function(tip_data_df){
+  if (sum(grepl("asr_cluster",colnames(tip_data_df))) == 0) {
+    stop("The input does not have asr_cluster results. Double check input is the tip_data_df from asr_cluster_detection()")
+  }
+}

@@ -10,7 +10,7 @@ asr_cluster_analysis(tip_data_df)
 \item{tip_data_df}{Tip data frame object from asr_cluster_detection()}
 }
 \value{
-A dataframe with data on the phylogenetics of a trait.
+Dataframe row with data on the phylogenetic clustering of the trait.
 }
 \description{
 This function calculates the clustering statistics (e.g., number of singletons, clusters, and no features).
