@@ -91,7 +91,7 @@
 
 
 <dt id="arg-simplify-faux-clusters">simplify_faux_clusters<a class="anchor" aria-label="anchor" href="#arg-simplify-faux-clusters"></a></dt>
-<dd><p>Booleane (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)</p></dd>
+<dd><p>Boolean (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)</p></dd>
 
 
 <dt id="arg-simplify-revertant">simplify_revertant<a class="anchor" aria-label="anchor" href="#arg-simplify-revertant"></a></dt>
@@ -104,8 +104,20 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired</p>
-    </div>
+    <p>A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired</p><dl><dt>asr_cluster</dt>
+<dd><p>Character string indicating cluster calls (cluster_[node]), singleton calls, traits without the feature (no feature), and revertant cases at the tip (revertant_tip) or clusters of revertants (revertant_cluster_[node]). If patient_id != NULL, additional calls may be provided where a cluster contains only one patient (cluster_[node]_1pt_only)</p></dd>
+
+    <dt>patient_id</dt>
+<dd><p>Character string with the patient ID, if provided</p></dd>
+
+    <dt>asr_cluster_renamed</dt>
+<dd><p>Character string where asr_cluster string was renamed as cluster [no. X], singletons, no feature. Clusters are ordered by presentation via ggtree. If simplify_revertant == TRUE, revertants are collapsed as 'No feature'</p></dd>
+
+    <dt>asr_cluster_collapsed</dt>
+<dd><p>Character string where asr_cluster string was collapsed into cluster, singleton, no feature, and revertant. If simplify_revertant == TRUE, revertants are collapsed as 'No feature'</p></dd>
+
+
+</dl></div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
