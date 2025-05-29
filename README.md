@@ -3,7 +3,7 @@
 [![CI](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml) 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
-[![Visit Website](https://img.shields.io/badge/Website-Visit-blue)]([https://example.com](https://kylegontjes.github.io/phyloAMR/))
+[![Visit Website](https://img.shields.io/badge/Website-Visit-blue)]([\[https://example.com](https://kylegontjes.github.io/phyloAMR/)])
 
 
 **Description**
