@@ -25,7 +25,7 @@ get_trait_traces_on_tree <- function(parent_child_df, tr, node_states) {
   if (node_states == "joint") {
     gains <- parent_child_df[parent_child_df$gain == 1, "child"]
   } else {
-    confidence_variable <- ifelse(confidnece == 'high', "gain_high", "gain")
+    confidence_variable <- ifelse(confidence == 'high', "gain_high", "gain")
     gains <- parent_child_df[parent_child_df[[confidence_variable]] == 1, "child"]
   }
 
@@ -76,8 +76,8 @@ get_gain_loss_on_stretches <- function(comparitor_parent_child_df, downstream_no
     comparitor_gains <- comparitor_parent_child_df[comparitor_parent_child_df$gain == 1, "child"]
     comparitor_losses <- comparitor_parent_child_df[comparitor_parent_child_df$loss == 1, "child"]
   } else {
-    confidence_gain <- ifelse(confidnece == 'high', "gain_high", "gain")
-    confidence_loss <- ifelse(confidnece == 'high', "loss_high", "loss")
+    confidence_gain <- ifelse(confidence == 'high', "gain_high", "gain")
+    confidence_loss <- ifelse(confidence == 'high', "loss_high", "loss")
     comparitor_gains <- comparitor_parent_child_df[comparitor_parent_child_df[[confidence_gain]] == 1, "child"]
     comparitor_losses <- comparitor_parent_child_df[comparitor_parent_child_df[[confidence_loss]] == 1, "child"]
   }

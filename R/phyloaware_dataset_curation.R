@@ -1,3 +1,20 @@
+#' Dataset curation for phylogenetically aware regression
+#'
+#' Curate three datasetes for phylogenetically aware regression.
+#'
+#'
+#' @param trait Outcome of interest. Character string.
+#' @param df Dataset with trait variable and asr_cluster. Must contain patient_id and culture_date variables if first_present == TRUE.
+#' @param first_present Boolean (i.e., TRUE/FALSE) indicating whether to take the first present isolate
+#' @param patient_id Variable that contains IDs that group tips (i.e., Patient ID). Character string.
+#' @param culture_date  Variable that contains collection/culture date. Character string.
+#' @return Three datasets labeled as 'present', 'singleton', and 'cluster'.
+#' @importFrom dplyr slice
+#' @importFrom dplyr group_by
+#' @importFrom dplyr across
+#' @importFrom dplyr all_of
+#' @export
+
 phyloaware_dataset_curation <- function(trait, df, first_present = NULL, patient_id = NULL, culture_date = NULL) {
   # Get first isolate present
   if (first_present == TRUE) {

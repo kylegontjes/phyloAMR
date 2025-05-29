@@ -14,6 +14,7 @@
 #' @param retention_criteria  P-value criteria for retention into the model. Default = 0.1
 #' @param confounding_criteria  Percent change of effect size. Set value to be very high (i.e., 1000) if testing for confounding is not desired. Default = 0.2.
 #' @return Regression results from each step.
+#' @importFrom dplyr left_join
 #' @export
 purposeful_selection_algorithm <- function(outcome, variables, dataset, entry_criteria = 0.2, retention_criteria = 0.1, confounding_criteria = 0.2) {
   ps_step1 <- purposeful_selection_step_1(outcome = outcome, variables = variables, dataset = dataset, entry_criteria = entry_criteria)
@@ -68,7 +69,7 @@ purposeful_selection_step_2 <- function(outcome, candidate_variables, dataset, r
         ## Reduced model
         glm_reduced_model <- glm(formula = reduced_model_formula, data = dataset, family = "binomial")
         # Test for confounding
-        confounding <- test_confounding(variable = max_pval$variable, model = glm_model, dataset = dataset, confounding_criteria = confounding_criteria)
+        confounding <- test_confounding(variable = max_pval$variable, glm_model = glm_model, dataset = dataset, confounding_criteria = confounding_criteria)
         is_confounding <- ifelse(sum(confounding$confounder == "yes") > 0, "yes", "no")
         if (is_confounding == "no") {
           # Remove variable from model
@@ -131,7 +132,7 @@ purposeful_selection_step_3 <-  function(outcome, fixed_model_variables, candida
         # Test as confounder
         ## Remove variable from model
         # Test confounding
-        confounding <- test_confounding(variable = max_pval$variable, model = glm_model, dataset = dataset, confounding_criteria = confounding_criteria)
+        confounding <- test_confounding(variable = max_pval$variable, glm_model = glm_model, dataset = dataset, confounding_criteria = confounding_criteria)
         if (confounding$confounder_status == FALSE) {
           # Remove variable from model
           glm_model <- confounding[["reduced_model"]]
