@@ -32,15 +32,14 @@ asr_cluster_detection(
 
 \item{confidence}{Whether to use 'high' (i.e., 0 -> 1) or 'low' (i.e., any transition) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold in asr() was set > 0.5, consider setting confidence as 'low'. Otherwise, set confidence as 'high'.}
 
-\item{simplify_faux_clusters}{Booleane (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)}
+\item{simplify_faux_clusters}{Boolean (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)}
 
 \item{simplify_revertant}{Boolean (i.e., TRUE/FALSE). Whether to collapse revertant episodes as isolates without the trait in the cleaned text string}
 
 \item{collapse_cluster}{Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category}
 }
 \value{
-A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired
-{
+A tip-only dataframe with inferences on the ancestral history of these strains. Can be merged with parent_child_df from asr() if desired \describe{
     \item{asr_cluster}{Character string indicating cluster calls (cluster_[node]), singleton calls, traits without the feature (no feature), and revertant cases at the tip (revertant_tip) or clusters of revertants (revertant_cluster_[node]). If patient_id != NULL, additional calls may be provided where a cluster contains only one patient (cluster_[node]_1pt_only)}
     \item{patient_id}{Character string with the patient ID, if provided}
     \item{asr_cluster_renamed}{Character string where asr_cluster string was renamed as cluster [no. X], singletons, no feature. Clusters are ordered by presentation via ggtree. If simplify_revertant == TRUE, revertants are collapsed as 'No feature' }

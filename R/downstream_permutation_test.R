@@ -18,11 +18,11 @@ downstream_permutation_test <- function(comparitor, df, tr, tip_name_variable, t
   tr$node.label <- NULL
 
   # trait
-  trait_asr <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = trait, model = "MF", node_states = node_states, confidence_threshold = confidence_threshold)
+  trait_asr <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = trait, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold)
   trait_asr_parent_child <- trait_asr$parent_child_df
 
   # Comparitor
-  comparitor_asr <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = comparitor, model = "MF", node_states = node_states, confidence_threshold = confidence_threshold)
+  comparitor_asr <- asr(df = df, tr = tr, tip_name_variable = tip_name_variable, trait = comparitor, model = "ER", node_states = node_states, confidence_threshold = confidence_threshold)
   comparitor_asr_parent_child <- comparitor_asr$parent_child_df
 
   # Get observed

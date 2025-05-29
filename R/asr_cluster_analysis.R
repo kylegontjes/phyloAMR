@@ -1,9 +1,13 @@
 #' Analysis of trait clustering on a phylogeny
 #'
-#' This function calculates the clustering statistics (e.g., number of singletons, clusters, and no features)
+#' This function calculates the clustering statistics (e.g., number of singletons, clusters, and no features).
+#' Alongside the frequency of these events, the size of resistance and revertant clusters are reported.
+#' Two additional statistsics are employed:
+#' 1. Phylogenetic frequency: No. clusters + singletons / total opportunities (i.e., phylogenetic events + tips without the trait)
+#' 2. Clustering frequency:  No. clusters / total phylogenetic events (i.e., singleton events + clusters)
 #'
 #' @param tip_data_df Tip data frame object from asr_cluster_detection()
-#' @return A dataframe with data on the phylogenetics of a trait
+#' @return A dataframe with data on the phylogenetics of a trait.
 #' @export
 asr_cluster_analysis <- function(tip_data_df) {
   clustering <- tip_data_df[["asr_cluster"]]

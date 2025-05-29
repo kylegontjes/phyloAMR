@@ -1,10 +1,12 @@
 #' Enumeration of trait transitions using ancestral state reconstruction
 #'
 #' Calculate transition statistics (e.g., gain, loss, and continuation) of an ancestral state reconstruction model.
+#' Values include the number of transitions, gain events, loss events, continuation events, and the number of gains and losses at the tip.
+#' Additional frequency statistics include the frequency of gain events (gains / parents without trait), loss events (losses / parents with trait), and the proportion of edges with continuation events.
 #'
 #' @param parent_child_df parent_child_df object returned sfrom asr() function
 #' @param node_states If 'joint' or 'marginal' reconstruction was used
-#' @return Dataframe with phylogenetic transition statistics for a trait
+#' @return Dataframe with transition statistics for a trait.
 #' @export
 asr_transition_analysis <- function(parent_child_df, node_states = "joint") {
   # Checks

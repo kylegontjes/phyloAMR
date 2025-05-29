@@ -10,7 +10,7 @@ geno <- phyloAMR::genotype_mat
 geno$tip_name_var <- rownames(geno)
 df <- left_join(df,geno)
 trait <-  'colistin_ns'
-geno <-  colnames(geno)[1]
+geno <-  colnames(genotype_mat)[3]
 tip_name_variable <- "tip_name_var"
 
 asr_trait_obj <- asr(df = df,tr = tr,tip_name_variable = tip_name_variable ,trait = trait,model="ER",node_states = "joint", confidence_threshold = NULL)

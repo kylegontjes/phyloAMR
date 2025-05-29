@@ -12,8 +12,10 @@ asr_transition_analysis(parent_child_df, node_states = "joint")
 \item{node_states}{If 'joint' or 'marginal' reconstruction was used}
 }
 \value{
-Dataframe with phylogenetic transition statistics for a trait
+Dataframe with transition statistics for a trait.
 }
 \description{
 Calculate transition statistics (e.g., gain, loss, and continuation) of an ancestral state reconstruction model.
+Values include the number of transitions, gain events, loss events, continuation events, and the number of gains and losses at the tip.
+Additional frequency statistics include the frequency of gain events (gains / parents without trait), loss events (losses / parents with trait), and the proportion of edges with continuation events.
 }
