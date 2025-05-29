@@ -1,4 +1,21 @@
-purposeful_selection_algorithm <- function(outcome, variables, dataset, entry_criteria, retention_criteria, confounding_criteria) {
+#' Logistic regression using purposeful selection
+#'
+#' Uses purposeful selection algorithm to identify a regression model.
+#' Three steps exist:
+#' 1. Unadjusted logistic regression to identify candidate variables under a p-value threshold (entry_criteria)
+#' 2. Multivariable regression of candidate variables. Iterative process, starting from the value with the highest p-value, variables are retained if they fall under category of a significant variable (< retention_criteria) or confounding (i.e., effect size +/- confounding criteria).
+#' 3. All variables that failed step 1 are introduced to the model and retained if p-value < retention criteria (retention_criteria)
+#' Reference: https://scfbm.biomedcentral.com/articles/10.1186/1751-0473-3-17
+#'
+#' @param outcome Outcome of interest
+#' @param variables Variables to evaluate. Must binarize variables (i.e., 0, 1).
+#' @param dataset Dataset with outcome and variables
+#' @param entry_criteria P-value criteria for entry into the model. Default = 0.2
+#' @param retention_criteria  P-value criteria for retention into the model. Default = 0.1
+#' @param confounding_criteria  Percent change of effect size. Set value to be very high (i.e., 1000) if testing for confounding is not desired. Default = 0.2.
+#' @return Regression results from each step.
+#' @export
+purposeful_selection_algorithm <- function(outcome, variables, dataset, entry_criteria = 0.2, retention_criteria = 0.1, confounding_criteria = 0.2) {
   ps_step1 <- purposeful_selection_step_1(outcome = outcome, variables = variables, dataset = dataset, entry_criteria = entry_criteria)
   ps_step2 <- purposeful_selection_step_2(outcome = outcome, candidate_variables = ps_step1$candidates, dataset = dataset, retention_criteria = retention_criteria, confounding_criteria = confounding_criteria)
   if(length(ps_step2) == 1 && sum(ps_step2 == "No significant variables") > 0) {
@@ -51,7 +68,7 @@ purposeful_selection_step_2 <- function(outcome, candidate_variables, dataset, r
         ## Reduced model
         glm_reduced_model <- glm(formula = reduced_model_formula, data = dataset, family = "binomial")
         # Test for confounding
-        confounding <- test_confounding(model1 = glm_model, model2 = glm_reduced_model, confounding_criteria = confounding_criteria, tested_variable = max_pval$variable)
+        confounding <- test_confounding(variable = max_pval$variable, model = glm_model, dataset = dataset, confounding_criteria = confounding_criteria)
         is_confounding <- ifelse(sum(confounding$confounder == "yes") > 0, "yes", "no")
         if (is_confounding == "no") {
           # Remove variable from model

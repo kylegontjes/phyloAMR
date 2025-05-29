@@ -20,8 +20,7 @@ Imports:
     corHMM,
     parallel,
     magrittr,
-    ggtree,
-    data.table
+    ggtree
 Suggests: 
     knitr,
     rmarkdown,

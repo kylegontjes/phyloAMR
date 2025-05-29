@@ -1,4 +1,4 @@
-#' synchronous_permutation_test: Synchronous permutation test
+#' Synchronous permutation test
 #'
 #' Permutation test for synchronous detection function
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/synchronous_permutation_test.R
 \name{synchronous_permutation_test}
 \alias{synchronous_permutation_test}
-\title{synchronous_permutation_test: Synchronous permutation test}
+\title{Synchronous permutation test}
 \usage{
 synchronous_permutation_test(
   comparitor,
