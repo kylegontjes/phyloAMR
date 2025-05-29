@@ -6,7 +6,6 @@ library(ggplot2)
 library(ape)
 tr <- phyloAMR::tr
 df <- phyloAMR::df
-df$isolate_no <- df$tip_name_variable
 trait <-  'colistin_ns'
 tip_name_variable <- "tip_name_var"
 

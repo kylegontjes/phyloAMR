@@ -13,6 +13,7 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr across
 #' @importFrom dplyr all_of
+#' @importFrom dplyr arrange
 #' @export
 
 phyloaware_dataset_curation <- function(trait, df, first_present = NULL, patient_id = NULL, culture_date = NULL) {

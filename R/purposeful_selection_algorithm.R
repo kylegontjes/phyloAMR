@@ -160,18 +160,18 @@ test_confounding <- function(variable, glm_model, dataset, confounding_criteria)
   # Reduced model
   glm_reduced_model <- glm(formula=reduced_model_formula, data = dataset, family = "binomial")
   # Generate variable with
-  model1_summary <-  format_logistic_regression_table(model1)[,c("variable", "OR")]
-  colnames(model1_summary) <- c("variable", "OR_1")
-  model2_summary <- format_logistic_regression_table(model2)[,c("variable", "OR")]
-  colnames(model2_summary) <- c("variable", "OR_2")
+  full_model_summary <-  format_logistic_regression_table(glm_model)[,c("variable", "OR")]
+  colnames(full_model_summary) <- c("variable", "OR_full")
+  reduced_model_summary <- format_logistic_regression_table(glm_reduced_model)[,c("variable", "OR")]
+  colnames(reduced_model_summary) <- c("variable", "OR_reduced")
   # Compare models
-  model_comparison <- suppressMessages(left_join(model1_summary, model2_summary))
+  model_comparison <- suppressMessages(left_join(full_model_summary, reduced_model_summary))
   model_comparison <- model_comparison[model_comparison[["variable"]] != tested_variable, ]
   # Convert OR to numeric
-  model_comparison[["OR_1"]] <- as.numeric(model_comparison[["OR_1"]] )
-  model_comparison[["OR_2"]] <- as.numeric(model_comparison[["OR_2"]] )
+  model_comparison[["OR_full"]] <- as.numeric(model_comparison[["OR_full"]] )
+  model_comparison[["OR_reduced"]] <- as.numeric(model_comparison[["OR_reduced"]] )
   # Test for confounding
-  model_comparison$effect_change <- 1 - (model_comparison[["OR_1"]] / model_comparison[["OR_2"]])
+  model_comparison$effect_change <- 1 - (model_comparison[["OR_full"]] / model_comparison[["OR_reduced"]])
   model_comparison$confounder <- ifelse(abs(model_comparison[["effect_change"]]) > confounding_criteria, "yes", "no")
   # IS it a confounder
   confounder_status <- ifelse(sum(model_comparison$confounder == "yes") > 0, TRUE, FALSE)
