@@ -67,9 +67,10 @@
 </h1></div>
 <p><a href="https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml" class="external-link"><img src="https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml/badge.svg" alt="CI"></a> <a href="https://www.repostatus.org/#active" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active - The project has reached a stable, usable state and is being actively developed."></a> <a href="https://cran.r-project.org/web/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a> <a href="%5Bhttps://example.com%5D(https://kylegontjes.github.io/phyloAMR/)"><img src="https://img.shields.io/badge/Website-Visit-blue" alt="Visit Website"></a></p>
 <p><strong>Description</strong></p>
-<p>phyloAMR is an R package that leverages ancestral state reconstruction and other phylogenetically-informed algorithms to characterize the evolutionary history of genome-influenced traits and investigate phenotype-genotype associations.</p>
-<p>While this package was built to analyze the phylogenetics of antimicrobial resistance, it can be applied to genome-influenced traits, including infection severity and source of infection.</p>
-<p>This package’s workhorse function is <strong>asr()</strong>, which leverages corHMM’s ancestral state reconstruction algorithm to characterize a trait’s gain, loss, and continuation across a phylogenetic tree. This function’s inferred ancestral states can be leveraged, using our downstream algorithms, to address numerous questions, including: 1. How often does an antibiotic-resistant bacterium emerge and spread across a healthcare network? 2. Are there genotypes associated with the gain or loss of antibiotic resistance?<br>
+<p>phyloAMR is an R package that characterizes the evolutionary history of genome-influenced traits and investigate phenotype-genotype associations.</p>
+<p>While built to evaluate the phylogenetics of antimicrobial resistance, it can be applied to genome-influenced traits, including infection severity and source of infection.</p>
+<p>Leveraging corHMM’s ancestral state reconstruction, this package characterizes a trait’s gain, loss, and continuation across a phylogeny. These inferred ancestral states can adress numerous questions, such as:<br>
+1. How often does an antibiotic-resistant bacterium emerge and spread across a healthcare network? 2. Are there genotypes associated with the gain or loss of antibiotic resistance?<br>
 3. Do compensatory or revertant mutations follow a genome-informed trait?</p>
 <p>Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed: 1. <strong>nearest_neighbor_algorithm()</strong>: Identification of an isolate’s nearest neighbor on the phylogenetic tree. Can be used to identify an isolate’s nearest neighbor without a feature (i.e., susceptible neighbor of a resistant isolate).</p>
 <p><strong>How to install phyloAMR</strong></p>
@@ -82,8 +83,74 @@
 <span></span>
 <span><span class="co">## phyloAMR</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"kylegontjes/phyloAMR"</span>, force <span class="op">=</span> <span class="cn">TRUE</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre>
-<p><strong>Questions that this tool can address</strong> | Question | Method | Function(s) | Inputs | Output | |—|—|—|—|—| | What are the ancestral states for our trait? | Ancestral state reconstruction using corHMM | asr() | Dataframe with a trait and a phylogenetic tree | Ancestral reconstruction states | | Do isolates belong to episodes of trait emergence or spread? | Ancestral state reconstruction and tree traversal of estimates | asr() + asr_cluster_detection() | Dataframe with genome-influenced trait and a phylogenetic tree | Ancestral reconstruction and calls for clusters and singletons | | How often does a genome-informed trait emerge and spread across a healthcare network? | Ancestral state reconstruction and tracing of estimates| asr() + asr_cluster_detection() + asr_cluster_analysis() | Dataframe with genome-influenced trait and a phylogenetic tree | Descriptive statistics on cluster calls and phylogenetic singletons | | Genetic features associated with trait/lineage emergence/spread? | Ancestral state reconstruction of phenotype and genotype | asr() + synchronous_detection() + synchronous_permutation_test() <strong>WIP</strong> | Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree | Two traits with synchronous episodes of gain or loss | What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations) | Ancestral state reconstruction of phenotype and genotypes | asr() + downstream_gain_loss() + downstream_permutation_test() <strong>WIP</strong> | Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree | Genotypes classified as downstream mutations from a traits gain event |<br>
-| What descriptive characteristics are associated with phenotypic emergence and spread? | Association testing for characteristics and phenotypic emergence (singletons) and clusters | phyloaware_regression() | Cluster calls from asr_cluster_detection() algorithm and a dataframe with characteristics of interest | Statistical association testing results for characteristics of interest | | Who is my isolate’s closest related strain (i.e., nearest neighbor)? | Evaluation of phylogenetic distance | nearest_neighbor_algorithm() | Dataframe with genome-influenced trait and a phylogenetic tree | An isolate’s nearest neighbor |</p>
+<p><strong>Questions that this tool can address</strong></p>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th>Question</th>
+<th>Method</th>
+<th>Function(s)</th>
+<th>Inputs</th>
+<th>Output</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>What are the ancestral states for our trait?</td>
+<td>Ancestral state reconstruction using corHMM</td>
+<td>asr()</td>
+<td>Dataframe with a trait and a phylogenetic tree</td>
+<td>Ancestral reconstruction states</td>
+</tr>
+<tr class="even">
+<td>Do isolates belong to episodes of trait emergence or spread?</td>
+<td>Ancestral state reconstruction and tree traversal of estimates</td>
+<td>asr() + asr_cluster_detection()</td>
+<td>Dataframe with genome-influenced trait and a phylogenetic tree</td>
+<td>Ancestral reconstruction and calls for clusters and singletons</td>
+</tr>
+<tr class="odd">
+<td>How often does a genome-informed trait emerge and spread across a healthcare network?</td>
+<td>Ancestral state reconstruction and tracing of estimates</td>
+<td>asr() + asr_cluster_detection() + asr_cluster_analysis()</td>
+<td>Dataframe with genome-influenced trait and a phylogenetic tree</td>
+<td>Descriptive statistics on cluster calls and phylogenetic singletons</td>
+</tr>
+<tr class="even">
+<td>Genetic features associated with trait/lineage emergence/spread?</td>
+<td>Ancestral state reconstruction of phenotype and genotype</td>
+<td>asr() + synchronous_detection() + synchronous_permutation_test()</td>
+<td>Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree</td>
+<td>Two traits with synchronous episodes of gain or loss</td>
+</tr>
+<tr class="odd">
+<td>What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations)</td>
+<td>Ancestral state reconstruction of phenotype and genotypes</td>
+<td>asr() + downstream_gain_loss() + downstream_permutation_test()</td>
+<td>Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree</td>
+<td>Genotypes classified as downstream mutations from a traits gain event</td>
+</tr>
+<tr class="even">
+<td>What descriptive characteristics are associated with phenotypic emergence and spread?</td>
+<td>Association testing for characteristics and phenotypic emergence (singletons) and clusters</td>
+<td>phyloaware_regression()</td>
+<td>Cluster calls from asr_cluster_detection() algorithm and a dataframe with characteristics of interest</td>
+<td>Statistical association testing results for characteristics of interest</td>
+</tr>
+<tr class="odd">
+<td>Who is my isolate’s closest related strain (i.e., nearest neighbor)?</td>
+<td>Evaluation of phylogenetic distance</td>
+<td>nearest_neighbor_algorithm()</td>
+<td>Dataframe with genome-influenced trait and a phylogenetic tree</td>
+<td>An isolate’s nearest neighbor</td>
+</tr>
+</tbody>
+</table>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
