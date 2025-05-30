@@ -2,7 +2,7 @@
 #'
 #' This function performs regression on our dataset
 #'
-#' Alongside univeriable regression, multivariable options included in this implementation:
+#' Alongside univariable regression, multivariable options included in this implementation:
 #' 1. Multivariable: Standard multivariable regression of all variables
 #' 2. pvalue: A p-value informed logistic regression
 #' 3. AIC: Stepwise AIC
@@ -23,7 +23,6 @@
 #' @importFrom stats as.formula
 #' @importFrom stats coef
 #' @importFrom stats confint
-#' @importFrom stats filter
 #' @importFrom stats glm
 #' @importFrom stats na.omit
 #' @importFrom stats setNames
@@ -31,37 +30,39 @@
 phyloaware_regression <- function(trait, variables, df, first_present = NULL, patient_id = NULL, culture_date = NULL, multivariable = NULL, stepwise_direction = NULL, entry_criteria = NULL, retention_criteria = NULL, confounding_criteria = NULL) {
   # Curate the three datasets (i.e., present, singletons, clusters)
   datasets <- phyloaware_dataset_curation(trait = trait, df = df, first_present = first_present, patient_id = patient_id, culture_date = culture_date)
+
   # Univariable regression
   univariable <- lapply(datasets, FUN = function(x) {
     univariable_regression(outcome = trait, dataset = x, variables = variables)
   })
   results <- list(datasets = datasets, univariable = univariable)
-  # Multivariable
+
+  # Multivariable modeling
   if (is.null(multivariable) == TRUE || multivariable == FALSE) {
     return(results)
   } else {
     if (multivariable == "purposeful") {
-    # Purposeful selection
-    multivariable <- lapply(datasets, FUN = function(x) {
-      purposeful_selection_algorithm(outcome = trait, variables = variables, dataset = x, entry_criteria = entry_criteria, retention_criteria = retention_criteria, confounding_criteria = confounding_criteria)
-    })
-  } else if (multivariable == "AIC") {
-    # Stepwise regression using Akaike information criterion (AIC) via stats::step
-    multivariable <- lapply(datasets, FUN = function(x) {
-      AIC_stepwise_regression(outcome = trait, dataset = x, variables = variables, stepwise_direction = stepwise_direction)
-    })
-  } else if (multivariable == "pvalue") {
-    # P-value informed regression
-    multivariable <- lapply(datasets, FUN = function(x) {
-      pvalue_informed_regression(outcome = trait, dataset = x, variables = variables, entry_criteria = entry_criteria, retention_criteria = retention_criteria)
-  })
-  } else if (multivariable == "multivariable") {
-    # Multivariable regression without variable selection
-    multivariable <- lapply(datasets, FUN = function(x) {
-      multivariable_regression(outcome = trait, variables = variables, dataset = x)
-    })
-  }
-    results[["multivariable"]] <- multivariable
+      # Purposeful selection
+      multivariable_results <- lapply(datasets, FUN = function(x) {
+        purposeful_selection_algorithm(outcome = trait, variables = variables, dataset = x, entry_criteria = entry_criteria, retention_criteria = retention_criteria, confounding_criteria = confounding_criteria)
+      })
+    } else if (multivariable == "AIC") {
+      # Stepwise regression using Akaike information criterion (AIC) via stats::step
+      multivariable_results <- lapply(datasets, FUN = function(x) {
+        AIC_stepwise_regression(outcome = trait, dataset = x, variables = variables, stepwise_direction = stepwise_direction)
+      })
+    } else if (multivariable == "pvalue") {
+      # P-value informed regression
+      multivariable_results <- lapply(datasets, FUN = function(x) {
+        pvalue_informed_regression(outcome = trait, dataset = x, variables = variables, entry_criteria = entry_criteria, retention_criteria = retention_criteria)
+      })
+    } else if (multivariable == "multivariable") {
+      # Multivariable regression without variable selection
+      multivariable_results <- lapply(datasets, FUN = function(x) {
+        multivariable_regression(outcome = trait, variables = variables, dataset = x)
+      })
+    }
+    results[["multivariable"]] <- multivariable_results
   }
   return(results)
 }

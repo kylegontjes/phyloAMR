@@ -7,17 +7,17 @@
 AIC_stepwise_regression(outcome, dataset, variables, stepwise_direction)
 }
 \arguments{
-\item{outcome}{Outcome of interest}
+\item{outcome}{Outcome of interest. Character string.}
 
 \item{dataset}{Dataframe that contains the trait and exposure variables}
 
-\item{variables}{Exposure variables of interest. Must be numeric or one-hot encoded}
+\item{variables}{Exposure variables of interest. Must be numeric or one-hot encoded.}
 
-\item{stepwise_direction}{Direction of stepwise selection. Options include: 'both', 'backward', or 'forward'. For more information, see stats::step.}
+\item{stepwise_direction}{Direction of stepwise selection. Options include: 'both', 'backward', or 'forward'. For more information on these selection methods, see stats::step.}
 }
 \value{
 Regression results
 }
 \description{
-Performs Akaike information criterion (AIC) informed selection using stats::step function.
+Performs Akaike information criterion (AIC) informed variable selection using the stats::step function.
 }

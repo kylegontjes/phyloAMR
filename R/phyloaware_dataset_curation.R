@@ -13,7 +13,7 @@
 #' @param df Dataset with trait variable and asr_cluster. Must contain patient_id and culture_date variables if first_present == TRUE.
 #' @param first_present Boolean (i.e., TRUE/FALSE) indicating whether to take the first present isolate
 #' @param patient_id Variable that contains IDs that group tips (i.e., Patient ID). Character string.
-#' @param culture_date  Variable that contains collection/culture date. Character string.
+#' @param culture_date  Variable that contains collection/culture date. Character string. Variable must be formatted as a date.
 #' @return Three datasets labeled as 'present', 'singleton', and 'cluster'.
 #' @importFrom dplyr slice
 #' @importFrom dplyr group_by

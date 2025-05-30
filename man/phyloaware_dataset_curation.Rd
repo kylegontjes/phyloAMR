@@ -21,7 +21,7 @@ phyloaware_dataset_curation(
 
 \item{patient_id}{Variable that contains IDs that group tips (i.e., Patient ID). Character string.}
 
-\item{culture_date}{Variable that contains collection/culture date. Character string.}
+\item{culture_date}{Variable that contains collection/culture date. Character string. Variable must be formatted as a date.}
 }
 \value{
 Three datasets labeled as 'present', 'singleton', and 'cluster'.

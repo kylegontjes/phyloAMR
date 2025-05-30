@@ -48,7 +48,7 @@ List with datasets, univariable, and multivariable results (if requested)
 This function performs regression on our dataset
 }
 \details{
-Alongside univeriable regression, multivariable options included in this implementation:
+Alongside univariable regression, multivariable options included in this implementation:
 1. Multivariable: Standard multivariable regression of all variables
 2. pvalue: A p-value informed logistic regression
 3. AIC: Stepwise AIC

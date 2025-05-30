@@ -27,7 +27,7 @@ purposeful_selection_algorithm(
 \item{confounding_criteria}{Percent change of effect size. Set value to be very high (i.e., 1000) if testing for confounding is not desired. Default = 0.2.}
 }
 \value{
-Regression results from each step.
+A list containing univariable results (ps_step_1), initial multivariable modeling (ps_step_2), model refinement with non-candidate variables (ps_step_3), and the final glm model (final_model) and table (final_model_table).
 }
 \description{
 Uses purposeful selection algorithm to identify a regression model.
