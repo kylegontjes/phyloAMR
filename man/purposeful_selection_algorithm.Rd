@@ -16,9 +16,9 @@ purposeful_selection_algorithm(
 \arguments{
 \item{outcome}{Outcome of interest}
 
-\item{variables}{Variables to evaluate. Must binarize variables (i.e., 0, 1).}
+\item{variables}{Exposure variables of interest. Must be numeric or one-hot encoded}
 
-\item{dataset}{Dataset with outcome and variables}
+\item{dataset}{Dataframe that contains the trait and exposure variables}
 
 \item{entry_criteria}{P-value criteria for entry into the model. Default = 0.2}
 

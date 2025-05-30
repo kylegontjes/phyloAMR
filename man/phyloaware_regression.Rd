@@ -2,7 +2,7 @@
 % Please edit documentation in R/phyloaware_regression.R
 \name{phyloaware_regression}
 \alias{phyloaware_regression}
-\title{phyloaware_regression: Phylogenetically-aware regression}
+\title{Phylogenetically aware regression of genome-influenced traits}
 \usage{
 phyloaware_regression(
   trait,
@@ -21,9 +21,9 @@ phyloaware_regression(
 \arguments{
 \item{trait}{Trait of interest}
 
-\item{variables}{Exposure variables of interest}
+\item{variables}{Exposure variables of interest. Must be numeric or one-hot encoded}
 
-\item{df}{Dataframe}
+\item{df}{Dataframe that contains the trait, exposure variables, and other requested variables.}
 
 \item{first_present}{Boolean (i.e., TRUE, FALSE) whether to select a participant's first isolate with the trait.}
 
@@ -33,17 +33,24 @@ phyloaware_regression(
 
 \item{multivariable}{Defines the multivariable selection strategy. Options include: 'purposeful', 'AIC', 'pvalue', and 'multivariable.'}
 
-\item{stepwise_direction}{Direction of stepwise selection. Options include: 'both', 'backward', or 'forward'.}
+\item{stepwise_direction}{Direction of stepwise selection. Options include: 'both', 'backward', or 'forward'.  For more information, see stats::step.}
 
-\item{entry_criteria}{P-value for defining candidate variables for multivariable regression. Used in pvalue and purposeful selection)}
+\item{entry_criteria}{P-value for defining candidate variables for multivariable regression. Used in pvalue and purposeful selection. Suggestion: 0.2.}
 
-\item{retention_criteria}{P-value for retaining candidate variables in model (used in pvalue and purposeful selection)}
+\item{retention_criteria}{P-value for retaining candidate variables in model Used in pvalue and purposeful selection. Suggestion: 0.1.}
 
-\item{confounding_criteria}{Impact on effect size for purposeful selection (used in purposeful selection)}
+\item{confounding_criteria}{Percent change of effect size. Set value to be very high (i.e., 1000) if testing for confounding is not desired. Default = 0.2.}
 }
 \value{
-List with univariable and multivariable results (if requested)
+List with datasets, univariable, and multivariable results (if requested)
 }
 \description{
 This function performs regression on our dataset
+}
+\details{
+Alongside univeriable regression, multivariable options included in this implementation:
+1. Multivariable: Standard multivariable regression of all variables
+2. pvalue: A p-value informed logistic regression
+3. AIC: Stepwise AIC
+4. Purposeful selection: Iterative model selection accounting for p-value and confounding. Hosmer & Lemeshow 2000
 }
