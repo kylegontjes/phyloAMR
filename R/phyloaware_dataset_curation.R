@@ -2,6 +2,12 @@
 #'
 #' Curate three datasetes for phylogenetically aware regression.
 #'
+#' Datasets included:
+#' 1. Present: All isolates
+#' 2. Singleton: Singleton isolates-only
+#' 3. Cluster: Cluster isolates-only
+#'
+#' This permits isolated analysis of singleton and cluster isolates, enabling identification of characteristics associated with the emergence and/or spread of a trait.
 #'
 #' @param trait Outcome of interest. Character string.
 #' @param df Dataset with trait variable and asr_cluster. Must contain patient_id and culture_date variables if first_present == TRUE.
@@ -16,18 +22,24 @@
 #' @importFrom dplyr arrange
 #' @export
 
-phyloaware_dataset_curation <- function(trait, df, first_present = NULL, patient_id = NULL, culture_date = NULL) {
+phyloaware_dataset_curation <- function(trait, df, first_present = FALSE, patient_id = NULL, culture_date = NULL) {
+  # Check dataset has trait and asr
+  check_asr_trait(df = df, trait = trait)
+
   # Get first isolate present
   if (first_present == TRUE) {
+    # Check if patient_id and culture_date are present
+    check_patient_id_and_culture_date(df = df, patient_id = patient_id, culture_date = culture_date)
+    # Generate dataset with first present isolate
     present_df <- get_dataset_with_first_present_isolate(variable = trait, patient_id = patient_id, culture_date = culture_date, df = df)
   } else {
     present_df <- as.data.frame(df)
   }
-  # Emergence
+  # Singleton-only dataset
   singleton_df <- subset(present_df, get(trait) == 0 | grepl("singleton|1pt", asr_cluster))
-  # Spread
+  # Cluster-only dataset
   cluster_df <-  subset(present_df, get(trait) == 0 | (grepl("cluster", asr_cluster) & !grepl("1pt", asr_cluster)))
-  # Final DF list
+  # Final list with overall, singleton, and cluster datasets
   df_list <- list(present_df, singleton_df, cluster_df)
   names(df_list) <- c("present", "singleton", "cluster")
   return(df_list)

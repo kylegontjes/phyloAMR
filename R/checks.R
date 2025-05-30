@@ -80,3 +80,19 @@ check_asr_content <- function(tip_data_df){
     stop("The input does not have asr_cluster results. Double check input is the tip_data_df from asr_cluster_detection()")
   }
 }
+
+#### Phyloaware dataset curation check ####
+### Check has asr and trait
+check_asr_trait <- function(df,trait){
+  if (sum(c(trait, "asr_cluster") %in% colnames(df)) != 2) {
+    stop("The input does not have asr_cluster and/or trait. Check content.")
+  }
+}
+
+
+check_patient_id_and_culture_date <- function(df, patient_id, culture_date){
+  if(sum(c(patient_id, culture_date) %in% colnames(df)) != 2) {
+    stop("The input does not have the provided patient_id and/or culture date variable. These are required when specifying first_present == TRUE")
+  }
+}
+

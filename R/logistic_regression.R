@@ -13,7 +13,7 @@ logistic_regression <- function(variables, outcome, dataset) {
 univariable_regression <- function (outcome, dataset, variables) {
   datatable <- lapply(variables,
     FUN = function(x) {
-      datatable <- logistic_regression(x, outcome, dataset)
+      datatable <- logistic_regression(variables = x, outcome =  outcome, dataset =  dataset)
       return(datatable)
     }
   )
@@ -24,7 +24,7 @@ univariable_regression <- function (outcome, dataset, variables) {
 # Multivariable regression
 multivariable_regression <- function(outcome, dataset, variables) {
   results <- logistic_regression(variables = variables, outcome = outcome, dataset = dataset)
-  return(datatable)
+  return(results)
 }
 
 format_logistic_regression_table <- function(glm_model) {
@@ -39,10 +39,10 @@ format_logistic_regression_table <- function(glm_model) {
   # Get variable name
   variable <-  all.vars(formula(glm_model))[-1]
 
-  # Curate table
-  effectsize_pvalue <- cbind.data.frame(coefficients, p_value)
-  effectsize_pvalue <- subset(effectsize_pvalue, rownames(effectsize_pvalue) != "(Intercept)")
-  table <- cbind.data.frame(variable, effectsize_pvalue)
+  # Curate table with effect size and p-value. Also, remove the intercept results, cause not necessary!
+  effect_size_pvalue <- cbind.data.frame(coefficients, p_value)
+  effect_size_pvalue <- subset(effect_size_pvalue, rownames(effect_size_pvalue) != "(Intercept)")
+  table <- cbind.data.frame(variable, effect_size_pvalue)
   colnames(table) <- c("variable","OR", "2.5%", "97.5%", "p_value")
   rownames(table) <- NULL
 

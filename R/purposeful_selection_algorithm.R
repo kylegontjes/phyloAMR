@@ -15,7 +15,6 @@
 #' @param confounding_criteria  Percent change of effect size. Set value to be very high (i.e., 1000) if testing for confounding is not desired. Default = 0.2.
 #' @return Regression results from each step.
 #' @importFrom dplyr left_join
-#' @export
 purposeful_selection_algorithm <- function(outcome, variables, dataset, entry_criteria = 0.2, retention_criteria = 0.1, confounding_criteria = 0.2) {
   ps_step1 <- purposeful_selection_step_1(outcome = outcome, variables = variables, dataset = dataset, entry_criteria = entry_criteria)
   ps_step2 <- purposeful_selection_step_2(outcome = outcome, candidate_variables = ps_step1$candidates, dataset = dataset, retention_criteria = retention_criteria, confounding_criteria = confounding_criteria)

@@ -52,7 +52,7 @@ asr_cluster_detection <- function(df, tr, tip_name_variable, patient_id = NULL, 
   }
 
   # Get tip data and merge it with the clustering data
-  tip_parent_child_data <- subset(parent_child_df, child <= ape::Nnode(tr) + 1)
+  tip_parent_child_data <- subset(parent_child_df, child_name %in%  clustering_data$tip_name)
   tip_parent_child_data[["tip_name"]] <- tip_parent_child_data[["child_name"]]
   tip_data_df <- suppressMessages(dplyr::left_join(tip_parent_child_data, clustering_data))
   rownames(tip_data_df) <- tip_data_df$tip_name
@@ -277,3 +277,4 @@ group_by_category <- function(string, simplify_faux_clusters, simplify_revertant
   }
   return(collapsed_string)
 }
+

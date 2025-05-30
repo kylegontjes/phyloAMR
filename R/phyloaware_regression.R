@@ -1,6 +1,12 @@
-#' phyloaware_regression: Phylogenetically-aware regression
+#' Phylogenetically aware regression of genome-influenced traits
 #'
 #' This function performs regression on our dataset
+#'
+#' Alongside univeriable regression, multivariable options included in this implementation:
+#' 1. Multivariable: Standard multivariable regression of all variables
+#' 2. pvalue: A p-value informed logistic regression
+#' 3. AIC: Stepwise AIC
+#' 4. Purposeful selection:
 #'
 #' @param trait Trait of interest
 #' @param variables Exposure variables of interest
@@ -32,7 +38,7 @@ phyloaware_regression <- function(trait, variables, df, first_present = NULL, pa
   names(univariable) <- names(datasets)
   results <- list(datasets = datasets, univariable = univariable)
   # Multivariable
-  if (is.null(multivariable) == TRUE | multivariable == FALSE) {
+  if (is.null(multivariable) == TRUE || multivariable == FALSE) {
     return(results)
   } else {
     if (multivariable == "purposeful") {
@@ -54,7 +60,6 @@ phyloaware_regression <- function(trait, variables, df, first_present = NULL, pa
     # Multivariable regression
     multivariable <- lapply(datasets, FUN = function(x) {
       multivariable_regression(outcome = trait, variables = variables, dataset = x)
-      return(final)
     })
   }
     names(multivariable) <- names(datasets)

@@ -1,3 +1,13 @@
+#' Logistic regression using stepwise Akaike information criteria selection
+#'
+#' Performs Akaike information criteria (AIC) informed selection using stats::step function.
+#'
+#' @param outcome Outcome of interest
+#' @param dataset Dataset with outcome and variables
+#' @param variables Variables to evaluate. Must binarize variables (i.e., 0, 1).
+#' @param stepwise_direction  Stepwise directions include "both", "backward", or "forward". For more information, see stats::step.
+#' @return Regression results
+
 AIC_stepwise_regression <- function(outcome, dataset, variables, stepwise_direction) {
   model <- as.formula(paste0(outcome, " ~ 1 +", paste0(variables, collapse = " + ")))
   if (stepwise_direction == "forward") {

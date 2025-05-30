@@ -7,7 +7,7 @@
 phyloaware_dataset_curation(
   trait,
   df,
-  first_present = NULL,
+  first_present = FALSE,
   patient_id = NULL,
   culture_date = NULL
 )
@@ -28,4 +28,12 @@ Three datasets labeled as 'present', 'singleton', and 'cluster'.
 }
 \description{
 Curate three datasetes for phylogenetically aware regression.
+}
+\details{
+Datasets included:
+1. Present: All isolates
+2. Singleton: Singleton isolates-only
+3. Cluster: Cluster isolates-only
+
+This permits isolated analysis of singleton and cluster isolates, enabling identification of characteristics associated with the emergence and/or spread of a trait.
 }
