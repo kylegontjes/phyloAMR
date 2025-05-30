@@ -1,6 +1,6 @@
 # phyloAMR: an R package to perform PHYLOgenetic analysis of AntiMicrobial Resistance 
 
-[![CI](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml) 
+[![R CMD Build](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml/badge.svg)](https://github.com/kylegontjes/phyloAMR/actions/workflows/ci.yml) 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://cran.r-project.org/web/licenses/MIT)
 [![Visit Website](https://img.shields.io/badge/Website-Visit-blue)]([\[https://example.com](https://kylegontjes.github.io/phyloAMR/)])
@@ -8,14 +8,13 @@
 
 **Description**
 
-phyloAMR is an R package that characterizes the evolutionary history of genome-influenced traits and investigate phenotype-genotype associations. 
+phyloAMR is an R package that characterizes the evolutionary history of genome-influenced traits and investigate phenotype-genotype associations. This package can be applied to genome-influenced traits, including antibiotic resistance, infection severity, source of infection, and genotypes.  
 
-While built to evaluate the phylogenetics of antimicrobial resistance, it can be applied to genome-influenced traits, including infection severity and source of infection.
-
-Leveraging corHMM's ancestral state reconstruction, this package characterizes a trait's gain, loss, and continuation across a phylogeny. These inferred ancestral states can adress numerous questions, such as:  
+Leveraging corHMM's ancestral state reconstruction, this package characterizes a trait's gain, loss, and continuation across a phylogeny. Inferred ancestral states can address numerous research questions:  
 1. How often does an antibiotic-resistant bacterium emerge and spread across a healthcare network?
-2. Are there genotypes associated with the gain or loss of antibiotic resistance?  
-3. Do compensatory or revertant mutations follow a genome-informed trait? 
+2. Are certain genotypes associated with the gain or loss of antibiotic resistance?  
+3. Do compensatory or revertant mutations follow the acquisition of a genome-informed trait? 
+4. What patient characteristics are associated with the emergence and spread of antibiotic-resistant organisms?
 
 Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed:
 1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree. Can be used to identify an isolate's nearest neighbor without a feature (i.e., susceptible neighbor of a resistant isolate).  
