@@ -54,7 +54,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">phyloaware_dataset_curation</span><span class="op">(</span></span>
 <span>  <span class="va">trait</span>,</span>
 <span>  <span class="va">df</span>,</span>
-<span>  first_present <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  first_present <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  patient_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  culture_date <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -87,6 +87,14 @@
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Three datasets labeled as 'present', 'singleton', and 'cluster'.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Datasets included:
+1. Present: All isolates
+2. Singleton: Singleton isolates-only
+3. Cluster: Cluster isolates-only</p>
+<p>This permits isolated analysis of singleton and cluster isolates, enabling identification of characteristics associated with the emergence and/or spread of a trait.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
