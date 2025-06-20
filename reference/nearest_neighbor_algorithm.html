@@ -53,6 +53,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nearest_neighbor_algorithm</span><span class="op">(</span></span>
 <span>  <span class="va">isolate</span>,</span>
+<span>  <span class="va">tip_name_variable</span>,</span>
 <span>  <span class="va">phylogenetic_distance</span>,</span>
 <span>  <span class="va">variant_distance</span>,</span>
 <span>  <span class="va">metadata</span>,</span>
@@ -71,12 +72,16 @@
 <dd><p>Isolate of interest</p></dd>
 
 
+<dt id="arg-tip-name-variable">tip_name_variable<a class="anchor" aria-label="anchor" href="#arg-tip-name-variable"></a></dt>
+<dd><p>Name of variable containing tip names in the dataframe (metadata). Tip name variable must correspond to tip names in the tree.</p></dd>
+
+
 <dt id="arg-phylogenetic-distance">phylogenetic_distance<a class="anchor" aria-label="anchor" href="#arg-phylogenetic-distance"></a></dt>
 <dd><p>Matrix of phylogenetic distance</p></dd>
 
 
 <dt id="arg-variant-distance">variant_distance<a class="anchor" aria-label="anchor" href="#arg-variant-distance"></a></dt>
-<dd><p>Provide a secondary distance measure</p></dd>
+<dd><p>Matrix with secondary distance measure, presumably SNPs. This is OPTIONAL. If not specified, the first entry will be gathered (OPTIONAL)</p></dd>
 
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
