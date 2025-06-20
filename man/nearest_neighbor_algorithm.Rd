@@ -6,6 +6,7 @@
 \usage{
 nearest_neighbor_algorithm(
   isolate,
+  tip_name_variable,
   phylogenetic_distance,
   variant_distance,
   metadata,
@@ -18,9 +19,11 @@ nearest_neighbor_algorithm(
 \arguments{
 \item{isolate}{Isolate of interest}
 
+\item{tip_name_variable}{Name of variable containing tip names in the dataframe (metadata). Tip name variable must correspond to tip names in the tree.}
+
 \item{phylogenetic_distance}{Matrix of phylogenetic distance}
 
-\item{variant_distance}{Provide a secondary distance measure}
+\item{variant_distance}{Matrix with secondary distance measure, presumably SNPs. This is OPTIONAL. If not specified, the first entry will be gathered (OPTIONAL)}
 
 \item{metadata}{Dataframe with trait and variables of interest}
 

@@ -5,7 +5,7 @@
 \title{nearest_neighbor_analysis: Generate nearest neighbor comparisons for isolate pairs}
 \usage{
 nearest_neighbor_analysis(
-  comparison_df,
+  nearest_neighbor_df,
   categorical_vars = NULL,
   binary_vars = NULL,
   continuous_vars = NULL,
@@ -13,13 +13,13 @@ nearest_neighbor_analysis(
 )
 }
 \arguments{
-\item{comparison_df}{Dataframe with isolates and their nearest neighbors.}
+\item{nearest_neighbor_df}{Dataframe with isolates and their nearest neighbors. Can work on}
 
-\item{categorical_vars}{Categorical variables. Must be in the comparison_df}
+\item{categorical_vars}{Categorical variables. Must be in the nearest_neighbor_df}
 
-\item{binary_vars}{Binary variables. Must be in the comparison_df AND coded 0 and 1.}
+\item{binary_vars}{Binary variables. Must be in the nearest_neighbor_df AND coded 0 and 1.}
 
-\item{continuous_vars}{Continuous variables. Must be in the comparison_df}
+\item{continuous_vars}{Continuous variables. Must be in the nearest_neighbor_df}
 
 \item{log_2}{Boolean (TRUE/FALSE) Whether to perform log-2 transformation on continuous variables}
 }
@@ -27,7 +27,7 @@ nearest_neighbor_analysis(
 Dataframe with differences in the categorical and continuous variables between an isolate and their nearest neighbor
 }
 \description{
-This function will compare the isolate to their nearest neighbor. Has functionality for categorical and continuous variables.
+This function will compare the isolate to their nearest neighbor generated from phyloAMR::nearest_neighbor_algorithm(). Has functionality for categorical and continuous variables.
 }
 \details{
 This function will use the phylogenetic tree to identify an isolate's nearest neighbor.

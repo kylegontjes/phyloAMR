@@ -96,3 +96,19 @@ check_patient_id_and_culture_date <- function(df, patient_id, culture_date){
   }
 }
 
+#### Nearest neighbor algorithm ####
+check_if_nearest_neighbor_data_is_matrix <- function(phylogenetic_distance, variant_distance) {
+  if (is.matrix(phylogenetic_distance) == FALSE) {
+    stop("The phylogenetic distance object must be formatted as a matrix")
+  }
+
+  if (is.null(variant_distance) == FALSE & is.matrix(variant_distance) == FALSE) {
+    stop("The variant distance object must be formatted as a matrix")
+  }
+}
+
+check_if_variables_are_present <- function(metadata = metadata, variables_of_interest = variables_of_interest, comparison_feature = comparison_feature){
+  if (sum(!c(variables_of_interest, comparison_feature) %in% colnames(metadata)) > 0) {
+    stop("At least one requested variable was not included in the metadata object")
+  }
+}
