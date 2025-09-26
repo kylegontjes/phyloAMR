@@ -18,7 +18,7 @@ nearest_neighbor_summary_statistics <- function(nearest_neighbor_differences, ca
 
   # Categorical differences
   if (is.null(categorical_vars) == FALSE) {
-    continuous_vars_names <- paste0(categorical_vars, "_cat_diff")
+    continuous_vars_names <- paste0(categorical_vars, "_categorical_diff")
     cat_sum_df <- lapply(continuous_vars_names, FUN = function(x) {
       cat_summary(x, nearest_neighbor_differences = nearest_neighbor_differences, n =  comps_sum[["n"]])
     })
@@ -80,8 +80,8 @@ cont_summary <- function(var, nearest_neighbor_differences, n) {
   median <- stats::median(string)
   mean <- mean(string)
   range <- paste0(range(string), collapse = "-")
-  increase_prop <- length(string > 0) / n
-  decrease_prop <- length(string < 0) / n
+  increase_prop <- sum(string > 0) / n
+  decrease_prop <- sum(string < 0) / n
   data <- cbind.data.frame(median, mean, range, increase_prop, decrease_prop)
   colnames(data) <- paste0(var, "_", colnames(data))
   return(data)

@@ -29,7 +29,7 @@ nearest_neighbor_algorithm <- function(isolate, tip_name_variable, phylogenetic_
   nearest_neighbor <- get_nearest_neighbor(isolate = isolate, tip_name_variable = tip_name_variable, phylogenetic_distance = phylogenetic_distance, variant_distance = variant_distance, metadata = metadata, comparison = comparison, comparison_feature = comparison_feature)
   # Annotate Data
   if (annotate == TRUE) {
-    nearest_neighbor <- annotate_nearest_neighbor(nearest_neighbor = nearest_neighbor, metadata = metadata, variables_of_interest = variables_of_interest)
+    nearest_neighbor <- annotate_nearest_neighbor(nearest_neighbor = nearest_neighbor, tip_name_variable = tip_name_variable, metadata = metadata, variables_of_interest = variables_of_interest, comparison_feature = comparison_feature)
   }
   return(nearest_neighbor)
 }
@@ -74,7 +74,7 @@ get_nearest_neighbor <- function(isolate, tip_name_variable, phylogenetic_distan
 }
 
 # Annotate the nearest neighbor
-annotate_nearest_neighbor <- function(nearest_neighbor, metadata, variables_of_interest) {
+annotate_nearest_neighbor <- function(nearest_neighbor, tip_name_variable, metadata, variables_of_interest,comparison_feature = NULL) {
   nearest_neighbor_info <- nearest_neighbor[, !(names(nearest_neighbor) %in% c("tip_name", "nearest_neighbor"))]
 
   # Get metadata for isolate and its neighbor
