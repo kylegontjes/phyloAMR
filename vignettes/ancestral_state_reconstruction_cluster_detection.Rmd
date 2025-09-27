@@ -244,9 +244,9 @@ clusters_col <- hues::iwanthue(ncluster,hmin=15,hmax=360,lmin = 5,lmax = 95,cmin
 clusters_name <- paste0("Cluster ",1:ncluster)
 names(clusters_col) <- clusters_name
 ## Scale
-cluster_scale <- scale_fill_manual(breaks =c("No feature","Singleton","Single atient Cluter",names(clusters_col)),values=c("No feature" = "white","Singleton" = "red","Single patient cluster" = 'gray',clusters_col),labels=c("No Feature","NS Singleton","NS Single Patient Cluster",clusters_name),name="Phylogenetics of Non-susceptibility", guide = guide_legend(ncol=4, title.position = "top", label.position = "right"))
+cluster_scale <- scale_fill_manual(breaks =c("No feature","Singleton","Single Patient Cluter",names(clusters_col)),values=c("No feature" = "white","Singleton" = "red","Single Patient cluster" = 'gray',clusters_col),labels=c("No Feature","NS Singleton","NS Single Patient Cluster",clusters_name),name="Phylogenetics of Non-susceptibility", guide = guide_legend(ncol=4, title.position = "top", label.position = "right"))
 
 # Phylogenetic visualization
-p0.1 <- p0+ggnewscale::new_scale_fill()
+p0.1 <- p0 + ggnewscale::new_scale_fill()
 gheatmap(p0.1,asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,500) + cluster_scale
 ```
