@@ -2,7 +2,7 @@
 title: "Phenotype and genotype association testing using ancestral state reconstruction"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ancestral_state_reconstruction_phenotype_genotype_investigations}
+  %\VignetteIndexEntry{Phenotype and genotype association testing using ancestral state reconstruction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,8 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
-)
-options(rmarkdown.html_vignette.check_title = FALSE)
+) 
 ```
 
 # Introduction
@@ -66,7 +65,7 @@ This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombina
 
 ```{r,fig.width=7.5,fig.height=7.5}
 tr <- phyloAMR::tr
-ggtree(tr)
+ggtree::ggtree(tr)
 ```
 
 # Step 0.1: Visualization of the trait across the phylogenetic tree  
@@ -83,9 +82,9 @@ Notice the clustering of Colistin non-susceptibility across the phylogeny.
 
 ```{r,fig.width=7.5,fig.height=7.5}
 feature_colors <- c(`1` = "black",`0`="white")
-feature_scale <- scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+feature_scale <- ggplot2::scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
 
-p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0 <- ggtree::gheatmap(ggtree::ggtree(tr),df %>% as.data.frame %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
 p0
 ```
 
@@ -101,7 +100,7 @@ paste0("Genotypes present in this matrix: ")
 colnames(genotype_mat)
 
 paste0("Visualization of the genotypes")
-gheatmap(ggtree(tr),genotype_mat %>% mutate_all(as.factor),width = 0.8,colnames = F) + feature_scale
+ggtree::gheatmap(ggtree::ggtree(tr),genotype_mat %>% as.data.frame %>% mutate_all(as.factor),width = 0.8,colnames = F) + feature_scale
 ```
 
 # Step 1: Run ancestral state reconstruction
@@ -156,13 +155,13 @@ variables <- colnames(genotype_mat %>% select(-isolate_no)) %>% .[1:2]
 genotypes<- genotype_mat %>% .[match(tr$tip.label,.[['isolate_no']]),]
 
 asr_of_genotypes <- lapply(variables,FUN=function(x){
-  asr(df = genotype_mat,tr = tr,tip_name_variable = "isolate_no",trait = x,model = "ER",node_states = "joint") %>% .$parent_child_df
+  phyloAMR::asr(df = genotype_mat,tr = tr,tip_name_variable = "isolate_no",trait = x,model = "ER",node_states = "joint") %>% .$parent_child_df
 })
 ```
 
 ```{r,fig.height=9}
 # Synchronous impact
-synchronous_df <- lapply(asr_of_genotypes,synchronous_transitions,asr_obj$parent_child_df) %>% do.call(rbind,.) %>% mutate(genotype = variables)   
+synchronous_df <- lapply(asr_of_genotypes,phyloAMR::synchronous_transitions,asr_obj$parent_child_df) %>% do.call(rbind,.) %>% mutate(genotype = variables)   
 
 paste0("Synchronous data frame")
 head(synchronous_df)
@@ -182,7 +181,7 @@ table(synchronous_df$synchronous_loss_gain_num)
 
 # Step 3: Downstream gain/loss events
 ```{r} 
-downstream_df <- lapply(asr_of_genotypes,downstream_transitions,asr_obj$parent_child_df,tr=tr,node_states='joint') %>% do.call(rbind,.) %>% mutate(genotype = variables)
+downstream_df <- lapply(asr_of_genotypes,phyloAMR::downstream_transitions,asr_obj$parent_child_df,tr=tr,node_states='joint') %>% do.call(rbind,.) %>% mutate(genotype = variables)
 
 paste0("Downstream data frame")
 head(downstream_df)

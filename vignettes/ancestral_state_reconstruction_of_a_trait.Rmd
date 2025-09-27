@@ -2,7 +2,7 @@
 title: "Ancestral state reconstruction of a trait"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ancestral_state_reconstruction_of_a_trait}
+  %\VignetteIndexEntry{Ancestral state reconstruction of a trait}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,8 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
-)
-options(rmarkdown.html_vignette.check_title = FALSE)
+) 
 ```
 
 # Introduction
@@ -78,7 +77,7 @@ This maximum-likelihood phylogenetic tree was constructed on a Gubbins recombina
 
 ```{r,fig.width=7.5,fig.height=7.5}
 tr <- phyloAMR::tr
-ggtree(tr)
+ggtree::ggtree(tr)
 ```
 
 # Step 0: Visualization of the trait across the phylogenetic tree
@@ -95,9 +94,9 @@ Notice the clustering of Colistin non-susceptibility across the phylogeny.
 
 ```{r,fig.width=7.5,fig.height=7.5}
 feature_colors <- c(`1` = "black",`0`="white")
-feature_scale <- scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
+feature_scale <- ggplot2::scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
 
-p0 <- gheatmap(ggtree(tr),df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0 <- ggtree::gheatmap(ggtree::ggtree(tr),df %>% as.data.frame %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
 p0
 ```
 
@@ -204,7 +203,7 @@ painted_tree
 ## Add non-suceptibility matrix to the painted tree
 
 ```{r,fig.width=7.5,fig.height=7.5}
-gheatmap(painted_tree,df %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+ggtree::gheatmap(painted_tree,df %>% as.data.frame %>%select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
 ```
 
 # What's next?
