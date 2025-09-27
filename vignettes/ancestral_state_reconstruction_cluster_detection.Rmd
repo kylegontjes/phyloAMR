@@ -1,5 +1,5 @@
 ---
-title: "ancestral_state_reconstruction_cluster_detection"
+title: "Detection of phylogenetic clusters using phyloAMR"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ancestral_state_reconstruction_cluster_detection}
@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 # Introduction

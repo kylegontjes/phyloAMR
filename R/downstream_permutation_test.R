@@ -49,6 +49,7 @@ downstream_permutation_test <- function(comparitor, df, tr, tip_name_variable, t
   num_isolates <- nrow(df)
   comparitor_vals <- df[[comparitor]]
   trait_runs <- replicate(num_permutations, comparitor_vals[sample.int(num_isolates)], simplify = FALSE)
+  tip_names <- df[[tip_name_variable]]
 
   # Permutation test
   asr_permutation <- parallel::mclapply(trait_runs, FUN = function(x) {

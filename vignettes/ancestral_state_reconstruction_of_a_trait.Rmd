@@ -1,5 +1,5 @@
 ---
-title: "ancestral_state_reconstruction_of_a_trait"
+title: "Ancestral state reconstruction of a trait"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ancestral_state_reconstruction_of_a_trait}
@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 # Introduction
