@@ -84,7 +84,7 @@ Notice the clustering of Colistin non-susceptibility across the phylogeny.
 feature_colors <- c(`1` = "black",`0`="white")
 feature_scale <- ggplot2::scale_fill_manual(values=feature_colors,labels=c("Present","Absent"),name="Tip State", guide = guide_legend(nrow=1, title.position = "top", label.position = "right"))
 
-p0 <- ggtree::gheatmap(ggtree::ggtree(tr),df %>% as.data.frame %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0 <- ggtree::gheatmap(ggtree::ggtree(tr),df %>% as.data.frame %>% select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
 p0
 ```
 
@@ -101,7 +101,7 @@ colnames(genotype_mat)
 
 paste0("Visualization of the genotypes:")
 paste0("Black indicates feature presence:") 
-p0 <- ggtree::gheatmap(ggtree::ggtree(tr), genotype_mat %>% as.data.frame %>% mutate_all(as.factor) %>% `colnames<-`(paste0("Variant ",1:ncol(.))),colnames_position = 'top',width = 1.5,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0 <- ggtree::gheatmap(ggtree::ggtree(tr), genotype_mat %>% as.data.frame %>% mutate_all(as.factor) %>% `colnames<-`(paste0("Variant ",1:ncol(.))),colnames_position = 'top',width = 1.5,colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
 p0 
 ```
 
