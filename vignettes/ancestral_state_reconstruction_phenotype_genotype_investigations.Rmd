@@ -101,7 +101,7 @@ colnames(genotype_mat)
 
 paste0("Visualization of the genotypes:")
 paste0("Black indicates feature presence:") 
-p0 <- ggtree::gheatmap(ggtree::ggtree(tr), genotype_mat %>% as.data.frame %>% mutate_all(as.factor) %>% `colnames<-`(NULL),colnames_position = 'top',width = 1,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0 <- ggtree::gheatmap(ggtree::ggtree(tr), genotype_mat %>% as.data.frame %>% mutate_all(as.factor) %>% `colnames<-`(paste0("Variant ",1:ncol(.))),colnames_position = 'top',width = 1.5,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
 p0 
 ```
 
