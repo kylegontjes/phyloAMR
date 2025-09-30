@@ -191,19 +191,13 @@ In this case, several important observations occur:
 asr_transition_analysis(asr_obj$parent_child_df,node_states='joint')
 ```
 
-# Step 4: Paint the states on the phylogeny
+# Step 4: Visualize the states on the phylogeny
 
 ## Paint the tree
 
 ```{r,fig.width=7.5,fig.height=7.5}
 painted_tree <- phyloAMR::paint_tree_with_states(asr_obj$parent_child_df,tr)
 painted_tree
-```
-
-## Add non-suceptibility matrix to the painted tree
-
-```{r,fig.width=7.5,fig.height=7.5}
-ggtree::gheatmap(painted_tree,df %>% as.data.frame %>%select(colistin_ns) %>% mutate_all(as.factor),colnames_position = 'top',width = .25,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
 ```
 
 # What's next?

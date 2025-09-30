@@ -100,12 +100,9 @@ paste0("Genotypes present in this matrix: ")
 colnames(genotype_mat)
 
 paste0("Visualization of the genotypes:")
-paste0("Black indicates feature presence:")
-phylo.heatmap(tr, genotype_mat %>% as.data.frame %>% mutate_all(as.numeric),
-              fsize = 0.00000001,                                
-              colors =c("white",'black'),
-              outline = TRUE,
-              plot.axes=FALSE)
+paste0("Black indicates feature presence:") 
+p0 <- ggtree::gheatmap(ggtree::ggtree(tr), genotype_mat %>% as.data.frame %>% select(colistin_ns) %>% mutate_all(as.factor) %>% `colnames<-`(NULL),colnames_position = 'top',width = 1,low = 'white',high='black',colnames_angle = 90,legend_title = 'Colistin non-susceptibility',hjust = 0,color = NULL) + ylim(NA,485) + feature_scale
+p0 
 ```
 
 # Step 1: Run ancestral state reconstruction

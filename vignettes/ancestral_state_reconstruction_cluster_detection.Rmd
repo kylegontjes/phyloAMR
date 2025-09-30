@@ -246,5 +246,5 @@ names(clusters_col) <- clusters_name
 cluster_scale <- ggplot2::scale_fill_manual(breaks =c("No feature","Singleton","Single Patient Cluter",names(clusters_col)),values=c("No feature" = "white","Singleton" = "red","Single Patient cluster" = 'gray',clusters_col),labels=c("No Feature","NS Singleton","NS Single Patient Cluster",clusters_name),name="Phylogenetics of Non-susceptibility", guide = guide_legend(ncol=4, title.position = "top", label.position = "right"))
 
 # Phylogenetic visualization  
-ggtree::gheatmap(ggtree(tr),asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor) %>% as.data.frame,colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,500) + cluster_scale
+ggtree::gheatmap(ggtree(tr),asr_cluster_obj %>% select(asr_cluster_renamed) %>% mutate_all(as.factor) %>% as.data.frame,colnames_position = 'top',width = .25,colnames_angle = 90,legend_title = 'Colistin non-usceptibility',hjust = 0,offset=0.0000075,color=NULL) + ylim(NA,510) + cluster_scale
 ```
