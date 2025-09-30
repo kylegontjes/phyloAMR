@@ -200,7 +200,7 @@ simplify_clustering_string <-  function(clustering_data, tr, simplify_faux_clust
   # Get initial order
   initial_order <- clustering_data$tip_name
   #Reorder vector to tree plotting
-  clustering_data <- clustering_data[match(ggtree::get_taxa_name(ggtree::ggtree(tr)), clustering_data$tip_name), c("tip_name", "asr_cluster")]
+  clustering_data <- clustering_data[match(x = ggtree::get_taxa_name(ggtree::ggtree(tr = tr)),table =  clustering_data$tip_name), c("tip_name", "asr_cluster")]
 
   # Convert Names to Easy to Report String
   clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(asr_cluster == "no feature" ~ "No feature",

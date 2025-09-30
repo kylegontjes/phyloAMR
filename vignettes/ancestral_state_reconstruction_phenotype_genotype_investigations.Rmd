@@ -32,7 +32,7 @@ library(dplyr)
 library(stringr)
 library(ggplot2)
 library(ape)
-library(ggtree) 
+library(phytools) 
 ```
 
 # Load example data
@@ -99,8 +99,13 @@ paste0("Total of ",ncol(genotype_mat)," genotypes")
 paste0("Genotypes present in this matrix: ")
 colnames(genotype_mat)
 
-paste0("Visualization of the genotypes")
-ggtree::gheatmap(ggtree::ggtree(tr),genotype_mat %>% as.data.frame %>% mutate_all(as.factor),width = 0.8,colnames = F) + feature_scale
+paste0("Visualization of the genotypes:")
+paste0("Black indicates feature presence:")
+phylo.heatmap(tr, genotype_mat %>% as.data.frame %>% mutate_all(as.numeric),
+              fsize = 0.00000001,                                
+              colors =c("white",'black'),
+              outline = TRUE,
+              plot.axes=FALSE)
 ```
 
 # Step 1: Run ancestral state reconstruction

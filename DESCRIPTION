@@ -12,7 +12,7 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/kylegontjes/phyloAMR, https://kylegontjes.github.io/phyloAMR/
 BugReports: https://github.com/kylegontjes/phyloAMR/issues
-RoxygenNote: 7.3.2 
+RoxygenNote: 7.3.3
 Imports: 
     dplyr,
     stringr,
@@ -27,7 +27,8 @@ Suggests:
     testthat (>= 3.0.0),
     hues,
     ggplot2,
-    ggnewscale
+    ggnewscale,
+    phytools
 Remotes:
     thej022214/corHMM
 Depends: 
