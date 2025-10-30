@@ -6,9 +6,9 @@
 #' @param tr Phylogenetic tree
 #' @param tip_name_variable Name of variable containing tip names in df
 #' @param patient_id Name of variable containing patient IDs, can be combined with faux_clusters option to factor into whether a cluster should have >1 patient. (Optional)
-#' @param parent_child_df Parent child dataframe from asr() object
+#' @param parent_child_df Parent child dataframe output from phyloAMR::asr() object
 #' @param node_states Whether the reconstruction was "joint" or "marginal"
-#' @param confidence Whether to use 'high' (i.e., 0 -> 1) or 'low' (i.e., any transition) confidence transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold value in asr() was > 0.5, set confidence as 'low'. Otherwise, set confidence as 'high'.
+#' @param confidence Whether to use 'high' (i.e., 0 -> 1) or 'low' (i.e., any transition) confidence state transitions when determining clustering with marginal ancestral state reconstruction results. If the confidence_threshold value in phyloAMR::asr() was > 0.5, set confidence as 'low'. Otherwise, set confidence as 'high'.
 #' @param simplify_faux_clusters Boolean (i.e., TRUE/FALSE), whether to collapse faux clusters (i.e., clusters where 1 patient contributes all isolates) as singletons without distinction (Optional)
 #' @param simplify_revertant Boolean (i.e., TRUE/FALSE). Whether to collapse revertant episodes as isolates without the trait in the cleaned text string
 #' @param collapse_cluster Boolean (i.e., TRUE/FALSE). Whether to create a variable that collapses cluster calls into one category
@@ -23,7 +23,7 @@
 #' @importFrom dplyr first
 #' @export
 asr_cluster_detection <- function(df, tr, tip_name_variable, patient_id = NULL, parent_child_df, node_states = "joint", confidence = NULL, simplify_faux_clusters = FALSE, simplify_revertant = TRUE, collapse_cluster = TRUE) {
-  # Check if states are as desired
+  # Check if states were specified correctly
   check_joint_confidence(node_states, confidence)
 
   # Check faux_cluster
@@ -62,6 +62,7 @@ asr_cluster_detection <- function(df, tr, tip_name_variable, patient_id = NULL, 
 
 # Get clustering data
 get_clustering_data <- function(isolate, parent_child_df, tr, root_node, node_states, confidence) {
+  # Subset parent-child dataframe to just tip entries
   tip_data <- parent_child_df[!is.na(parent_child_df$child_name) & parent_child_df$child_name  == isolate, ]
 
   # Classify tips with the trait
@@ -202,7 +203,7 @@ simplify_clustering_string <-  function(clustering_data, tr, simplify_faux_clust
   #Reorder vector to tree plotting
   clustering_data <- clustering_data[match(x = ggtree::get_taxa_name(ggtree::ggtree(tr = tr)),table =  clustering_data$tip_name), c("tip_name", "asr_cluster")]
 
-  # Convert Names to Easy to Report String
+  # Rename cluster names to enable easy reporting and interpretation
   clustering_data <- clustering_data %>% mutate(asr_cluster_renamed = case_when(asr_cluster == "no feature" ~ "No feature",
                                                                                 asr_cluster == "singleton" ~ "Singleton",
                                                                                 TRUE ~ asr_cluster))

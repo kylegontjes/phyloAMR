@@ -17,7 +17,8 @@ Leveraging corHMM's ancestral state reconstruction, this package characterizes a
 4. What patient characteristics are associated with the emergence and spread of antibiotic-resistant organisms?
 
 Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed:
-1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree. Can be used to identify an isolate's nearest neighbor without a feature (i.e., susceptible neighbor of a resistant isolate).  
+1. **nearest_neighbor_algorithm()**: Identification of an isolate's nearest neighbor on the phylogenetic tree. Can be used to identify an isolate's nearest neighbor without a feature (i.e., susceptible neighbor of a resistant isolate). This method can be combined with nearest_neighbor_analysis() and nearest_neighbor_summary_statistic() to compare characteristics of the isolate and their nearest neighbor. This analysis framework is useful for identifying the influence of genetic mutations on bacterial phenotypes (i.e., acquisition of resistance mutation and a resistance measurement).
+2. **phyloaware_regression()**: Phylogenetically-informed regression to test for associations between descriptive characteristics and the emergence and spread of a genome-influenced trait.
 
 **How to install phyloAMR**
 
