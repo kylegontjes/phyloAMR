@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Phylogenetic Analysis of Genome-Influenced Traits">
-<meta name="description" content="Suite of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.">
-<meta property="og:description" content="Suite of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.">
+<meta name="description" content="Toolkit to perform phylogenetically-informed analysis of antibiotic resistance and other genome-influenced traits">
+<meta property="og:description" content="Toolkit to perform phylogenetically-informed analysis of antibiotic resistance and other genome-influenced traits">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -71,7 +71,7 @@
 <p>Leveraging corHMM’s ancestral state reconstruction, this package characterizes a trait’s gain, loss, and continuation across a phylogeny. Inferred ancestral states can address numerous research questions:<br>
 1. How often does an antibiotic-resistant bacterium emerge and spread across a healthcare network? 2. Are certain genotypes associated with the gain or loss of antibiotic resistance?<br>
 3. Do compensatory or revertant mutations follow the acquisition of a genome-informed trait? 4. What patient characteristics are associated with the emergence and spread of antibiotic-resistant organisms?</p>
-<p>Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed: 1. <strong>nearest_neighbor_algorithm()</strong>: Identification of an isolate’s nearest neighbor on the phylogenetic tree. Can be used to identify an isolate’s nearest neighbor without a feature (i.e., susceptible neighbor of a resistant isolate).</p>
+<p>Additional phylogenetically-informed algorithms, that do not use ancestral state reconstruction, have been developed: 1. <strong>nearest_neighbor_algorithm()</strong>: Identification of an isolate’s nearest neighbor on the phylogenetic tree. Can be used to identify an isolate’s nearest neighbor without a feature (i.e., susceptible neighbor of a resistant isolate). This method can be combined with nearest_neighbor_analysis() and nearest_neighbor_summary_statistic() to compare characteristics of the isolate and their nearest neighbor. This analysis framework is useful for identifying the influence of genetic mutations on bacterial phenotypes (i.e., acquisition of resistance mutation and a resistance measurement). 2. <strong>phyloaware_regression()</strong>: Phylogenetically-informed regression to test for associations between descriptive characteristics and the emergence and spread of a genome-influenced trait.</p>
 <p><strong>How to install phyloAMR</strong></p>
 <pre><code><span><span class="co"># Install devtools</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span>, dep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -107,41 +107,48 @@
 <td>Ancestral reconstruction states</td>
 </tr>
 <tr class="even">
+<td>How often is the trait gained and lost across the phylogeny?</td>
+<td>Ancestral state reconstruction and transition statistics</td>
+<td>asr() + asr_transition_analysis()</td>
+<td>Ancestral reconstruction states from asr()</td>
+<td>Descriptive statistics on trait gain, loss, and continuation</td>
+</tr>
+<tr class="odd">
 <td>Do isolates belong to episodes of trait emergence or spread?</td>
 <td>Ancestral state reconstruction and tree traversal of estimates</td>
 <td>asr() + asr_cluster_detection()</td>
 <td>Dataframe with genome-influenced trait and a phylogenetic tree</td>
-<td>Ancestral reconstruction and calls for clusters and singletons</td>
+<td>Ancestral reconstruction and calls for phylogenetic clusters and singletons</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>How often does a genome-informed trait emerge and spread across a healthcare network?</td>
 <td>Ancestral state reconstruction and tracing of estimates</td>
 <td>asr() + asr_cluster_detection() + asr_cluster_analysis()</td>
 <td>Dataframe with genome-influenced trait and a phylogenetic tree</td>
-<td>Descriptive statistics on cluster calls and phylogenetic singletons</td>
+<td>Descriptive statistics on phylogenetic cluster calls and singletons</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Genetic features associated with trait/lineage emergence/spread?</td>
 <td>Ancestral state reconstruction of phenotype and genotype</td>
-<td>asr() + synchronous_detection() + synchronous_permutation_test()</td>
+<td>asr() + synchronous_transitions() + synchronous_permutation_test()</td>
 <td>Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree</td>
 <td>Two traits with synchronous episodes of gain or loss</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>What genotypes are subsequently gained/lost upon acquisition of a trait (i.e., potential compensatory or revertant mutations)</td>
 <td>Ancestral state reconstruction of phenotype and genotypes</td>
-<td>asr() + downstream_gain_loss() + downstream_permutation_test()</td>
+<td>asr() + downstream_transitions() + downstream_permutation_test()</td>
 <td>Dataframe with genome-influenced trait + genotypes of interest and a phylogenetic tree</td>
 <td>Genotypes classified as downstream mutations from a traits gain event</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>What descriptive characteristics are associated with phenotypic emergence and spread?</td>
-<td>Association testing for characteristics and phenotypic emergence (singletons) and clusters</td>
+<td>Association testing for characteristics and trait emergence (singletons) and spread (clusters)</td>
 <td>phyloaware_regression()</td>
 <td>Cluster calls from asr_cluster_detection() algorithm and a dataframe with characteristics of interest</td>
 <td>Statistical association testing results for characteristics of interest</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Who is my isolate’s closest related strain (i.e., nearest neighbor)?</td>
 <td>Evaluation of phylogenetic distance</td>
 <td>nearest_neighbor_algorithm()</td>
@@ -150,6 +157,8 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Citation</strong></p>
+<p>Kyle J Gontjes, Aryan Singh, Sarah E Sansom, James D Boyko, Stephen A Smith, Ebbing Lautenbach, Evan Snitkin, Phylogenetic Context of Antibiotic Resistance Provides Insights into the Dynamics of Resistance Emergence and Spread, The Journal of Infectious Diseases, 2025;, jiaf478, <a href="https://doi.org/10.1093/infdis/jiaf478" class="external-link uri">https://doi.org/10.1093/infdis/jiaf478</a></p>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
@@ -179,6 +188,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Kyle Gontjes <br><small class="roles"> Maintainer, author </small> <a href="https://orcid.org/0000-0001-8671-7990" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Aryan Singh <br><small class="roles"> Author </small>   </li>
 </ul>
 </div>
 
@@ -189,7 +199,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Kyle Gontjes.</p>
+  <p>Developed by Kyle Gontjes, Aryan Singh.</p>
 </div>
 
 <div class="pkgdown-footer-right">
