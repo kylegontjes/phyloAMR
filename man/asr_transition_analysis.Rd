@@ -7,9 +7,9 @@
 asr_transition_analysis(parent_child_df, node_states = "joint")
 }
 \arguments{
-\item{parent_child_df}{parent_child_df object returned sfrom asr() function}
+\item{parent_child_df}{parent_child_df object returned from phyloAMR::asr()}
 
-\item{node_states}{If 'joint' or 'marginal' reconstruction was used}
+\item{node_states}{Whether 'joint' or 'marginal' reconstruction was used}
 }
 \value{
 Dataframe with transition statistics for a trait.

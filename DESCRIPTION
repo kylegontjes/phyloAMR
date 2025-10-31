@@ -7,7 +7,7 @@ Authors@R: c(
   person(given = "Aryan",family = "Singh",email = "aryansin@umich.eduu",role=c("aut"))
   )
 Maintainer: Kyle Gontjes <kgontjes@umich.edu>
-Description: Suite of phylogenetically informed algorithms for analyzing genome-influenced traits, such as antibiotic resistance and infection severity.
+Description: Toolkit to perform phylogenetically-informed analysis of antibiotic resistance and other genome-influenced traits
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
